@@ -1,0 +1,31 @@
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:GeorgaMobileClient.View"
+                xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
+                x:Class="GeorgaMobileClient.View.MapsPage"
+                Title="Maps">
+    <views:BasePage.BindingContext>
+        <viewmodels:MapsViewModel />
+    </views:BasePage.BindingContext>
+
+    <ScrollView>
+        <StackLayout Padding="10">
+            <Label Text="Open location in maps." FontAttributes="Bold"/>
+
+            <Label Text="Options:"/>
+            <Label Text="Navigation Mode"/>
+            <Picker HorizontalOptions="FillAndExpand"
+                    ItemsSource="{Binding NavigationModes}"
+                    SelectedIndex="{Binding NavigationMode, Mode=TwoWay}" />
+            <Label Text="Name"/>
+            <Entry Text="{Binding Name}"/>
+
+            <Label Text="Latitude" Margin="0,24,0,0" />
+            <Entry Keyboard="Numeric" Text="{Binding Latitude}" />
+            <Label Text="Longitude" />
+            <Entry Keyboard="Numeric" Text="{Binding Longitude}" />
+            <Button Text="Open coordinates" Command="{Binding MapsCommand}"/>
+        </StackLayout>
+    </ScrollView>
+
+</views:BasePage>

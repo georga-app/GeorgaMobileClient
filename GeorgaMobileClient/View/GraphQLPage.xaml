@@ -1,0 +1,22 @@
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:GeorgaMobileClient.View"
+                xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
+                x:Class="GeorgaMobileClient.View.GraphQLPage"
+                Title="Maps">
+    <views:BasePage.BindingContext>
+        <viewmodels:GraphQLViewModel />
+    </views:BasePage.BindingContext>
+
+    <ScrollView>
+        <StackLayout Padding="10">
+            <Label Text="GraphQL Demo" FontAttributes="Bold"/>
+
+            <Label Text="Username"/>
+            <Entry Text="{Binding Username}"/>
+
+            <Button Text="QueryX" Command="{Binding GraphQLCommand}"/>
+        </StackLayout>
+    </ScrollView>
+
+</views:BasePage>

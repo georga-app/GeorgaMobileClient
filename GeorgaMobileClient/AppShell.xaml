@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="GeorgaMobileClient.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:GeorgaMobileClient"
+    xmlns:prop="clr-namespace:GeorgaMobileClient.Properties"
+    FlyoutBackgroundColor="{AppThemeBinding Dark={StaticResource BackgroundDark},
+                                            Light={StaticResource BackgroundLight}}">
+    <!--
+        The overall app visual hierarchy is defined here, along with navigation.
+        Ensure atleast a Flyout item or a TabBar is defined for Shell to work
+    -->
+    <Shell.Resources>
+        <ResourceDictionary>
+
+            <Style x:Key="BaseStyle" TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource PrimaryTextColor}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource PrimaryTextColor}" />
+                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="White" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarTitleColor" Value="White" />
+            </Style>
+
+            <Style
+                ApplyToDerivedTypes="True"
+                BasedOn="{StaticResource BaseStyle}"
+                TargetType="ShellItem" />
+
+            <!--
+                Default Styles for all Flyout Items
+            -->
+            <Style Class="FlyoutItemLabelStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="White" />
+            </Style>
+            <Style
+                ApplyToDerivedTypes="True"
+                Class="FlyoutItemLayoutStyle"
+                TargetType="Layout">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{x:OnPlatform UWP=Transparent, Android=Transparent, iOS=White}" />
+                                    <Setter TargetName="FlyoutItemLabel" Property="Label.TextColor" Value="{AppThemeBinding Dark={StaticResource TextDark}, Light={StaticResource TextLight}}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter TargetName="FlyoutItemLabel" Property="Label.TextColor" Value="White" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+            <!--
+                Custom Style you can apply to any Flyout Item
+            -->
+            <Style
+                ApplyToDerivedTypes="True"
+                Class="MenuItemLayoutStyle"
+                TargetType="Layout">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter TargetName="FlyoutItemLabel" Property="Label.TextColor" Value="{StaticResource PrimaryColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
+    <!--
+        When the Flyout is visible this defines the content to display in the flyout.
+        FlyoutDisplayOptions="AsMultipleItems" will create a separate flyout item for each child element
+    -->
+
+    <!--FlyoutItem Title="GraphQL">
+        <ShellContent ContentTemplate="{DataTemplate local:GraphQLPage}" Route="home" />
+    </FlyoutItem>
+    <FlyoutItem Title="Maps">
+        <ShellContent ContentTemplate="{DataTemplate local:MapsPage}" Route="search" />
+    </FlyoutItem>
+    <FlyoutItem Title="WebAuthenticator">
+        <ShellContent ContentTemplate="{DataTemplate local:WebAuthenticatorPage}" Route="settings" />
+    </FlyoutItem-->
+    <FlyoutItem Title="{x:Static prop:Resources.MainPage}">
+        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="main" />
+    </FlyoutItem>
+    <FlyoutItem Title="{x:Static prop:Resources.Settings}">
+        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" Route="settings" />
+    </FlyoutItem>
+
+    <!--
+        When the Flyout is visible this will be a menu item you can tie a click behavior to
+    -->
+
+    <MenuItem Clicked="OnLogoutClicked" Text="Logout" />
+
+    <!--
+        TabBar lets you define content that won't show up in a Flyout menu. When this content is active
+        the flyout menu won't be available. This is useful for creating areas of the application where
+        you don't want users to be able to navigate away from. If you would like to navigate to this
+        content you can do so by calling
+        await Shell.Current.GoToAsync("//login");
+    -->
+
+    <TabBar>
+        <ShellContent ContentTemplate="{DataTemplate local:LoginPage}" Route="login" />
+    </TabBar>
+
+    <!-- Optional Templates
+    // These may be provided inline as below or as separate classes.
+
+    // This header appears at the top of the Flyout
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid>ContentHere</Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+
+    // ItemTemplate is for ShellItems as displayed in a Flyout
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <ContentView>
+                Bindable Properties: Title, Icon
+            </ContentView>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    // MenuItemTemplate is for MenuItems as displayed in a Flyout
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <ContentView>
+                Bindable Properties: Text, Icon
+            </ContentView>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
+
+    // This footer appears at the bottom of the Flyout
+    <Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <Grid>ContentHere</Grid>
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>
+    -->
+</Shell>
