@@ -11,7 +11,7 @@
             <x:Double x:Key="MobileFontSize">14</x:Double>
             <x:Double x:Key="DesktopFontSize">16</x:Double>
 
-            <Color x:Key="MauiColor">#512BDF</Color>
+            <Color x:Key="MauiColor">#FFFFFF</Color>
 
             <Color x:Key="PrimaryColor">#3700B3</Color>
             <Color x:Key="PrimaryTextColor">White</Color>
