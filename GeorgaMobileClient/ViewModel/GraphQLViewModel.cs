@@ -7,7 +7,6 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Essentials;
 using Newtonsoft.Json;
 
 namespace GeorgaMobileClient.ViewModel

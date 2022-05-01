@@ -1,6 +1,9 @@
+using GeorgaMobileClient.View;
+using Microsoft.Toolkit.Mvvm.Input;
+
 namespace GeorgaMobileClient;
 
-public partial class LoginPage : ContentPage
+public partial class LoginPage : BasePage
 {
 	public LoginPage()
 	{
@@ -13,5 +16,5 @@ public partial class LoginPage : ContentPage
         {
             App.Instance.User.Authenticated = true;
         }
-    }
+	}
 }
