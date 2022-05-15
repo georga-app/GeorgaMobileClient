@@ -1,20 +1,23 @@
 using GeorgaMobileClient.View;
 using Microsoft.Toolkit.Mvvm.Input;
+using GeorgaMobileClient.Interface;
 
 namespace GeorgaMobileClient;
 
-public partial class LoginPage : BasePage
+public partial class LoginPage : BasePage, ILoginView
 {
-	public LoginPage()
+    public LoginPage()
 	{
-		InitializeComponent();
+        InitializeComponent();
     }
 
-    private void OnLoginClicked(object sender, EventArgs e)
+    private void OnRegisterClicked(object sender, EventArgs e)
     {
-        if (App.Instance is not null)
-        {
-            App.Instance.User.Authenticated = true;
-        }
-	}
+        repeatPasswordEntry.Focus();
+    }
+
+    public void SetFocusToRepeatPassword()
+    {
+        repeatPasswordEntry.Focus();
+    }
 }

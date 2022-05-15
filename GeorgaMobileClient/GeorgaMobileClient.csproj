@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-android;net6.0-ios;net6.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows')) and '$(MSBuildRuntimeType)' == 'Full'">$(TargetFrameworks);net6.0-windows10.0.19041</TargetFrameworks>
+		<TargetFrameworks>$(TargetFrameworks);net6.0-windows10.0.26624</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.26624</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
 		<OutputType>Exe</OutputType>
@@ -17,8 +17,8 @@
 		<ApplicationTitle>GeoRGA Mobile Client</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>app.georga</ApplicationId>
-		<ApplicationIdGuid>301A3453-B375-47C9-91B4-70A5157261EC</ApplicationIdGuid>
+		<ApplicationId>app.georga.test</ApplicationId>
+		<ApplicationIdGuid>311A3E53-B375-44C9-91B4-70A5157262EC</ApplicationIdGuid>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

@@ -5,7 +5,7 @@
              BackgroundColor="{DynamicResource SecondaryColor}">
 
     <ScrollView>
-        <Grid RowSpacing="25" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*"
+        <Grid RowSpacing="25" RowDefinitions="Auto,*,Auto,Auto,Auto,Auto,*"
               Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
 
             <Label 
@@ -46,6 +46,26 @@
                 SemanticProperties.Hint="{x:Static prop:Resources.ChangeLanguage}"
                 Clicked="OnChangeLanguage"
                 HorizontalOptions="Center" />
+
+            <CollectionView Grid.Row="1" x:Name="collectionView" SelectionMode="Single" SelectionChanged="collectionView_SelectionChanged">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="15">
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="{Binding LastName}"
+                                   FontSize="Medium" />
+                                <Label Text=", "
+                                   FontSize="Medium" />
+                                <Label Text="{Binding FirstName}"
+                               FontSize="Medium" />
+                            </StackLayout>
+                            <Label Text="{Binding Email}"
+                               TextColor="Silver"
+                               FontSize="Small" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <!--Image Grid.Row="4"
                 Source="dotnet_bot.png"

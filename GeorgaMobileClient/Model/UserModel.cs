@@ -2,22 +2,38 @@
 {
     public class UserModel : ObservableObject
     {
-        private string _username;
+        private string _email;
+        private string _password;
+        private string _token;
         private bool? _authenticated;
 
         private readonly INavigationService? _navigationService;
 
         public UserModel()
         {
-            _username = string.Empty;
+            _email = string.Empty;
+            _password = string.Empty;
+            _token = string.Empty;
             _authenticated = null;
             _navigationService = AppService.GetService<INavigationService>();
         }
 
-        public string Username
+        public string Email
         {
-            get => _username;
-            set => SetProperty(ref _username, value);
+            get => _email;
+            set => SetProperty(ref _email, value);
+        }
+
+        public string Password
+        {
+            get => _password;
+            set => SetProperty(ref _password, value);
+        }
+
+        public string Token
+        {
+            get => _token;
+            set => SetProperty(ref _token, value);
         }
 
         public bool? Authenticated

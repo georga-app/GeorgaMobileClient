@@ -7,6 +7,7 @@
              xmlns:converters="clr-namespace:CommunityToolkit.Maui.Converters;assembly=CommunityToolkit.Maui"
              xmlns:ctviews="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"                
              x:Class="GeorgaMobileClient.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
              Title="Login"
              Shell.NavBarIsVisible="False">
     
@@ -15,12 +16,15 @@
     </views:BasePage.BindingContext>
     
     <views:BasePage.Resources>
+        
         <Style x:Key="InvalidStyle" TargetType="Entry">
             <Setter Property="TextColor" Value="Red" />
         </Style>
+
         <ResourceDictionary>
             <converters:InvertedBoolConverter x:Key="invertBoolConverter" />
         </ResourceDictionary>
+        
     </views:BasePage.Resources>
     
     <Grid Style="{StaticResource ContentArea}">
@@ -44,11 +48,20 @@
                 </Entry.Behaviors>
             </Entry>
             <Entry x:Name="password" Placeholder="Password" IsPassword = "true" Text="{Binding Password}" />
-            <Button Text="Login" Command="{Binding LoginCommand}" />
+            <Button Text="Login" Command="{Binding LoginCommand}" IsEnabled="{Binding HasErrors, Converter={StaticResource invertBoolConverter}}" />
+            <Entry x:Name="repeatPasswordEntry" Placeholder="Repeat password" IsPassword = "true" Text="{Binding RepeatPassword}" IsVisible="{Binding IsRepeatPasswordVisible}" >
+                <Entry.Behaviors>
+                    <behaviors:RequiredStringValidationBehavior IsValid="{Binding IsPasswordMatching}" RequiredString="{Binding Password}" Flags="ValidateOnValueChanged" InvalidStyle="{StaticResource InvalidStyle}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Button Text="Register new account" Command="{Binding RegisterCommand}" Clicked="OnRegisterClicked" />
         </StackLayout>
 
         <StackLayout Grid.Row="3" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
-            <Label Text="Email not valid" TextColor="Red" IsVisible="{Binding IsEmailValid, Converter={StaticResource invertBoolConverter}}" />
+            <Label Text="Email address not valid" TextColor="Red" IsVisible="{Binding IsEmailValid, Converter={StaticResource invertBoolConverter}}" />
+            <Label Text="Please provide an email address" TextColor="Red" IsVisible="{Binding IsEmailEmpty}" />
+            <Label Text="Passwords don't match" TextColor="Red" IsVisible="{Binding IsPasswordMatching, Converter={StaticResource invertBoolConverter}}" />
+            <Label Text="{Binding Result}"  LineBreakMode="WordWrap" WidthRequest="300" />
         </StackLayout>        
 
     </Grid>
