@@ -17,7 +17,7 @@ public partial class MainPage : ContentPage
 		base.OnAppearing();
 		//collectionView.ItemsSource = await App.Database.GetPeopleAsync();
 
-		var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:8000/graphql" : "http://localhost:8000/graphql", new NewtonsoftJsonSerializer());
+		var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
 		graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
 		var usernameRequest = new GraphQLRequest
 		{
