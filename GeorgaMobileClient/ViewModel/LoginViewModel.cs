@@ -70,9 +70,9 @@ namespace GeorgaMobileClient.ViewModel
 						  password: $personPassword
 						}
 					  ) {
-						payload
-						refreshExpiresIn
+						id
 						token
+						refreshExpiresIn
 					  }
 					}",
 					Variables = new
@@ -83,9 +83,10 @@ namespace GeorgaMobileClient.ViewModel
 				};
 
 				string token;
-				try
+				dynamic jwtResponse = null;
+                try
 				{
-					var jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
+					jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
 					token = jwtResponse.Data.personAuth.token;
 				}
 				catch (GraphQLHttpRequestException e)
@@ -95,7 +96,10 @@ namespace GeorgaMobileClient.ViewModel
 				}
 				catch (Exception e)
 				{
-					Result = e.Message;
+					if (jwtResponse?.Errors?.Length > 0)
+						Result = jwtResponse.Errors[0].Message;
+					else
+	                    Result = e.Message;
 					return;
 				}
 

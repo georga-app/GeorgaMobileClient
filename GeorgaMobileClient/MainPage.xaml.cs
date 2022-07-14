@@ -9,6 +9,8 @@ public partial class MainPage : ContentPage
 {
 	public MainPage()
 	{
+		int i = 0;
+		i++;
 		InitializeComponent();
 	}
 
@@ -40,7 +42,7 @@ public partial class MainPage : ContentPage
 		string data = graphQLResponse.Data.ToString();
 		string allPersonsString = graphQLResponse.Data.allPersons.ToString();
 		var allPersons = graphQLResponse.Data.allPersons;
-		var edges = allPersons.edges;
+		/*var edges = allPersons.edges;
 		//List<Person> items = edges.ToObject<List<Person>>();
 		List<Person> items = ((Newtonsoft.Json.Linq.JArray)edges).Select(x => new Person
 		{
@@ -49,7 +51,7 @@ public partial class MainPage : ContentPage
 			LastName = (string)x["Person"]["lastName"],
 			Email = (string)x["Person"]["email"],
 		}).ToList();
-		collectionView.ItemsSource = items;
+		collectionView.ItemsSource = items;*/
 	}
 
 	private void OnAuthenticate(object sender, EventArgs e)
