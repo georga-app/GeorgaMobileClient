@@ -1,11 +1,14 @@
-﻿namespace GeorgaMobileClient;
+﻿using CommunityToolkit.Maui;
+
+namespace GeorgaMobileClient;
 
 public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
-		builder
+        builder.UseMauiApp<App>().UseMauiCommunityToolkit();
+        builder
 			.UseMauiApp<App>()
 			.UseVijayAnandMauiToolkit(ServiceRegistrations.Navigation | ServiceRegistrations.Theme)
 			.ConfigureFonts(fonts =>

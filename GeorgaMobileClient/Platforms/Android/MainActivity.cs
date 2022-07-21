@@ -22,8 +22,9 @@ public class MainActivity : MauiAppCompatActivity
 	}
 }
 
-[Activity(NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
+/*[Activity(NoHistory = true, LaunchMode = LaunchMode.SingleTop)]
 [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataScheme = "xamarinessentials")]
-public class WebAuthenticationCallbackActivity : Microsoft.Maui.Essentials.WebAuthenticatorCallbackActivity
+public class WebAuthenticationCallbackActivity : Microsoft.Maui.Authentication.WebAuthenticatorCallbackActivity -----> Essentials!
 {
 }
+*/
