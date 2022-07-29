@@ -11,6 +11,7 @@ using GeorgaMobileClient.Interface;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Newtonsoft.Json.Linq;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -31,6 +32,15 @@ namespace GeorgaMobileClient.ViewModel
 		bool isEmailValid;
 
 		[ObservableProperty]
+        bool isFirstNameValid;
+
+        [ObservableProperty]
+        bool isLastNameValid;
+
+		[ObservableProperty]
+		bool isMobilePhoneValid;
+
+        [ObservableProperty]
         [MinLength(8)]
         [AlsoNotifyChangeFor(nameof(IsPasswordMatching))]
 		string password = "sdfwer234";
@@ -45,15 +55,27 @@ namespace GeorgaMobileClient.ViewModel
 		public bool IsPasswordMatching => !IsRepeatPasswordVisible || Password == RepeatPassword;
 
 		[ObservableProperty]
-		string title;
+        [Required]
+        [MinLength(2)]
+        [MaxLength(100)]
+        string title;
 
 		[ObservableProperty]
-		string firstName;
+        [Required]
+        [MinLength(2)]
+        [MaxLength(100)]
+        string firstName;
 
         [ObservableProperty]
+        [Required]
+        [MinLength(2)]
+        [MaxLength(100)]
         string lastName;
 
         [ObservableProperty]
+        [Required]
+        [MinLength(10, ErrorMessage = "Phone number should have at least 10 digits.")]
+        [MaxLength(20, ErrorMessage = "Phone number is too long.")]
         string mobilePhone;
 
         [ObservableProperty]
@@ -62,69 +84,85 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
 		string result;
 
-		[ICommand]
+        // --- constructor ---
+
+        [ICommand]
 		async public void Login()
 		{
-			ValidateAllProperties();
-			if (String.IsNullOrEmpty(Email)) 
-				IsEmailEmpty = true;
-			if (!HasErrors)
+            if (String.IsNullOrEmpty(Email))  // some atavism that wonn't harm...
+                IsEmailEmpty = true;
+
+			// ValidateAllProperties(); -- no longer : the registration-specific fields are allowed to be invalid for login
+			var emailErrors = GetErrors("Email");
+            var passwordErrors = GetErrors("Password");
+			if (emailErrors?.Count() > 0)
+			{
+				Result = emailErrors.FirstOrDefault().ErrorMessage;
+				return;
+			}
+            if (passwordErrors?.Count() > 0)
             {
-				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+                Result = passwordErrors.FirstOrDefault().ErrorMessage;
+                return;
+            }
 
-				var jwtRequest = new GraphQLRequest
-				{
-					Query = @"
-					mutation TokenAuth (
-					  $email: String!
-					  $password: String!
-					) {
-					  personAuth: tokenAuth (
-						input: {
-						  email: $email
-						  password: $password
-						}
-					  ) {
-						id
-						token
-						refreshExpiresIn
-					  }
-					}",
-					Variables = new
-					{
-						email = Email,
-						password = Password
+			var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+
+			var jwtRequest = new GraphQLRequest
+			{
+				Query = @"
+				mutation TokenAuth (
+					$email: String!
+					$password: String!
+				) {
+					personAuth: tokenAuth (
+					input: {
+						email: $email
+						password: $password
 					}
-				};
+					) {
+					payload
+					token
+					refreshExpiresIn
+					}
+				}",
+				Variables = new
+				{
+					email = Email,
+					password = Password
+				}
+			};
 
-				string token;
-				dynamic jwtResponse = null;
-                try
-				{
-					jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
-					token = jwtResponse.Data.personAuth.token;
-				}
-				catch (GraphQLHttpRequestException e)
-				{
-					Result = e.Content;
-					return;
-				}
-				catch (Exception e)
-				{
-					if (jwtResponse?.Errors?.Length > 0)
-						Result = jwtResponse.Errors[0].Message;
-					else
-	                    Result = e.Message;
-					return;
-				}
+			string token = "";
+			dynamic jwtResponse = null;
+            try
+			{
+				jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
+                if (QueryHasErrors(jwtResponse.Data.personAuth))
+                    return;
 
-				if (App.Instance is not null)
-				{
-					App.Instance.User.Email = Email;
-					App.Instance.User.Password = Password;
-					App.Instance.User.Token = token;
-					App.Instance.User.Authenticated = true;
-				}
+				// login, if token has been aquired successfully
+                token = jwtResponse.Data.personAuth.token;
+                if (App.Instance is not null)
+                {
+                    App.Instance.User.Email = Email;
+                    App.Instance.User.Password = Password;
+                    App.Instance.User.Token = token;
+                    App.Instance.User.Authenticated = true;
+                }
+            }
+			catch (GraphQLHttpRequestException e)
+			{
+				Result = e.Content;
+				return;
+			}
+			catch (Exception e)
+			{
+				if (jwtResponse?.Errors?.Length > 0)
+					Result = jwtResponse.Errors[0].Message;
+				else
+	                Result = e.Message;
+				return;
 			}
 		}
 
@@ -170,7 +208,13 @@ namespace GeorgaMobileClient.ViewModel
         [ICommand]
 		public async void Register()
 		{
-			if (!IsRepeatPasswordVisible)
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                Result = "Connectivity Error: No internet connection currently.";
+                return;
+            }
+
+            if (!IsRepeatPasswordVisible)
 			{
 				IsRepeatPasswordVisible = true;
 				GetLanguageQualifications();
@@ -178,7 +222,12 @@ namespace GeorgaMobileClient.ViewModel
 			else
 			{
 				ValidateAllProperties();
-				if (!HasErrors)
+				if (HasErrors)
+				{
+					Result = "Please provide valid entries in order to register.";
+					return;
+				}
+				else
 				{
 					var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
 
@@ -192,7 +241,6 @@ namespace GeorgaMobileClient.ViewModel
 							$firstName: String
 							$lastName: String
 							$mobilePhone: String
-							$qualificationsLanguage: [ID]
 						  ) {
 							registerPerson(
 							  input: {
@@ -202,7 +250,6 @@ namespace GeorgaMobileClient.ViewModel
 								firstName: $firstName
 								lastName: $lastName
 								mobilePhone: $mobilePhone
-								qualificationsLanguage: $qualificationsLanguage
 							  }
 							) {
 							  id
@@ -220,17 +267,24 @@ namespace GeorgaMobileClient.ViewModel
 							firstName = FirstName,
 							lastName = LastName,
 							mobilePhone = MobilePhone,
-							qualificationsLanguage = QualificationsLanguage
-						}
+							
+                        }
 					};
 
-					string token;
 					dynamic jwtResponse = null;
 					try
 					{
 						jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
-						token = jwtResponse.Data.personAuth.token;
-					}
+						if (QueryHasErrors(jwtResponse.Data.registerPerson))
+							return;
+
+                        // var id = jwtResponse.Data.registerPerson.id;
+
+						// Success:
+                        IsRepeatPasswordVisible = false;
+                        Result = "Success! Please check your inbox for the email we just sent you and click on the activation link in it. Then return here to login. (Sending the email can take a minute; look in your spam folder, if it's not there in time.)";
+                        return;
+                    }
 					catch (GraphQLHttpRequestException e)
 					{
 						Result = e.Content;
@@ -244,18 +298,42 @@ namespace GeorgaMobileClient.ViewModel
 							Result = e.Message;
 						return;
 					}
-
-					if (App.Instance is not null)
-					{
-						App.Instance.User.Email = Email;
-						App.Instance.User.Password = Password;
-						App.Instance.User.Token = token;
-						App.Instance.User.Authenticated = true;
-					}
-
-
 				}
 			}
 		}
-	}
+
+		private bool QueryHasErrors(dynamic obj)
+		{
+			if (obj == null)
+			{
+                Result = "Application error (object is null)";  // this shouldn't happen
+					return true;
+			}
+			dynamic errors;
+            try
+			{
+				errors = obj.errors;
+			}
+			catch (Exception e)
+			{
+                return false;
+            }
+
+            if (errors?.Count > 0)
+			{
+				Result = "";
+				foreach (dynamic error in errors.Children<JObject>())
+				{
+					Result += $"\r\nField '{error.field}': ";
+
+					JArray messages = error.messages;
+					foreach (var message in messages)
+						Result += $"{message}\r\n";
+				}
+				return true;
+			}
+			else
+				return false;
+        }
+    }
 }

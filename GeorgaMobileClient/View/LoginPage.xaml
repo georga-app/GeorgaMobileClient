@@ -5,18 +5,19 @@
              xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
              xmlns:behaviors="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
              xmlns:converters="clr-namespace:CommunityToolkit.Maui.Converters;assembly=CommunityToolkit.Maui"
-             xmlns:ctviews="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"                
+             xmlns:ctviews="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"   
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"           
              x:Class="GeorgaMobileClient.LoginPage"
              x:DataType="viewmodels:LoginViewModel"
              Title="Login"
              Shell.NavBarIsVisible="False">
-    
+
     <views:BasePage.BindingContext>
         <viewmodels:LoginViewModel x:Name="ViewModel" />
     </views:BasePage.BindingContext>
-    
+
     <views:BasePage.Resources>
-        
+
         <Style x:Key="InvalidStyle" TargetType="Entry">
             <Setter Property="TextColor" Value="Red" />
         </Style>
@@ -24,45 +25,109 @@
         <ResourceDictionary>
             <converters:InvertedBoolConverter x:Key="invertBoolConverter" />
         </ResourceDictionary>
-        
+
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+        <Style x:Key="ValidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Black" />
+        </Style>
+
     </views:BasePage.Resources>
-    
-    <Grid Style="{StaticResource ContentArea}">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <StackLayout Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" WidthRequest="200" VerticalOptions="Center">
-            <Entry x:Name="email" Placeholder="EMail" Text="{Binding Email}">
-                <Entry.Behaviors>
-                    <behaviors:EmailValidationBehavior IsValid="{Binding IsEmailValid}" Flags="ValidateOnValueChanged" InvalidStyle="{StaticResource InvalidStyle}"/>
-                </Entry.Behaviors>
-            </Entry>
-            <Entry x:Name="password" Placeholder="Password" IsPassword = "true" Text="{Binding Password}" />
-            <Button Text="Login" Command="{Binding LoginCommand}" IsEnabled="{Binding HasErrors, Converter={StaticResource invertBoolConverter}}" />
-            <Entry x:Name="repeatPasswordEntry" Placeholder="Repeat password" IsPassword = "true" Text="{Binding RepeatPassword}" IsVisible="{Binding IsRepeatPasswordVisible}" >
-                <Entry.Behaviors>
-                    <behaviors:RequiredStringValidationBehavior IsValid="{Binding IsPasswordMatching}" RequiredString="{Binding Password}" Flags="ValidateOnValueChanged" InvalidStyle="{StaticResource InvalidStyle}"/>
-                </Entry.Behaviors>
-            </Entry>
-            <Button Text="Register new account" Command="{Binding RegisterCommand}" Clicked="OnRegisterClicked" />
-        </StackLayout>
+    <ScrollView VerticalOptions="StartAndExpand">
+        <Grid Style="{StaticResource ContentArea}">
 
-        <StackLayout Grid.Row="3" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
-            <Label Text="Email address not valid" TextColor="Red" IsVisible="{Binding IsEmailValid, Converter={StaticResource invertBoolConverter}}" />
-            <Label Text="Please provide an email address" TextColor="Red" IsVisible="{Binding IsEmailEmpty}" />
-            <Label Text="Passwords don't match" TextColor="Red" IsVisible="{Binding IsPasswordMatching, Converter={StaticResource invertBoolConverter}}" />
-            <Label Text="{Binding Result}"  LineBreakMode="WordWrap" WidthRequest="300" />
-        </StackLayout>        
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="1" Grid.Column="1" Padding="10"></Label>
+            <StackLayout Grid.Row="2" Grid.Column="1" HorizontalOptions="Center" WidthRequest="200" VerticalOptions="Center">
+                <Entry x:Name="email" Placeholder="EMail" Text="{Binding Email}">
+                    <Entry.Behaviors>
+                        <behaviors:EmailValidationBehavior
+                            IsValid="{Binding IsEmailValid}"
+                            Flags="ValidateOnValueChanged" 
+                            InvalidStyle="{StaticResource InvalidStyle}"/>
+                    </Entry.Behaviors>
+                </Entry>
+                <Entry x:Name="password" Placeholder="Password" IsPassword = "true" Text="{Binding Password}" />
+                <Button Text="Login" Command="{Binding LoginCommand}" />
+                <!-- IsEnabled="{Binding HasErrors, Converter={StaticResource invertBoolConverter}}" -->
+                <Picker Title="Select your title" SelectedItem="{Binding Title}" IsVisible="{Binding IsRepeatPasswordVisible}">
+                    <Picker.Items>
+                        <x:String>NONE</x:String>
+                        <x:String>MR</x:String>
+                        <x:String>MS</x:String>
+                        <x:String>MX</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Entry Placeholder="First name" Text="{Binding FirstName}" IsVisible="{Binding IsRepeatPasswordVisible}">
+                    <Entry.Behaviors>
+                        <toolkit:TextValidationBehavior 
+                            IsValid="{Binding IsFirstNameValid}"
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            Flags="ValidateOnValueChanged"
+                            MinimumLength="1"/>
+                    </Entry.Behaviors>
+                </Entry>
+                <Entry Placeholder="Last name" Text="{Binding LastName}" IsVisible="{Binding IsRepeatPasswordVisible}">
+                    <Entry.Behaviors>
+                        <toolkit:TextValidationBehavior 
+                            IsValid="{Binding IsLastNameValid}"
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            Flags="ValidateOnValueChanged"
+                            MinimumLength="2"/>
+                    </Entry.Behaviors>
+                </Entry>
+                <Entry Placeholder="Mobile phone" Text="{Binding MobilePhone}" IsVisible="{Binding IsRepeatPasswordVisible}">
+                    <Entry.Behaviors>
+                        <toolkit:CharactersValidationBehavior
+                            IsValid="{Binding IsMobilePhoneValid}"
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            Flags="ValidateOnValueChanged"
+                            CharacterType="Digit" 
+                            MinimumLength="10" 
+                            MaximumLength="20"                      
+                        />
+                    </Entry.Behaviors>
+                </Entry>
+                <Entry x:Name="repeatPasswordEntry" Placeholder="Repeat password" IsPassword = "true" Text="{Binding RepeatPassword}" IsVisible="{Binding IsRepeatPasswordVisible}">
+                    <Entry.Behaviors>
+                        <behaviors:RequiredStringValidationBehavior 
+                            IsValid="{Binding IsPasswordMatching}" 
+                            InvalidStyle="{StaticResource InvalidStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            RequiredString="{Binding Password}" 
+                            Flags="ValidateOnValueChanged" />
+                    </Entry.Behaviors>
+                </Entry>
+                <Button Text="Register new account" Command="{Binding RegisterCommand}" Clicked="OnRegisterClicked" />
+                <!--  IsEnabled="{Binding HasErrors, Converter={StaticResource invertBoolConverter}}"-->
+            </StackLayout>
 
-    </Grid>
+            <StackLayout Padding="10" Grid.Row="3" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="StartAndExpand">
+                <Label Text="Email address not valid" LineBreakMode="WordWrap" TextColor="Red" IsVisible="{Binding IsEmailValid, Converter={StaticResource invertBoolConverter}}" />
+                <Label Text="Please provide an email address" LineBreakMode="WordWrap" TextColor="Red" IsVisible="{Binding IsEmailEmpty}" />
+                <Label Text="First name is not valid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsFirstNameValid, Converter={StaticResource invertBoolConverter}}" />
+                <Label Text="Last name is not valid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsLastNameValid, Converter={StaticResource invertBoolConverter}}" />
+                <Label Text="Mobile phone number invalid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsMobilePhoneValid, Converter={StaticResource invertBoolConverter}}" />
+                <Label Text="Passwords don't match" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsPasswordMatching, Converter={StaticResource invertBoolConverter}}" />
+                <Label Text="{Binding Result}" LineBreakMode="WordWrap" WidthRequest="200" />
+            </StackLayout>
+
+        </Grid>
+    </ScrollView>
 </views:BasePage>
