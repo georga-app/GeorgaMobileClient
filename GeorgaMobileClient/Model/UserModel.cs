@@ -1,6 +1,6 @@
 ﻿namespace GeorgaMobileClient.Model
 {
-    public class UserModel : ObservableObject
+    public class UserModel : OYYYYbservableObject
     {
         private string _email;
         private string _password;

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public class ObservableObject : INotifyPropertyChanged
+    public class OXXXbservableObject : INotifyPropertyChanged
     {
         protected virtual bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "", Action onChanged = null, Func<T, T, bool> validateValue = null)
         {

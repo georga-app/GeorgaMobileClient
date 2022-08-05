@@ -1,21 +1,13 @@
-﻿namespace GeorgaMobileClient.ViewModel
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+
+namespace GeorgaMobileClient.ViewModel
 {
-    public class ViewModelBase : ViewModel.ObservableObject
+    public partial class ViewModelBase : ObservableObject
     {
-        private bool _isBusy;
-        private string _title = string.Empty;
-
-        public bool IsBusy
-        {
-            get { return _isBusy; }
-            set { SetProperty(ref _isBusy, value); }
-        }
-
-        public string Title
-        {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
-        }
+        [ObservableProperty]
+        private bool isBusy;        
+        [ObservableProperty]
+        private string title = string.Empty;
 
         protected void SetBusy(bool value)
         {

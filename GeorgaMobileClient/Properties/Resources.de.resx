@@ -126,11 +126,23 @@
   <data name="English" xml:space="preserve">
     <value>Englisch</value>
   </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Vorname</value>
+  </data>
   <data name="German" xml:space="preserve">
     <value>Deutsch</value>
   </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Nachname</value>
+  </data>
   <data name="MainPage" xml:space="preserve">
     <value>Hauptseite</value>
+  </data>
+  <data name="PersonalData" xml:space="preserve">
+    <value>Persönliche Daten</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profil</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Einstellungen</value>

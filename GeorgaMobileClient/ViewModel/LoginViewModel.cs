@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Headers;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using GeorgaMobileClient.Interface;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -138,7 +131,7 @@ namespace GeorgaMobileClient.ViewModel
             try
 			{
 				jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
-                if (QueryHasErrors(jwtResponse.Data.personAuth))
+                if (QueryHasErrors(jwtResponse))
                     return;
 
 				// login, if token has been aquired successfully
@@ -302,38 +295,38 @@ namespace GeorgaMobileClient.ViewModel
 			}
 		}
 
-		private bool QueryHasErrors(dynamic obj)
-		{
-			if (obj == null)
-			{
+        private bool QueryHasErrors(dynamic obj)
+        {
+            if (obj == null)
+            {
                 Result = "Application error (object is null)";  // this shouldn't happen
-					return true;
-			}
-			dynamic errors;
+                return true;
+            }
+            dynamic errors;
             try
-			{
-				errors = obj.errors;
-			}
-			catch (Exception e)
-			{
+            {
+                errors = obj.Errors;
+            }
+            catch (Exception e)
+            {
                 return false;
             }
 
-            if (errors?.Count > 0)
-			{
-				Result = "";
-				foreach (dynamic error in errors.Children<JObject>())
-				{
-					Result += $"\r\nField '{error.field}': ";
+            if (errors?.Length > 0)
+            {
+                Result = "";
+                foreach (dynamic error in errors.Children<JObject>())
+                {
+                    Result += $"\r\nField '{error.field}': ";
 
-					JArray messages = error.messages;
-					foreach (var message in messages)
-						Result += $"{message}\r\n";
-				}
-				return true;
-			}
-			else
-				return false;
+                    JArray messages = error.messages;
+                    foreach (var message in messages)
+                        Result += $"{message}\r\n";
+                }
+                return true;
+            }
+            else
+                return false;
         }
     }
 }

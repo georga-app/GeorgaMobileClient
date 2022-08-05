@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public class BaseViewModel : ObservableObject
+    public class BaseViewModel : OXXXbservableObject
     {
         bool isBusy;
 

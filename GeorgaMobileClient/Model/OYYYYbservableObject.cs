@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace GeorgaMobileClient.Model
 {
-    public class ObservableObject : INotifyPropertyChanged
+    public class OYYYYbservableObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

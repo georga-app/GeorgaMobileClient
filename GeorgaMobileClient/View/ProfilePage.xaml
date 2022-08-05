@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="GeorgaMobileClient.ProfilePage"
+    xmlns:vm="clr-namespace:GeorgaMobileClient.ViewModel"
+    xmlns:prop="clr-namespace:GeorgaMobileClient.Properties"
+    Title="{Binding Title}"
+    x:DataType="vm:ProfileViewModel">
+    <Grid Style="{StaticResource ContentArea}">
+        <StackLayout Grid.Row="2" Orientation="Vertical">
+            <Label TextColor="Red" Text="{Binding Result}" />
+            <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                <TableView Intent="Form" x:Name="form" 
+                   Margin="10, 0">
+                    <TableRoot Title="{x:Static prop:Resources.Profile}">
+                        <TableSection Title="{x:Static prop:Resources.PersonalData}">
+                            <EntryCell Label="Email" Text="{Binding Email}" />
+                            <EntryCell Label="{x:Static prop:Resources.FirstName}" Text="{Binding FirstName}" />
+                            <EntryCell Label="{x:Static prop:Resources.LastName}" Text="{Binding LastName}" />
+                        </TableSection>
+                        <TableSection Title="Playground Section">
+                            <TextCell Text="Text Cell"
+                              Detail="With Detail Text" />
+
+                            <ImageCell Text = "Image Cell"
+                               Detail = "With Detail Text">
+                                <ImageCell.ImageSource>
+                                    <OnPlatform x:TypeArguments="ImageSource">
+                                        <On Platform="iOS" Value="dotnet_bot.svg" />
+                                        <On Platform="Android" Value="dotnet_bot.svg" />
+                                        <On Platform="UWP" Value="dotnet_bot.svg" />
+                                    </OnPlatform>
+                                </ImageCell.ImageSource>
+                            </ImageCell>
+
+                            <SwitchCell Text="Switch Cell" />
+
+                            <EntryCell Label="Entry Cell"
+                               Placeholder = "Type text here" />
+
+                            <ViewCell>
+                                <Label Text="A View Cell can be anything you want!" />
+                            </ViewCell>
+                        </TableSection>
+                    </TableRoot>
+                </TableView>
+            </ScrollView>
+            <StackLayout Grid.Row="2" Orientation="Horizontal">
+                <Button Text="Store" Command="{Binding StoreCommand}" Padding="20" />
+                <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="20" />
+            </StackLayout>
+        </StackLayout>
+    </Grid>
+</ContentPage>

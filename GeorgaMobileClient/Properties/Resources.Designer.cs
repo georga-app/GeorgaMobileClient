@@ -88,6 +88,15 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die First name ähnelt.
+        /// </summary>
+        public static string FirstName {
+            get {
+                return ResourceManager.GetString("FirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die German ähnelt.
         /// </summary>
         public static string German {
@@ -97,11 +106,38 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Last name ähnelt.
+        /// </summary>
+        public static string LastName {
+            get {
+                return ResourceManager.GetString("LastName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Main Page ähnelt.
         /// </summary>
         public static string MainPage {
             get {
                 return ResourceManager.GetString("MainPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Personal Data ähnelt.
+        /// </summary>
+        public static string PersonalData {
+            get {
+                return ResourceManager.GetString("PersonalData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Profile ähnelt.
+        /// </summary>
+        public static string Profile {
+            get {
+                return ResourceManager.GetString("Profile", resourceCulture);
             }
         }
         

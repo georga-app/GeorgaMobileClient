@@ -1,16 +1,10 @@
 ﻿using GeorgaMobileClient.View;
 namespace GeorgaMobileClient;
-using System.Net.Http.Headers;
-using GraphQL;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.Newtonsoft;
 
 public partial class MainPage : ContentPage
 {
 	public MainPage()
 	{
-		int i = 0;
-		i++;
 		InitializeComponent();
 	}
 
@@ -18,7 +12,7 @@ public partial class MainPage : ContentPage
 	{
 		base.OnAppearing();
 		//collectionView.ItemsSource = await App.Database.GetPeopleAsync();
-
+/*
 		var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
 		graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
 		var usernameRequest = new GraphQLRequest
@@ -42,7 +36,7 @@ public partial class MainPage : ContentPage
 		string data = graphQLResponse.Data.ToString();
 		string allPersonsString = graphQLResponse.Data.allPersons.ToString();
 		var allPersons = graphQLResponse.Data.allPersons;
-		/*var edges = allPersons.edges;
+*/		/*var edges = allPersons.edges;
 		//List<Person> items = edges.ToObject<List<Person>>();
 		List<Person> items = ((Newtonsoft.Json.Linq.JArray)edges).Select(x => new Person
 		{
