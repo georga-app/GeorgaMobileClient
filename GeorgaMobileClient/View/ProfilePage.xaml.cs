@@ -1,15 +1,18 @@
-﻿namespace GeorgaMobileClient;
+﻿using System.Diagnostics;
+using GeorgaMobileClient.View;
 
-public partial class ProfilePage : ContentPage
+namespace GeorgaMobileClient;
+
+public partial class ProfilePage : BasePage
 {
-    public ProfilePage(ProfileViewModel viewModel)
+    public ProfilePage()
     {
         InitializeComponent();
-        BindingContext = viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        Debug.WriteLine("ProfilePage.OnAppearing()");
     }
 }

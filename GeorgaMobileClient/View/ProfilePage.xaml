@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage
+<views:BasePage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="GeorgaMobileClient.ProfilePage"
-    xmlns:vm="clr-namespace:GeorgaMobileClient.ViewModel"
+    xmlns:views="clr-namespace:GeorgaMobileClient.View"
+    xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
     xmlns:prop="clr-namespace:GeorgaMobileClient.Properties"
-    Title="{Binding Title}"
-    x:DataType="vm:ProfileViewModel">
+    xmlns:behaviors="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
+    xmlns:converters="clr-namespace:CommunityToolkit.Maui.Converters;assembly=CommunityToolkit.Maui"
+    xmlns:ctviews="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"   
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
+    x:Class="GeorgaMobileClient.ProfilePage"
+    x:DataType="viewmodels:ProfileViewModel"
+    Title="{Binding Title}">
+
+    <views:BasePage.BindingContext>
+        <viewmodels:ProfileViewModel x:Name="ViewModel" />
+    </views:BasePage.BindingContext>
+    
+    <views:BasePage.Resources>
+
+        <Style x:Key="InvalidStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+
+        <ResourceDictionary>
+            <converters:InvertedBoolConverter x:Key="invertBoolConverter" />
+        </ResourceDictionary>
+
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+        <Style x:Key="ValidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Black" />
+        </Style>
+
+    </views:BasePage.Resources>
+
     <Grid Style="{StaticResource ContentArea}">
         <StackLayout Grid.Row="2" Orientation="Vertical">
-            <Label TextColor="Red" Text="{Binding Result}" />
             <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
                 <TableView Intent="Form" x:Name="form" 
                    Margin="10, 0">
                     <TableRoot Title="{x:Static prop:Resources.Profile}">
                         <TableSection Title="{x:Static prop:Resources.PersonalData}">
-                            <EntryCell Label="Email" Text="{Binding Email}" />
-                            <EntryCell Label="{x:Static prop:Resources.FirstName}" Text="{Binding FirstName}" />
-                            <EntryCell Label="{x:Static prop:Resources.LastName}" Text="{Binding LastName}" />
+                            <EntryCell Label="Email" Text="{Binding Email}" IsEnabled="False" />
+                            <EntryCell Label="{x:Static prop:Resources.FirstName}" Text="{Binding FirstName}" IsEnabled="{Binding IsEditing}" />
+                            <EntryCell Label="{x:Static prop:Resources.LastName}" Text="{Binding LastName}" IsEnabled="{Binding IsEditing}" />
                         </TableSection>
                         <TableSection Title="Playground Section">
                             <TextCell Text="Text Cell"
@@ -46,10 +74,17 @@
                     </TableRoot>
                 </TableView>
             </ScrollView>
-            <StackLayout Grid.Row="2" Orientation="Horizontal">
-                <Button Text="Store" Command="{Binding StoreCommand}" Padding="20" />
-                <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="20" />
+            <StackLayout Grid.Row="2" Orientation="Horizontal" IsVisible="{Binding IsEditing}">
+                <Button Text="Store" Command="{Binding StoreCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" Margin="5" />
+            </StackLayout>
+            <StackLayout Grid.Row="2" Orientation="Horizontal" Spacing="5" Margin="5" IsVisible="{Binding IsEditing, Converter={StaticResource invertBoolConverter}}">
+                <Button Text="Refresh" Command="{Binding RefreshCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                <Button Text="Edit" Command="{Binding EditCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                <Button Text="Back" Command="{Binding BackCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" Margin="5" />
             </StackLayout>
         </StackLayout>
     </Grid>
-</ContentPage>
+</views:BasePage>

@@ -11,18 +11,32 @@ namespace GeorgaMobileClient.ViewModel
     public partial class ProfileViewModel : ViewModelBase
     {
         #region form data
+
+        [ObservableProperty]
+        string id;
         [ObservableProperty]
         string email;
         [ObservableProperty]
         string firstName;
         [ObservableProperty]
         string lastName;
+
         #endregion
 
         #region view control elements
+
+        public ICommand RefreshCommand { protected set; get; }
+        public ICommand EditCommand { protected set; get; }
+        public ICommand BackCommand { protected set; get; }
         public ICommand StoreCommand { protected set; get; }
         public ICommand CancelCommand { protected set; get; }
 
+        [ObservableProperty]
+        private bool isEditing;
+        [ObservableProperty]
+        private bool isEditEnabled;
+        [ObservableProperty]
+        private bool isRefreshEnabled;
         [ObservableProperty]
         private bool isStoreEnabled;
         [ObservableProperty]
@@ -30,15 +44,50 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         string result;
 
-        public ProfileViewModel(IPreferences preferences, IThemeService theme)
+        public ProfileViewModel()
         {
+            RefreshCommand = new Command(Refresh);
+            EditCommand = new Command(Edit);
+            BackCommand = new Command(Back);
             StoreCommand = new Command(Store);
             CancelCommand = new Command(Cancel);
-            IsStoreEnabled = true;
+            IsRefreshEnabled = true;
+            IsEditEnabled = true;
+            IsStoreEnabled = false;
             IsCancelEnabled = true;
+            IsEditing = false;
             Title = GeorgaMobileClient.Properties.Resources.Profile;
-            GetProfileDataFromApi();
             Result = "Nix";
+            Refresh();
+        }
+
+        async void Refresh()
+        {
+            if (!IsRefreshEnabled) return;
+            IsRefreshEnabled = false;
+
+            await GetProfileDataFromApi();
+
+            IsRefreshEnabled = true;
+        }
+
+        public async void Edit()
+        {
+            if (!IsEditEnabled) return;
+            IsEditEnabled = false;
+            
+            if (await GetProfileDataFromApi())
+            {
+                IsEditEnabled = true;
+                IsStoreEnabled = true;
+                IsCancelEnabled = true;
+                IsEditing = true;
+            }
+        }
+
+        async void Back()
+        {
+            await Shell.Current.GoToAsync("///main");
         }
 
         // store form data
@@ -47,20 +96,43 @@ namespace GeorgaMobileClient.ViewModel
             if (!IsStoreEnabled) return;
             IsStoreEnabled = false;
 
-            await Shell.Current.GoToAsync("///main");
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                Result = "Connectivity Error: No internet connection currently.";
+                IsStoreEnabled = true;
+                return;
+            }
+
+            ValidateAllProperties();
+            if (HasErrors)
+            {
+                Result = "Please provide valid data.";
+                IsStoreEnabled = true;
+                return;
+            }
+
+            if (await SendProfileDataToApi())
+                IsEditing = false;
+            else
+                IsStoreEnabled = true;
         }
 
         async void Cancel()
         {
             if (!IsCancelEnabled) return;
-            IsCancelEnabled = false;
+                IsCancelEnabled = false;
 
-            await Shell.Current.GoToAsync("///main");
+            IsRefreshEnabled = true;
+            IsEditEnabled = true;
+            IsEditing = false;
+            Refresh();
         }
+
         #endregion
 
         #region api stuff
-        public async void GetProfileDataFromApi()
+
+        public async Task<bool> GetProfileDataFromApi()
         {
             var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
@@ -88,22 +160,25 @@ namespace GeorgaMobileClient.ViewModel
             dynamic graphQLResponse = null;
             try
             {
+                SetBusy(true);
                 graphQLResponse = await graphQLClient.SendQueryAsync<dynamic>(usernameRequest);
+                SetBusy(false);
                 if (QueryHasErrors(graphQLResponse))
                 {
                     IsStoreEnabled = false;
-                    return;
+                    return false;
                 }
                 // string allPersonsString = graphQLResponse.Data.allPersons.ToString();
                 var allPersons = graphQLResponse?.Data?.allPersons;
                 if (allPersons == null)
                 {
                     IsStoreEnabled = false;
-                    return;
+                    return false;
                 }
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
+                    Id = allPersons?.edges[0]?.Person?.id;
                     Email = allPersons?.edges[0]?.Person?.email;
                     FirstName = allPersons?.edges[0]?.Person?.firstName;
                     LastName = allPersons?.edges[0]?.Person?.lastName;
@@ -112,7 +187,7 @@ namespace GeorgaMobileClient.ViewModel
             catch (GraphQLHttpRequestException e)
             {
                 Result = e.Content;
-                return;
+                return false;
             }
             catch (Exception e)
             {
@@ -120,8 +195,70 @@ namespace GeorgaMobileClient.ViewModel
                     Result = graphQLResponse.Errors[0].Message;
                 else
                     Result = e.Message;
-                return;
+                return false;
             }
+            return true;
+        }
+
+        public async Task<bool> SendProfileDataToApi()
+        {
+            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+            graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
+            var updatePersonRequest = new GraphQLRequest
+            {
+                Query = @"
+  mutation UpdatePerson (
+    $id: ID!
+    $firstName: String
+    $lastName: String
+  ) {
+    updatePerson(
+      input: {
+        id: $id
+        firstName: $firstName
+        lastName: $lastName
+      }
+    ) {
+      person {
+        id
+      }
+      errors {
+        field
+        messages
+      }
+    }
+  }",
+                Variables = new
+                {
+                    id = Id,
+                    firstName = FirstName,
+                    lastName = LastName
+                }
+            };
+
+            dynamic jwtResponse = null;
+            try
+            {
+                SetBusy(true);
+                jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(updatePersonRequest);
+                SetBusy(false);
+                if (QueryHasErrors(jwtResponse))
+                    return false;
+            }
+            catch (GraphQLHttpRequestException e)
+            {
+                Result = e.Content;
+                return false;
+            }
+            catch (Exception e)
+            {
+                if (jwtResponse?.Errors?.Length > 0)
+                    Result = jwtResponse.Errors[0].Message;
+                else
+                    Result = e.Message;
+                return false;
+            }
+            return true;
         }
 
         private bool QueryHasErrors(dynamic obj)
@@ -157,6 +294,7 @@ namespace GeorgaMobileClient.ViewModel
             else
                 return false;
         }
+
         #endregion
     }
 }

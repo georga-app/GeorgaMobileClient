@@ -142,6 +142,9 @@ namespace GeorgaMobileClient.ViewModel
                     App.Instance.User.Password = Password;
                     App.Instance.User.Token = token;
                     App.Instance.User.Authenticated = true;
+#if DEBUG
+                    await Shell.Current.GoToAsync("///profile");  // automatically go to profile page for debugging purposes
+#endif
                 }
             }
 			catch (GraphQLHttpRequestException e)

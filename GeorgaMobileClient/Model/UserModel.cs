@@ -45,11 +45,11 @@
                 {
                     if (value is true)
                     {
-                        await _navigationService.GoToAsync("//main");
+                        await _navigationService.GoToAsync("///main");
                     }
                     else
                     {
-                        await _navigationService.GoToAsync("//login");
+                        await _navigationService.GoToAsync("///login");
                     }
                 }
             });

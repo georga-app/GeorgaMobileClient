@@ -2,7 +2,7 @@
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public partial class ViewModelBase : ObservableObject
+    public partial class ViewModelBase : ObservableValidator
     {
         [ObservableProperty]
         private bool isBusy;        

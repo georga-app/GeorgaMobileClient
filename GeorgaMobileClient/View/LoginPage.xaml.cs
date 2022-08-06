@@ -20,4 +20,13 @@ public partial class LoginPage : BasePage, ILoginView
     {
         repeatPasswordEntry.Focus();
     }
+
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+#if DEBUG
+        (BindingContext as LoginViewModel).Login();  // automatically login for debugging purposes
+#endif
+    }    
 }

@@ -11,42 +11,42 @@ public partial class MainPage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
-		//collectionView.ItemsSource = await App.Database.GetPeopleAsync();
-/*
-		var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
-		graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
-		var usernameRequest = new GraphQLRequest
-		{
-			Query = @"
-			{
-				allPersons {
-				  edges {
-					Person: node {
-					  id
-					  firstName
-					  lastName
-					  email
-					}
-				  }
-				}
-			}"
-		};
+        //collectionView.ItemsSource = await App.Database.GetPeopleAsync();
+        /*
+                var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+                graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
+                var usernameRequest = new GraphQLRequest
+                {
+                    Query = @"
+                    {
+                        allPersons {
+                          edges {
+                            Person: node {
+                              id
+                              firstName
+                              lastName
+                              email
+                            }
+                          }
+                        }
+                    }"
+                };
 
-		var graphQLResponse = await graphQLClient.SendQueryAsync<dynamic>(usernameRequest);
-		string data = graphQLResponse.Data.ToString();
-		string allPersonsString = graphQLResponse.Data.allPersons.ToString();
-		var allPersons = graphQLResponse.Data.allPersons;
-*/		/*var edges = allPersons.edges;
-		//List<Person> items = edges.ToObject<List<Person>>();
-		List<Person> items = ((Newtonsoft.Json.Linq.JArray)edges).Select(x => new Person
-		{
-			Id = (string)x["Person"]["id"],
-			FirstName = (string)x["Person"]["firstName"],
-			LastName = (string)x["Person"]["lastName"],
-			Email = (string)x["Person"]["email"],
-		}).ToList();
-		collectionView.ItemsSource = items;*/
-	}
+                var graphQLResponse = await graphQLClient.SendQueryAsync<dynamic>(usernameRequest);
+                string data = graphQLResponse.Data.ToString();
+                string allPersonsString = graphQLResponse.Data.allPersons.ToString();
+                var allPersons = graphQLResponse.Data.allPersons;
+        */        /*var edges = allPersons.edges;
+                  //List<Person> items = edges.ToObject<List<Person>>();
+                  List<Person> items = ((Newtonsoft.Json.Linq.JArray)edges).Select(x => new Person
+                  {
+                      Id = (string)x["Person"]["id"],
+                      FirstName = (string)x["Person"]["firstName"],
+                      LastName = (string)x["Person"]["lastName"],
+                      Email = (string)x["Person"]["email"],
+                  }).ToList();
+                  collectionView.ItemsSource = items;*/
+    }
 
 	private void OnAuthenticate(object sender, EventArgs e)
 	{

@@ -120,8 +120,14 @@
   <data name="Authenticate" xml:space="preserve">
     <value>Authenticate</value>
   </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
   <data name="ChangeLanguage" xml:space="preserve">
     <value>Change language</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="English" xml:space="preserve">
     <value>English</value>
@@ -143,6 +149,9 @@
   </data>
   <data name="Profile" xml:space="preserve">
     <value>Profile</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
