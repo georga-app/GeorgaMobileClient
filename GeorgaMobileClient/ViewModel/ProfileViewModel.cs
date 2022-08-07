@@ -6,6 +6,7 @@ using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
+using GeorgaMobileClient.Interface;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -56,6 +57,32 @@ namespace GeorgaMobileClient.ViewModel
 
         #endregion
 
+        #region events
+
+        public class PersonOptionsChangedArgs
+        {
+            // public bool QualificationCategoriesHaveChanged;
+            public ObservableCollection<QualificationCategory> QualificationCategories;
+            // public bool QualificationsHaveChanged;
+            public ObservableCollection<Qualification> Qualifications;
+            // public bool RestrictionsHaveChanged;
+            public ObservableCollection<Restriction> Restrictions;
+        }
+
+        public delegate void PersonOptionsChangedHandler(object sender, PersonOptionsChangedArgs e);
+        public event PersonOptionsChangedHandler PersonOptionsChangedEvent;
+        private void RaisePersonOptionsChangedEvent()
+        {
+            PersonOptionsChangedEvent?.Invoke(null, new PersonOptionsChangedArgs
+            {
+                QualificationCategories = QualificationCategories,
+                Qualifications = Qualifications,
+                Restrictions = Restrictions
+            });
+        }
+
+        #endregion
+
         #region constructor
 
         public ProfileViewModel()
@@ -87,8 +114,9 @@ namespace GeorgaMobileClient.ViewModel
             if (!IsRefreshEnabled) return;
             IsRefreshEnabled = false;
 
-            await GetPersonOptions();
-            //await Task.WhenAll(GetProfileDataFromApi(), GetPersonOptions());  // simultaneously do two queries
+            SetBusy(true);
+            await Task.WhenAll(GetProfileDataFromApi(), GetPersonOptions());  // simultaneously do two queries
+            SetBusy(false);
 
             IsRefreshEnabled = true;
         }
@@ -97,7 +125,8 @@ namespace GeorgaMobileClient.ViewModel
         {
             if (!IsEditEnabled) return;
             IsEditEnabled = false;
-            
+
+            SetBusy(true);
             if (await GetProfileDataFromApi())
             {
                 IsEditEnabled = true;
@@ -105,6 +134,7 @@ namespace GeorgaMobileClient.ViewModel
                 IsCancelEnabled = true;
                 IsEditing = true;
             }
+            SetBusy(false);
         }
 
         async void Back()
@@ -133,10 +163,12 @@ namespace GeorgaMobileClient.ViewModel
                 return;
             }
 
+            SetBusy(true);
             if (await SendProfileDataToApi())
                 IsEditing = false;
             else
                 IsStoreEnabled = true;
+            SetBusy(false);
         }
 
         async void Cancel()
@@ -239,7 +271,7 @@ namespace GeorgaMobileClient.ViewModel
                     Qualifications.Add(new Qualification()
                     {
                         Id = qualification.node.id,
-                        Code = qualification.node.code,
+                        Code = qualification.node.qualificationCategory.code,
                         Name = qualification.node.name,
                     });
                 }
@@ -258,6 +290,8 @@ namespace GeorgaMobileClient.ViewModel
                     });
                 }
             });
+
+            RaisePersonOptionsChangedEvent();
 
             return true;
         }
@@ -290,9 +324,7 @@ namespace GeorgaMobileClient.ViewModel
             dynamic graphQLResponse = null;
             try
             {
-                SetBusy(true);
                 graphQLResponse = await graphQLClient.SendQueryAsync<dynamic>(usernameRequest);
-                SetBusy(false);
                 if (QueryHasErrors(graphQLResponse))
                 {
                     IsStoreEnabled = false;
@@ -369,9 +401,7 @@ namespace GeorgaMobileClient.ViewModel
             dynamic jwtResponse = null;
             try
             {
-                SetBusy(true);
                 jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(updatePersonRequest);
-                SetBusy(false);
                 if (QueryHasErrors(jwtResponse))
                     return false;
             }

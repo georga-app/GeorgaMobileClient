@@ -47,7 +47,7 @@
                             <EntryCell Label="{x:Static prop:Resources.FirstName}" Text="{Binding FirstName}" IsEnabled="{Binding IsEditing}" />
                             <EntryCell Label="{x:Static prop:Resources.LastName}" Text="{Binding LastName}" IsEnabled="{Binding IsEditing}" />
                         </TableSection>
-                        <TableSection Title="Playground Section">
+                        <!--TableSection Title="Playground Section">
                             <TextCell Text="Text Cell"
                               Detail="With Detail Text" />
 
@@ -70,7 +70,7 @@
                             <ViewCell>
                                 <Label Text="A View Cell can be anything you want!" />
                             </ViewCell>
-                        </TableSection>
+                        </TableSection-->
                     </TableRoot>
                 </TableView>
             </ScrollView>
