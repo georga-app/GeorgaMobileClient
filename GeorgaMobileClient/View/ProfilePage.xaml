@@ -74,12 +74,12 @@
                     </TableRoot>
                 </TableView>
             </ScrollView>
-            <StackLayout Grid.Row="2" Orientation="Horizontal" IsVisible="{Binding IsEditing}">
+            <StackLayout Grid.Row="2" Orientation="Horizontal" Margin="5" IsVisible="{Binding IsEditing}">
                 <Button Text="Store" Command="{Binding StoreCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
                 <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
                 <ActivityIndicator IsRunning="{Binding IsBusy}" Margin="5" />
             </StackLayout>
-            <StackLayout Grid.Row="2" Orientation="Horizontal" Spacing="5" Margin="5" IsVisible="{Binding IsEditing, Converter={StaticResource invertBoolConverter}}">
+            <StackLayout Grid.Row="2" Orientation="Horizontal" Margin="5" IsVisible="{Binding IsEditing, Converter={StaticResource invertBoolConverter}}">
                 <Button Text="Refresh" Command="{Binding RefreshCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
                 <Button Text="Edit" Command="{Binding EditCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
                 <Button Text="Back" Command="{Binding BackCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />

@@ -5,6 +5,7 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -12,6 +13,7 @@ namespace GeorgaMobileClient.ViewModel
     {
         #region form data
 
+        // personal data
         [ObservableProperty]
         string id;
         [ObservableProperty]
@@ -21,9 +23,17 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         string lastName;
 
+        // person options
+        [ObservableProperty]
+        ObservableCollection<QualificationCategory> qualificationCategories;
+        [ObservableProperty]
+        ObservableCollection<Qualification> qualifications;
+        [ObservableProperty]
+        ObservableCollection<Restriction> restrictions;
+
         #endregion
 
-        #region view control elements
+        #region view control
 
         public ICommand RefreshCommand { protected set; get; }
         public ICommand EditCommand { protected set; get; }
@@ -44,6 +54,10 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         string result;
 
+        #endregion
+
+        #region constructor
+
         public ProfileViewModel()
         {
             RefreshCommand = new Command(Refresh);
@@ -57,16 +71,24 @@ namespace GeorgaMobileClient.ViewModel
             IsCancelEnabled = true;
             IsEditing = false;
             Title = GeorgaMobileClient.Properties.Resources.Profile;
-            Result = "Nix";
+            Result = "";
+            qualificationCategories = new ObservableCollection<QualificationCategory>();
+            qualifications = new ObservableCollection<Qualification>();
+            restrictions = new ObservableCollection<Restriction>();
             Refresh();
         }
+
+        #endregion
+
+        #region commands
 
         async void Refresh()
         {
             if (!IsRefreshEnabled) return;
             IsRefreshEnabled = false;
 
-            await GetProfileDataFromApi();
+            await GetPersonOptions();
+            //await Task.WhenAll(GetProfileDataFromApi(), GetPersonOptions());  // simultaneously do two queries
 
             IsRefreshEnabled = true;
         }
@@ -122,15 +144,123 @@ namespace GeorgaMobileClient.ViewModel
             if (!IsCancelEnabled) return;
                 IsCancelEnabled = false;
 
+            Refresh();
+
             IsRefreshEnabled = true;
             IsEditEnabled = true;
             IsEditing = false;
-            Refresh();
         }
 
         #endregion
 
         #region api stuff
+
+        async Task<bool> GetPersonOptions()
+        {
+            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+
+            var qualificationsRequest = new GraphQLRequest
+            {
+                Query = @"
+  query GetPersonOptions {
+    allQualificationCategories {
+      edges {
+        node {
+          id
+          code
+          name
+        }
+      }
+    }
+    allQualifications {
+      edges {
+        node {
+          id
+          name
+          qualificationCategory {
+            code
+          }
+        }
+      }
+    }
+    allRestrictions {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }"
+            };
+
+            dynamic qualificationsResponse = null;
+            try
+            {
+                qualificationsResponse = await graphQLClient.SendQueryAsync<dynamic>(qualificationsRequest);
+                if (QueryHasErrors(qualificationsResponse))
+                    return false;
+            }
+            catch (GraphQLHttpRequestException e)
+            {
+                Result = e.Content;
+                return false;
+            }
+            catch (Exception e)
+            {
+                if (qualificationsResponse?.Errors?.Length > 0)
+                    Result = qualificationsResponse.Errors[0].Message;
+                else
+                    Result = e.Message;
+                return false;
+            }
+
+            var allQualificationCategories = qualificationsResponse?.Data?.allQualificationCategories.edges.Children<JObject>();
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                QualificationCategories.Clear();
+                foreach (var qualificationCategory in allQualificationCategories)
+                {
+                    QualificationCategories.Add(new QualificationCategory()
+                    {
+                        Id = qualificationCategory.node.id,
+                        Code = qualificationCategory.node.code,
+                        Name = qualificationCategory.node.name,
+                    });
+                }
+            });
+
+            var allQualifications = qualificationsResponse?.Data?.allQualifications.edges.Children<JObject>();
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Qualifications.Clear();
+                foreach (var qualification in allQualifications)
+                {
+                    Qualifications.Add(new Qualification()
+                    {
+                        Id = qualification.node.id,
+                        Code = qualification.node.code,
+                        Name = qualification.node.name,
+                    });
+                }
+            });
+            
+            var allRestrictions = qualificationsResponse?.Data?.allRestrictions.edges.Children<JObject>();
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Restrictions.Clear();
+                foreach (var restriction in allRestrictions)
+                {
+                    Restrictions.Add(new Restriction()
+                    {
+                        Id = restriction.node.id,
+                        Name = restriction.node.name,
+                    });
+                }
+            });
+
+            return true;
+        }
 
         public async Task<bool> GetProfileDataFromApi()
         {
@@ -154,7 +284,7 @@ namespace GeorgaMobileClient.ViewModel
                 Variables = new
                 {
                     email = App.Instance.User.Email
-                }                
+                }
             };
 
             dynamic graphQLResponse = null;

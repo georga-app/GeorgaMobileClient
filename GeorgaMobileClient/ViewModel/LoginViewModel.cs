@@ -16,7 +16,7 @@ namespace GeorgaMobileClient.ViewModel
         [Required]
         [EmailAddress]
 		//[AlsoNotifyChangeFor(nameof(IsEmailEmpty))]
-		string email = "test1@georga.test";
+		string email = "simpleuser@georga.test";
 
         [ObservableProperty]
 		bool isEmailEmpty;
@@ -36,7 +36,7 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         [MinLength(8)]
         [AlsoNotifyChangeFor(nameof(IsPasswordMatching))]
-		string password = "sdfwer234";
+		string password = "simpleuserPassword";
 
 		[ObservableProperty]
 		[AlsoNotifyChangeFor(nameof(IsPasswordMatching))]
@@ -161,47 +161,8 @@ namespace GeorgaMobileClient.ViewModel
 				return;
 			}
 		}
-
-		async void GetLanguageQualifications()
-		{
-            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
-
-            var jwtRequest = new GraphQLRequest
-            {
-                Query = @"
-					query {
-						allQualificationsLanguage {
-							edges {
-								node {
-									id
-									name
-								}
-							}
-						}
-					}"
-            };
-
-            dynamic jwtResponse = null;
-            try
-            {
-                jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
-            }
-            catch (GraphQLHttpRequestException e)
-            {
-                Result = e.Content;
-                return;
-            }
-            catch (Exception e)
-            {
-                if (jwtResponse?.Errors?.Length > 0)
-                    Result = jwtResponse.Errors[0].Message;
-                else
-                    Result = e.Message;
-                return;
-            }
-        }
-
-        [ICommand]
+		
+		[ICommand]
 		public async void Register()
 		{
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
@@ -213,7 +174,6 @@ namespace GeorgaMobileClient.ViewModel
             if (!IsRepeatPasswordVisible)
 			{
 				IsRepeatPasswordVisible = true;
-				GetLanguageQualifications();
 			}
 			else
 			{
