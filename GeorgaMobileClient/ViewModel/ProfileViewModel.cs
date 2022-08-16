@@ -24,6 +24,9 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         string lastName;
 
+        // qualifications
+        public ObservableDictionary<string, bool> QualificationValues { get; set; }
+
         // person options
         [ObservableProperty]
         ObservableCollection<QualificationCategory> qualificationCategories;
@@ -102,6 +105,7 @@ namespace GeorgaMobileClient.ViewModel
             qualificationCategories = new ObservableCollection<QualificationCategory>();
             qualifications = new ObservableCollection<Qualification>();
             restrictions = new ObservableCollection<Restriction>();
+            QualificationValues = new ObservableDictionary<string, bool>();
             Refresh();
         }
 
@@ -113,11 +117,14 @@ namespace GeorgaMobileClient.ViewModel
         {
             if (!IsRefreshEnabled) return;
             IsRefreshEnabled = false;
+            Result = "";
 
             SetBusy(true);
-            await Task.WhenAll(GetProfileDataFromApi(), GetPersonOptions());  // simultaneously do two queries
+            await GetPersonOptions();
+            await GetProfileDataFromApi();
             SetBusy(false);
 
+            RaisePersonOptionsChangedEvent();
             IsRefreshEnabled = true;
         }
 
@@ -226,6 +233,7 @@ namespace GeorgaMobileClient.ViewModel
   }"
             };
 
+
             dynamic qualificationsResponse = null;
             try
             {
@@ -268,6 +276,7 @@ namespace GeorgaMobileClient.ViewModel
                 Qualifications.Clear();
                 foreach (var qualification in allQualifications)
                 {
+                    QualificationValues[qualification.node.id.ToString()] = false;
                     Qualifications.Add(new Qualification()
                     {
                         Id = qualification.node.id,
@@ -277,7 +286,7 @@ namespace GeorgaMobileClient.ViewModel
                 }
             });
             
-            var allRestrictions = qualificationsResponse?.Data?.allRestrictions.edges.Children<JObject>();
+            /*var allRestrictions = qualificationsResponse?.Data?.allRestrictions.edges.Children<JObject>();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 Restrictions.Clear();
@@ -289,9 +298,7 @@ namespace GeorgaMobileClient.ViewModel
                         Name = restriction.node.name,
                     });
                 }
-            });
-
-            RaisePersonOptionsChangedEvent();
+            });*/
 
             return true;
         }
@@ -300,10 +307,10 @@ namespace GeorgaMobileClient.ViewModel
         {
             var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
-            var usernameRequest = new GraphQLRequest
+            var personRequest = new GraphQLRequest
             {
                 Query = @"
-    query AllPersons ($email: String) {
+query AllPersons ($email: String) {
     allPersons (email: $email) {
 	    edges {
 	        Person: node {
@@ -311,6 +318,13 @@ namespace GeorgaMobileClient.ViewModel
 		        firstName
 		        lastName
 		        email
+                qualifications {
+                    edges {
+                        node {
+                            id
+                        }
+                    }
+                }
 		    }
 	    }
     }
@@ -324,7 +338,7 @@ namespace GeorgaMobileClient.ViewModel
             dynamic graphQLResponse = null;
             try
             {
-                graphQLResponse = await graphQLClient.SendQueryAsync<dynamic>(usernameRequest);
+                graphQLResponse = await graphQLClient.SendQueryAsync<dynamic>(personRequest);
                 if (QueryHasErrors(graphQLResponse))
                 {
                     IsStoreEnabled = false;
@@ -340,10 +354,13 @@ namespace GeorgaMobileClient.ViewModel
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Id = allPersons?.edges[0]?.Person?.id;
-                    Email = allPersons?.edges[0]?.Person?.email;
-                    FirstName = allPersons?.edges[0]?.Person?.firstName;
-                    LastName = allPersons?.edges[0]?.Person?.lastName;
+                    Id = allPersons.edges[0].Person?.id;
+                    Email = allPersons.edges[0].Person?.email;
+                    FirstName = allPersons.edges[0].Person.firstName;
+                    LastName = allPersons.edges[0].Person.lastName;
+                    var qualificationEdges = allPersons.edges[0].Person.qualifications.edges.Children<JObject>();
+                    foreach (var qualification in qualificationEdges)
+                        QualificationValues[qualification.node.id.ToString()] = true;
                 });
             }
             catch (GraphQLHttpRequestException e)
@@ -441,13 +458,27 @@ namespace GeorgaMobileClient.ViewModel
             if (errors?.Length > 0)
             {
                 Result = "";
-                foreach (dynamic error in errors.Children<JObject>())
+                foreach (dynamic error in errors)
                 {
-                    Result += $"\r\nField '{error.field}': ";
+                    try
+                    {
+                        Result += $"\r\nField '{error.field}': ";
+                    }
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException e)
+                    {
+                        Result += $"\r\n";
+                    }
 
-                    JArray messages = error.messages;
-                    foreach (var message in messages)
-                        Result += $"{message}\r\n";
+                    try
+                    {
+                        JArray messages = error.messages;
+                        foreach (var message in messages)
+                            Result += $"{message}\r\n";
+                    }
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException e)
+                    {
+                        Result += $"{error.Message}\r\n";
+                    }    
                 }
                 return true;
             }

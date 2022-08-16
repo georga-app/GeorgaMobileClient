@@ -35,10 +35,13 @@ public partial class ProfilePage : BasePage
             SwitchCell boolSwitchCell;
             qualificationSections[qual.Code].Add(boolSwitchCell = new SwitchCell()
             {
-                Text = qual.Name
+                Text = qual.Name,
+                On = ViewModel.QualificationValues[qual.Id]
             });
             //boolSwitchCell.SetBinding(SwitchCell.OnProperty,
-            //    new Binding($"Values[{id}]", BindingMode.TwoWay, string2boolConverter));
+            //    new Binding($"QualificationValues[{qual.Id}]", BindingMode.TwoWay));
+            boolSwitchCell.SetBinding(SwitchCell.IsEnabledProperty,
+                new Binding($"IsEditing", BindingMode.OneWay));
         }
     }
 }
