@@ -1,4 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<PropertyGroup>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
 
 	<PropertyGroup>		
 		<TargetFrameworks>net6.0-android;net6.0-ios;net6.0-maccatalyst</TargetFrameworks>
@@ -66,13 +70,14 @@
 	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Maui" Version="1.2.0" />
 	  <PackageReference Include="CommunityToolkit.Maui.Markup" Version="1.0.1" />
-	  <PackageReference Include="GraphQL.Client" Version="5.0.2" />
-	  <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="5.0.2" />
+	  <PackageReference Include="GraphQL.Client" Version="5.1.0" />
+	  <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="5.1.0" />
 	  <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
+	  <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.220727.1-experimental1" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
 	  <PackageReference Include="sqlite-net-sqlcipher" Version="1.8.116" />
-	  <PackageReference Include="VijayAnand.MauiToolkit" Version="1.0.2-pre2" />
-	  <PackageReference Include="VijayAnand.MauiToolkit.Core" Version="1.0.2-pre2" />
+	  <PackageReference Include="VijayAnand.MauiToolkit" Version="1.0.2-pre3" />
+	  <PackageReference Include="VijayAnand.MauiToolkit.Core" Version="1.0.2-pre3" />
 	</ItemGroup>
 	
 	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">

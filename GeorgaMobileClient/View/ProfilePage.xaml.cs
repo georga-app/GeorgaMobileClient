@@ -36,12 +36,10 @@ public partial class ProfilePage : BasePage
             qualificationSections[qual.Code].Add(boolSwitchCell = new SwitchCell()
             {
                 Text = qual.Name,
-                On = ViewModel.QualificationValues[qual.Id]
+                BindingContext = qual
             });
-            //boolSwitchCell.SetBinding(SwitchCell.OnProperty,
-            //    new Binding($"QualificationValues[{qual.Id}]", BindingMode.TwoWay));
-            boolSwitchCell.SetBinding(SwitchCell.IsEnabledProperty,
-                new Binding($"IsEditing", BindingMode.OneWay));
+            boolSwitchCell.SetBinding(SwitchCell.OnProperty, new Binding("Value", BindingMode.TwoWay));
+            boolSwitchCell.SetBinding(SwitchCell.IsEnabledProperty, new Binding("IsEditing", BindingMode.OneWay));
         }
     }
 }

@@ -24,14 +24,14 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         string lastName;
 
-        // qualifications
-        public ObservableDictionary<string, bool> QualificationValues { get; set; }
+        // qualifications 
+        List<string> qualificationsOfThisPerson;     // temporarily contains all qualifications a person possesses (IDs)
 
-        // person options
+        // general person options
         [ObservableProperty]
         ObservableCollection<QualificationCategory> qualificationCategories;
         [ObservableProperty]
-        ObservableCollection<Qualification> qualifications;
+        ObservableCollection<QualificationViewModel> qualifications;
         [ObservableProperty]
         ObservableCollection<Restriction> restrictions;
 
@@ -67,9 +67,7 @@ namespace GeorgaMobileClient.ViewModel
             // public bool QualificationCategoriesHaveChanged;
             public ObservableCollection<QualificationCategory> QualificationCategories;
             // public bool QualificationsHaveChanged;
-            public ObservableCollection<Qualification> Qualifications;
-            // public bool RestrictionsHaveChanged;
-            public ObservableCollection<Restriction> Restrictions;
+            public ObservableCollection<QualificationViewModel> Qualifications;
         }
 
         public delegate void PersonOptionsChangedHandler(object sender, PersonOptionsChangedArgs e);
@@ -79,8 +77,7 @@ namespace GeorgaMobileClient.ViewModel
             PersonOptionsChangedEvent?.Invoke(null, new PersonOptionsChangedArgs
             {
                 QualificationCategories = QualificationCategories,
-                Qualifications = Qualifications,
-                Restrictions = Restrictions
+                Qualifications = Qualifications
             });
         }
 
@@ -102,10 +99,10 @@ namespace GeorgaMobileClient.ViewModel
             IsEditing = false;
             Title = GeorgaMobileClient.Properties.Resources.Profile;
             Result = "";
-            qualificationCategories = new ObservableCollection<QualificationCategory>();
-            qualifications = new ObservableCollection<Qualification>();
-            restrictions = new ObservableCollection<Restriction>();
-            QualificationValues = new ObservableDictionary<string, bool>();
+            QualificationCategories = new ObservableCollection<QualificationCategory>();
+            Qualifications = new ObservableCollection<QualificationViewModel>();
+            qualificationsOfThisPerson = new List<string>();
+
             Refresh();
         }
 
@@ -120,9 +117,18 @@ namespace GeorgaMobileClient.ViewModel
             Result = "";
 
             SetBusy(true);
-            await GetPersonOptions();
-            await GetProfileDataFromApi();
-            SetBusy(false);
+
+            await Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
+
+            foreach (string personQualId in qualificationsOfThisPerson)         // set the Value member in 
+                foreach (var qual in Qualifications)                            // Qualifications to true
+                    if (qual.Id == personQualId)                                // if qualification is 
+                    {                                                           // possessed by the person
+                        qual.Value = true;
+                        break;
+                    }
+
+            SetBusy(false);            
 
             RaisePersonOptionsChangedEvent();
             IsRefreshEnabled = true;
@@ -140,6 +146,7 @@ namespace GeorgaMobileClient.ViewModel
                 IsStoreEnabled = true;
                 IsCancelEnabled = true;
                 IsEditing = true;
+                Qualifications.ToList().ForEach(p => p.IsEditing = true);
             }
             SetBusy(false);
         }
@@ -171,10 +178,22 @@ namespace GeorgaMobileClient.ViewModel
             }
 
             SetBusy(true);
+
+            qualificationsOfThisPerson.Clear();
+            foreach (var qual in Qualifications)
+                if (qual.Value)
+                {
+                    qualificationsOfThisPerson.Add(qual.Id);
+                    qual.IsEditing = false;
+                }
+
             if (await SendProfileDataToApi())
+            {
                 IsEditing = false;
+            }
             else
                 IsStoreEnabled = true;
+
             SetBusy(false);
         }
 
@@ -188,6 +207,7 @@ namespace GeorgaMobileClient.ViewModel
             IsRefreshEnabled = true;
             IsEditEnabled = true;
             IsEditing = false;
+            Qualifications.ToList().ForEach(p => p.IsEditing = true);
         }
 
         #endregion
@@ -219,14 +239,6 @@ namespace GeorgaMobileClient.ViewModel
           qualificationCategory {
             code
           }
-        }
-      }
-    }
-    allRestrictions {
-      edges {
-        node {
-          id
-          name
         }
       }
     }
@@ -265,7 +277,7 @@ namespace GeorgaMobileClient.ViewModel
                     {
                         Id = qualificationCategory.node.id,
                         Code = qualificationCategory.node.code,
-                        Name = qualificationCategory.node.name,
+                        Name = qualificationCategory.node.name
                     });
                 }
             });
@@ -276,12 +288,12 @@ namespace GeorgaMobileClient.ViewModel
                 Qualifications.Clear();
                 foreach (var qualification in allQualifications)
                 {
-                    QualificationValues[qualification.node.id.ToString()] = false;
-                    Qualifications.Add(new Qualification()
+                    Qualifications.Add(new QualificationViewModel()
                     {
                         Id = qualification.node.id,
                         Code = qualification.node.qualificationCategory.code,
                         Name = qualification.node.name,
+                        Value = false
                     });
                 }
             });
@@ -359,8 +371,9 @@ query AllPersons ($email: String) {
                     FirstName = allPersons.edges[0].Person.firstName;
                     LastName = allPersons.edges[0].Person.lastName;
                     var qualificationEdges = allPersons.edges[0].Person.qualifications.edges.Children<JObject>();
+                    qualificationsOfThisPerson.Clear();
                     foreach (var qualification in qualificationEdges)
-                        QualificationValues[qualification.node.id.ToString()] = true;
+                        qualificationsOfThisPerson.Add(qualification.node.id.ToString());
                 });
             }
             catch (GraphQLHttpRequestException e)
@@ -390,12 +403,14 @@ query AllPersons ($email: String) {
     $id: ID!
     $firstName: String
     $lastName: String
+    $qualifications: [ID]
   ) {
     updatePerson(
       input: {
         id: $id
         firstName: $firstName
         lastName: $lastName
+        qualifications: $qualifications
       }
     ) {
       person {
@@ -411,7 +426,8 @@ query AllPersons ($email: String) {
                 {
                     id = Id,
                     firstName = FirstName,
-                    lastName = LastName
+                    lastName = LastName,
+                    qualifications = qualificationsOfThisPerson
                 }
             };
 

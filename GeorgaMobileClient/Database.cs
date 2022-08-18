@@ -62,12 +62,5 @@ namespace GeorgaMobileClient
 
             return await _database.QueryAsync<Person>("SELECT * FROM Person WHERE Subscribed = true");
         }
-
-        /*public async Task<List<Person>> LinqNotSubscribedAsync()
-        {
-            await Init();
-
-            return await _database.Table<Person>().Where(p => p.Subscribed == false).ToListAsync();
-        }*/
     }
 }
