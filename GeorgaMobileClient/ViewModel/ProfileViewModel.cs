@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using GeorgaMobileClient.Interface;
@@ -85,8 +85,11 @@ namespace GeorgaMobileClient.ViewModel
 
         #region constructor
 
+        private Database db;
+
         public ProfileViewModel()
         {
+            this.db = (App.Current as App).Db;
             RefreshCommand = new Command(Refresh);
             EditCommand = new Command(Edit);
             BackCommand = new Command(Back);
@@ -182,17 +185,20 @@ namespace GeorgaMobileClient.ViewModel
             qualificationsOfThisPerson.Clear();
             foreach (var qual in Qualifications)
                 if (qual.Value)
-                {
                     qualificationsOfThisPerson.Add(qual.Id);
-                    qual.IsEditing = false;
-                }
 
-            if (await SendProfileDataToApi())
+            if (!await SaveToDb())
+                Result = "Problem while saving changes to local device.";
+            else if (await SendProfileDataToApi())
             {
                 IsEditing = false;
+                Qualifications.ToList().ForEach(p => p.IsEditing = false);
             }
             else
+            {
                 IsStoreEnabled = true;
+                Qualifications.ToList().ForEach(p => p.IsEditing = true);
+            }
 
             SetBusy(false);
         }
@@ -207,7 +213,7 @@ namespace GeorgaMobileClient.ViewModel
             IsRefreshEnabled = true;
             IsEditEnabled = true;
             IsEditing = false;
-            Qualifications.ToList().ForEach(p => p.IsEditing = true);
+            Qualifications.ToList().ForEach(p => p.IsEditing = false);
         }
 
         #endregion
@@ -500,6 +506,17 @@ query AllPersons ($email: String) {
             }
             else
                 return false;
+        }
+
+        #endregion
+
+        #region database stuff
+
+        public async Task<bool> SaveToDb()
+        {
+            var thisPerson = await db.GetPersonByEmail(App.Instance.User.Email);
+
+            return true;
         }
 
         #endregion

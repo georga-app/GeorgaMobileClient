@@ -1,5 +1,5 @@
 using GeorgaMobileClient.View;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using GeorgaMobileClient.Interface;
 
 namespace GeorgaMobileClient;
@@ -26,7 +26,7 @@ public partial class LoginPage : BasePage, ILoginView
     {
         base.OnAppearing();
 #if DEBUG
-        (BindingContext as LoginViewModel).Login();  // automatically login for debugging purposes
+ //       (BindingContext as LoginViewModel).Login();  // automatically login for debugging purposes
 #endif
     }    
 }

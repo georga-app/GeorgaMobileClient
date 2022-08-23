@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
-using Microsoft.Toolkit.Mvvm.Input;
+using System.Security.Cryptography;
+using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -10,9 +12,9 @@ namespace GeorgaMobileClient.ViewModel
 {
     public partial class LoginViewModel: ObservableValidator
 	{
-		//private ILoginView view;
+		private Database database;
 
-		[ObservableProperty]
+        [ObservableProperty]
         [Required]
         [EmailAddress]
 		//[AlsoNotifyChangeFor(nameof(IsEmailEmpty))]
@@ -35,11 +37,11 @@ namespace GeorgaMobileClient.ViewModel
 
         [ObservableProperty]
         [MinLength(8)]
-        [AlsoNotifyChangeFor(nameof(IsPasswordMatching))]
+        [NotifyPropertyChangedFor(nameof(IsPasswordMatching))]
 		string password = "simpleuserPassword";
 
 		[ObservableProperty]
-		[AlsoNotifyChangeFor(nameof(IsPasswordMatching))]
+		[NotifyPropertyChangedFor(nameof(IsPasswordMatching))]
 		string repeatPassword;
 
 		[ObservableProperty]
@@ -79,10 +81,23 @@ namespace GeorgaMobileClient.ViewModel
 
         // --- constructor ---
 
-        [ICommand]
-		async public void Login()
+
+        private Database db;
+
+		public LoginViewModel()
 		{
-            if (String.IsNullOrEmpty(Email))  // some atavism that wonn't harm...
+			this.db = (App.Current as App).Db;
+		}
+        
+		// --- commands ---
+
+        [RelayCommand]
+		async public void Login()
+        {
+            if (App.Instance is null)
+                return;
+
+            if (String.IsNullOrEmpty(Email))  // some atavism that won't harm...
                 IsEmailEmpty = true;
 
 			// ValidateAllProperties(); -- no longer : the registration-specific fields are allowed to be invalid for login
@@ -99,70 +114,105 @@ namespace GeorgaMobileClient.ViewModel
                 return;
             }
 
-			var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
-
-			var jwtRequest = new GraphQLRequest
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
 			{
-				Query = @"
-				mutation TokenAuth (
-					$email: String!
-					$password: String!
-				) {
-					personAuth: tokenAuth (
-					input: {
-						email: $email
-						password: $password
-					}
-					) {
-					payload
-					token
-					refreshExpiresIn
-					}
-				}",
-				Variables = new
+				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+
+				var jwtRequest = new GraphQLRequest
 				{
-					email = Email,
-					password = Password
-				}
-			};
+					Query = @"
+					mutation TokenAuth (
+						$email: String!
+						$password: String!
+					) {
+						personAuth: tokenAuth (
+						input: {
+							email: $email
+							password: $password
+						}
+						) {
+						payload
+						token
+						refreshExpiresIn
+						}
+					}",
+					Variables = new
+					{
+						email = Email,
+						password = Password
+					}
+				};
 
-			string token = "";
-			dynamic jwtResponse = null;
-            try
-			{
-				jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
-                if (QueryHasErrors(jwtResponse))
-                    return;
+				string token = "";
+				dynamic jwtResponse = null;
+				try
+				{
+					jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
+					if (QueryHasErrors(jwtResponse))
+						return;
 
-				// login, if token has been aquired successfully
-                token = jwtResponse.Data.personAuth.token;
-                if (App.Instance is not null)
-                {
-                    App.Instance.User.Email = Email;
-                    App.Instance.User.Password = Password;
-                    App.Instance.User.Token = token;
-                    App.Instance.User.Authenticated = true;
+					// login, if token has been aquired successfully
+					token = jwtResponse.Data.personAuth.token;
+
+					_ = await db.Login(ComputeSha256Hash(Email.ToLower()), Password);
+					App.Instance.User.Email = Email;
+					App.Instance.User.Password = Password;
+					App.Instance.User.Token = token;
+					App.Instance.User.Authenticated = true;
 #if DEBUG
-                    await Shell.Current.GoToAsync("///profile");  // automatically go to profile page for debugging purposes
+					await Shell.Current.GoToAsync("///profile");  // automatically go to profile page for debugging purposes
 #endif
-                }
+				}
+				catch (GraphQLHttpRequestException e)
+				{
+					Result = e.Content;
+					return;
+				}
+				catch (Exception e)
+				{
+					if (jwtResponse?.Errors?.Length > 0)
+					{
+						Result = jwtResponse.Errors[0].Message;
+					}
+					else
+					{
+						if (e is SQLite.SQLiteException)
+							Result = $"Devices database reports '{e.Message}' -- make sure you entered your password corretly.";
+						else
+							Result = e.Message;
+					}
+					return;
+				}
+			}
+			else
+			{
+                _ = await db.Login(ComputeSha256Hash(Email.ToLower()), Password);
+                App.Instance.User.Email = Email;
+                App.Instance.User.Password = Password;
+                App.Instance.User.Token = "";			// offline mode
+                App.Instance.User.Authenticated = true;
             }
-			catch (GraphQLHttpRequestException e)
-			{
-				Result = e.Content;
-				return;
-			}
-			catch (Exception e)
-			{
-				if (jwtResponse?.Errors?.Length > 0)
-					Result = jwtResponse.Errors[0].Message;
-				else
-	                Result = e.Message;
-				return;
-			}
 		}
-		
-		[ICommand]
+
+        private static string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+
+        [RelayCommand]
 		public async void Register()
 		{
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)

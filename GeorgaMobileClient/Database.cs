@@ -4,28 +4,42 @@ namespace GeorgaMobileClient
 {
     public class Database
     {
-        public string Password;
-
         private SQLiteAsyncConnection _database;
-        private readonly string _databasePath;
-        private async Task Init()
+        private string _filename;
+        private string _password;
+
+        private async Task<bool> Init()
         {
+            if (String.IsNullOrEmpty(_password) || String.IsNullOrEmpty(_filename))
+                return false;
+
             if (_database != null)
             {
-                return;
+                return true;
             }
 
-            var options = new SQLiteConnectionString(_databasePath, true, Password, postKeyAction: c =>
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), _filename);
+            var options = new SQLiteConnectionString(path, true, _password, postKeyAction: c =>
             {
                 c.Execute("PRAGMA cipher_compatibility = 3");
             });
             _database = new SQLiteAsyncConnection(options);
-            await _database.CreateTableAsync<Person>();
+            var tableCreateResult = await _database.CreateTableAsync<Person>();
+            if (tableCreateResult != CreateTableResult.Created && tableCreateResult != CreateTableResult.Migrated)
+                return false;  // can this even fail?
+
+            return true;
         }
 
-        public Database(string dbPath)
+        public Database()
         {
-            _databasePath = dbPath;
+        }
+
+        public async Task<bool> Login(string dbPath, string password)
+        {
+            _filename = dbPath;
+            _password = password;
+            return await Init();
         }
 
         public async Task<List<Person>> GetPeopleAsync()
@@ -33,6 +47,13 @@ namespace GeorgaMobileClient
             await Init();
 
             return await _database.Table<Person>().ToListAsync();
+        }
+
+        public async Task<Person> GetPersonByEmail(string email)
+        {
+            await Init();
+
+            return await _database.Table<Person>().Where(x => x.Email == email).FirstOrDefaultAsync();
         }
 
         public async Task<int> SavePersonAsync(Person person)
