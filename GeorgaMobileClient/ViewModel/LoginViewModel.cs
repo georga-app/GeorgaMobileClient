@@ -17,7 +17,7 @@ namespace GeorgaMobileClient.ViewModel
         [Required]
         [EmailAddress]
 		//[AlsoNotifyChangeFor(nameof(IsEmailEmpty))]
-		string email = "simpleuser@georga.test";
+		string email = "helper@georga.test";
 
         [ObservableProperty]
 		bool isEmailEmpty;
@@ -37,7 +37,7 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         [MinLength(8)]
         [NotifyPropertyChangedFor(nameof(IsPasswordMatching))]
-		string password = "simpleuserPassword";
+		string password = "georga";
 
 		[ObservableProperty]
 		[NotifyPropertyChangedFor(nameof(IsPasswordMatching))]
@@ -113,7 +113,7 @@ namespace GeorgaMobileClient.ViewModel
 
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
 			{
-				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform != DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
 
 				var jwtRequest = new GraphQLRequest
 				{

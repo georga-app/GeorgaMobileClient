@@ -2,7 +2,7 @@
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public partial class QualificationViewModel : ObservableObject
+    public partial class PersonPropertyViewModel : ObservableObject
     {
         [ObservableProperty]
         public string id;

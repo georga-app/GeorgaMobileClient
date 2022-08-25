@@ -2,7 +2,7 @@
 
 namespace GeorgaMobileClient.Model;
 
-public class QualificationCategory
+public class PersonProperty
 {
     [PrimaryKey]
     public string Id { get; set; }

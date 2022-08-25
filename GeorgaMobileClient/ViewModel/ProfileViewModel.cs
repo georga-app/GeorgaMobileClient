@@ -29,9 +29,9 @@ namespace GeorgaMobileClient.ViewModel
 
         // general person options
         [ObservableProperty]
-        ObservableCollection<QualificationCategory> qualificationCategories;
+        ObservableCollection<PersonPropertyGroup> qualificationCategories;
         [ObservableProperty]
-        ObservableCollection<QualificationViewModel> qualifications;
+        ObservableCollection<PersonPropertyViewModel> qualifications;
         [ObservableProperty]
         ObservableCollection<Restriction> restrictions;
 
@@ -65,9 +65,9 @@ namespace GeorgaMobileClient.ViewModel
         public class PersonOptionsChangedArgs
         {
             // public bool QualificationCategoriesHaveChanged;
-            public ObservableCollection<QualificationCategory> QualificationCategories;
+            public ObservableCollection<PersonPropertyGroup> QualificationCategories;
             // public bool QualificationsHaveChanged;
-            public ObservableCollection<QualificationViewModel> Qualifications;
+            public ObservableCollection<PersonPropertyViewModel> Qualifications;
         }
 
         public delegate void PersonOptionsChangedHandler(object sender, PersonOptionsChangedArgs e);
@@ -99,8 +99,8 @@ namespace GeorgaMobileClient.ViewModel
             IsEditing = false;
             Title = GeorgaMobileClient.Properties.Resources.Profile;
             Result = "";
-            QualificationCategories = new ObservableCollection<QualificationCategory>();
-            Qualifications = new ObservableCollection<QualificationViewModel>();
+            QualificationCategories = new ObservableCollection<PersonPropertyGroup>();
+            Qualifications = new ObservableCollection<PersonPropertyViewModel>();
             qualificationsOfThisPerson = new List<string>();
 
             Refresh();
@@ -197,16 +197,26 @@ namespace GeorgaMobileClient.ViewModel
                 Result = "Problem while saving changes to local device.";
             else if (await SendProfileDataToApi())
             {
-                IsEditing = false;
-                Qualifications.ToList().ForEach(p => p.IsEditing = false);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    IsEditing = false;
+                    Qualifications.ToList().ForEach(p => p.IsEditing = false);
+                });
             }
             else
             {
-                IsStoreEnabled = true;
-                Qualifications.ToList().ForEach(p => p.IsEditing = true);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    IsStoreEnabled = true;
+                    Qualifications.ToList().ForEach(p => p.IsEditing = true);
+                });
             }
 
             SetBusy(false);
+
+            IsEditing = false;
+
+            Refresh();
         }
 
         async void Cancel()
@@ -233,23 +243,23 @@ namespace GeorgaMobileClient.ViewModel
             var qualificationsRequest = new GraphQLRequest
             {
                 Query = @"
-  query GetPersonOptions {
-    allQualificationCategories {
+    query GetPersonOptions {
+    allPersonPropertyGroups {
       edges {
         node {
           id
-          code
+          codename
           name
         }
       }
     }
-    allQualifications {
+    allPersonProperties {
       edges {
         node {
           id
           name
-          qualificationCategory {
-            code
+          group {
+            codename
           }
         }
       }
@@ -279,31 +289,31 @@ namespace GeorgaMobileClient.ViewModel
                 return false;
             }
 
-            var allQualificationCategories = qualificationsResponse?.Data?.allQualificationCategories.edges.Children<JObject>();
+            var allQualificationCategories = qualificationsResponse?.Data?.allPersonPropertyGroups.edges.Children<JObject>();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 QualificationCategories.Clear();
                 foreach (var qualificationCategory in allQualificationCategories)
                 {
-                    QualificationCategories.Add(new QualificationCategory()
+                    QualificationCategories.Add(new PersonPropertyGroup()
                     {
                         Id = qualificationCategory.node.id,
-                        Code = qualificationCategory.node.code,
+                        Code = qualificationCategory.node.codename,
                         Name = qualificationCategory.node.name
                     });
                 }
             });
 
-            var allQualifications = qualificationsResponse?.Data?.allQualifications.edges.Children<JObject>();
+            var allQualifications = qualificationsResponse?.Data?.allPersonProperties.edges.Children<JObject>();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 Qualifications.Clear();
                 foreach (var qualification in allQualifications)
                 {
-                    Qualifications.Add(new QualificationViewModel()
+                    Qualifications.Add(new PersonPropertyViewModel()
                     {
                         Id = qualification.node.id,
-                        Code = qualification.node.qualificationCategory.code,
+                        Code = qualification.node.group.codename,
                         Name = qualification.node.name,
                         Value = false
                     });
@@ -342,7 +352,7 @@ query AllPersons ($email: String) {
 		        firstName
 		        lastName
 		        email
-                qualifications {
+                properties {
                     edges {
                         node {
                             id
@@ -382,7 +392,7 @@ query AllPersons ($email: String) {
                     Email = allPersons.edges[0].Person?.email;
                     FirstName = allPersons.edges[0].Person.firstName;
                     LastName = allPersons.edges[0].Person.lastName;
-                    var qualificationEdges = allPersons.edges[0].Person.qualifications.edges.Children<JObject>();
+                    var qualificationEdges = allPersons.edges[0].Person.properties.edges.Children<JObject>();
                     qualificationsOfThisPerson.Clear();
                     foreach (var qualification in qualificationEdges)
                         qualificationsOfThisPerson.Add(qualification.node.id.ToString());
@@ -415,14 +425,14 @@ query AllPersons ($email: String) {
     $id: ID!
     $firstName: String
     $lastName: String
-    $qualifications: [ID]
+    $properties: [ID]
   ) {
     updatePerson(
       input: {
         id: $id
         firstName: $firstName
         lastName: $lastName
-        qualifications: $qualifications
+        properties: $properties
       }
     ) {
       person {
@@ -439,7 +449,7 @@ query AllPersons ($email: String) {
                     id = Id,
                     firstName = FirstName,
                     lastName = LastName,
-                    qualifications = qualificationsOfThisPerson
+                    properties = qualificationsOfThisPerson
                 }
             };
 
@@ -520,6 +530,9 @@ query AllPersons ($email: String) {
 
         public async Task<bool> SavePersonToDb()
         {
+            if (String.IsNullOrEmpty(Id))  // is there valid data?
+                return false;
+
             bool createNewRecord = false;
             var thisPerson = await Db.GetPersonByEmail(App.Instance.User.Email);    // record exists? if not,
             if (thisPerson == null)                                                 // create new db entry
