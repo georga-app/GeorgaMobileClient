@@ -1,20 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
 namespace GeorgaMobileClient.ViewModel
 {
-	public class MapsViewModel : BaseViewModel
-	{
-		string name = "Thomas' home";
-
-		public string Name
-		{
-			get => name;
-			set => SetProperty(ref name, value);
-		}
+	public partial class MapsViewModel : DatabaseViewModel
+    {
+		[ObservableProperty]
+		string name;
 
 		string longitude = 10.0429685.ToString();
 

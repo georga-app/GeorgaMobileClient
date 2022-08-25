@@ -20,8 +20,8 @@ namespace GeorgaMobileClient.ViewModel
 		public string email { get; set; }
 	}
 
-	public class GraphQLViewModel : BaseViewModel
-	{
+	public class GraphQLViewModel : DatabaseViewModel
+    {
 		string username = "Thomas' home";
 
 		public string Username

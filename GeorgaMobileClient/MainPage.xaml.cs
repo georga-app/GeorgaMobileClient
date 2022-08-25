@@ -86,10 +86,10 @@ public partial class MainPage : ContentPage
 		(App.Current as App).MainPage = new AppShell();
 	}
 
-	Person lastSelection;
+	//Person lastSelection;
 	void collectionView_SelectionChanged(System.Object sender, SelectionChangedEventArgs e)
 	{
-		lastSelection = e.CurrentSelection[0] as Person;
+		//lastSelection = e.CurrentSelection[0] as Person;
 
 		// nameEntry.Text = lastSelection.Name;
 		// subscribed.IsChecked = lastSelection.Subscribed;

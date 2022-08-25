@@ -6,11 +6,11 @@ using GraphQL.Client.Serializer.Newtonsoft;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
-using GeorgaMobileClient.Interface;
+using GeorgaMobileDatabase.Model;
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public partial class ProfileViewModel : ViewModelBase
+    public partial class ProfileViewModel : DatabaseViewModel
     {
         #region form data
 
@@ -85,11 +85,8 @@ namespace GeorgaMobileClient.ViewModel
 
         #region constructor
 
-        private Database db;
-
         public ProfileViewModel()
         {
-            this.db = (App.Current as App).Db;
             RefreshCommand = new Command(Refresh);
             EditCommand = new Command(Edit);
             BackCommand = new Command(Back);
@@ -121,15 +118,24 @@ namespace GeorgaMobileClient.ViewModel
 
             SetBusy(true);
 
-            await Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                await Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
 
-            foreach (string personQualId in qualificationsOfThisPerson)         // set the Value member in 
-                foreach (var qual in Qualifications)                            // Qualifications to true
-                    if (qual.Id == personQualId)                                // if qualification is 
-                    {                                                           // possessed by the person
-                        qual.Value = true;
-                        break;
-                    }
+                foreach (string personQualId in qualificationsOfThisPerson)         // set the Value member in 
+                    foreach (var qual in Qualifications)                            // Qualifications to true
+                        if (qual.Id == personQualId)                                // if qualification is 
+                        {                                                           // possessed by the person
+                            qual.Value = true;
+                            break;
+                        }
+                if (!await SavePersonToDb())
+                    Result = "Problem while saving to local device.";
+            }
+            else
+            {
+                _ = await GetPersonFromDb();
+            }
 
             SetBusy(false);            
 
@@ -187,7 +193,7 @@ namespace GeorgaMobileClient.ViewModel
                 if (qual.Value)
                     qualificationsOfThisPerson.Add(qual.Id);
 
-            if (!await SaveToDb())
+            if (!await SavePersonToDb())
                 Result = "Problem while saving changes to local device.";
             else if (await SendProfileDataToApi())
             {
@@ -512,11 +518,45 @@ query AllPersons ($email: String) {
 
         #region database stuff
 
-        public async Task<bool> SaveToDb()
+        public async Task<bool> SavePersonToDb()
         {
-            var thisPerson = await db.GetPersonByEmail(App.Instance.User.Email);
+            bool createNewRecord = false;
+            var thisPerson = await Db.GetPersonByEmail(App.Instance.User.Email);    // record exists? if not,
+            if (thisPerson == null)                                                 // create new db entry
+            {
+                thisPerson = new Person();
+                thisPerson.Email = App.Instance.User.Email;
+                createNewRecord = true;
+            }
+
+            thisPerson.Id = Id;
+            thisPerson.FirstName = FirstName;
+            thisPerson.LastName = LastName;
+            thisPerson.Options = "";
+
+            int recordsCreated = 0;
+            int recordsUpdated = 0;
+            if (createNewRecord)
+                recordsCreated = await Db.SavePersonAsync(thisPerson);
+            else
+                recordsUpdated = await Db.UpdatePersonAsync(thisPerson);
+            Console.WriteLine($"{recordsCreated} record newly created, {recordsUpdated} existing records updated.");
 
             return true;
+        }
+
+        public async Task<bool> GetPersonFromDb()
+        {
+            var thisPerson = await Db.GetPersonByEmail(App.Instance.User.Email);    // record exists?
+            if (thisPerson != null)
+            {
+                Id = thisPerson.Id;
+                FirstName = thisPerson.FirstName;
+                LastName = thisPerson.LastName;
+                return true;
+            }
+            else
+                return false;
         }
 
         #endregion

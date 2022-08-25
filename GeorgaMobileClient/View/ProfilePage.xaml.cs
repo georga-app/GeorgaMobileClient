@@ -14,6 +14,11 @@ public partial class ProfilePage : BasePage
         qualificationSections = new Dictionary<string, TableSection>();
     }
 
+    public void OnAppearing()
+    {
+
+    }
+
     private void ViewModel_PersonOptionsChangedEvent(object sender, ProfileViewModel.PersonOptionsChangedArgs e)
     {
         // remove old qualification sections

@@ -1,20 +1,15 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using GeorgaMobileDatabase;
+using System;
 using System.Threading.Tasks;
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public class BaseViewModel : OXXXbservableObject
+    public class DatabaseViewModel : ViewModelBase
     {
-        bool isBusy;
+        public Database Db => DependencyService.Get<Database>();
 
-        public bool IsBusy
-        {
-            get => isBusy;
-            set => SetProperty(ref isBusy, value, onChanged: () => OnPropertyChanged(nameof(IsNotBusy)));
-        }
-
-        public bool IsNotBusy => !IsBusy;
-
+        
         public virtual void OnAppearing()
         {
         }
@@ -25,14 +20,14 @@ namespace GeorgaMobileClient.ViewModel
 
         internal event Func<string, Task> DoDisplayAlert;
 
-        internal event Func<BaseViewModel, bool, Task> DoNavigate;
+        internal event Func<DatabaseViewModel, bool, Task> DoNavigate;
 
         public Task DisplayAlertAsync(string message)
         {
             return DoDisplayAlert?.Invoke(message) ?? Task.CompletedTask;
         }
 
-        public Task NavigateAsync(BaseViewModel vm, bool showModal = false)
+        public Task NavigateAsync(DatabaseViewModel vm, bool showModal = false)
         {
             return DoNavigate?.Invoke(vm, showModal) ?? Task.CompletedTask;
         }

@@ -1,20 +1,21 @@
 ﻿namespace GeorgaMobileClient;
 using CommunityToolkit.Maui;
+using GeorgaMobileDatabase;
 
 public partial class App : Application
 {
-    public Database Db;
-
     private readonly IThemeService? themeService;
 
     public App()
     {
         InitializeComponent();
+
+        DependencyService.Register<Database>();
+
         MainPage = new AppShell();
 
         themeService = AppService.GetService<IThemeService>();
 
-        Db = new Database();
         User = new UserModel();
         // Add logic to check whether the user is authenticated or not and then update this flag
         User.Authenticated = false;

@@ -4,8 +4,8 @@ using System.Windows.Input;
 
 namespace GeorgaMobileClient.ViewModel
 {
-	public class WebAuthenticatorViewModel : BaseViewModel
-	{
+	public class WebAuthenticatorViewModel : DatabaseViewModel
+    {
 		const string authenticationUrl = "https://xamarin-essentials-auth-sample.azurewebsites.net/mobileauth/";
 
 		public WebAuthenticatorViewModel()

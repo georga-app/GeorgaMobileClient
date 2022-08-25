@@ -7,13 +7,12 @@ using GraphQL;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Newtonsoft.Json.Linq;
+using GeorgaMobileDatabase;
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public partial class LoginViewModel: ObservableValidator
-	{
-		private Database database;
-
+    public partial class LoginViewModel: DatabaseViewModel
+    {
         [ObservableProperty]
         [Required]
         [EmailAddress]
@@ -79,19 +78,17 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
 		string result;
 
-        // --- constructor ---
+		// --- events ---
 
-
-        private Database db;
-
-		public LoginViewModel()
+		public override void OnAppearing()
 		{
-			this.db = (App.Current as App).Db;
+			base.OnAppearing();
+			Db.Logout();        // if login page is showing, we consider this a logout
 		}
-        
+
 		// --- commands ---
 
-        [RelayCommand]
+		[RelayCommand]
 		async public void Login()
         {
             if (App.Instance is null)
@@ -114,9 +111,9 @@ namespace GeorgaMobileClient.ViewModel
                 return;
             }
 
-            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
 			{
-				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform != DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
 
 				var jwtRequest = new GraphQLRequest
 				{
@@ -154,7 +151,7 @@ namespace GeorgaMobileClient.ViewModel
 					// login, if token has been aquired successfully
 					token = jwtResponse.Data.personAuth.token;
 
-					_ = await db.Login(ComputeSha256Hash(Email.ToLower()), Password);
+					_ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
 					App.Instance.User.Email = Email;
 					App.Instance.User.Password = Password;
 					App.Instance.User.Token = token;
@@ -186,7 +183,7 @@ namespace GeorgaMobileClient.ViewModel
 			}
 			else
 			{
-                _ = await db.Login(ComputeSha256Hash(Email.ToLower()), Password);
+                _ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
                 App.Instance.User.Email = Email;
                 App.Instance.User.Password = Password;
                 App.Instance.User.Token = "";			// offline mode

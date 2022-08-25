@@ -30,7 +30,7 @@ namespace GeorgaMobileClient.View
 
         protected void SetupBinding(object bindingContext)
         {
-            if (bindingContext is BaseViewModel vm)
+            if (bindingContext is DatabaseViewModel vm)
             {
                 vm.DoDisplayAlert += OnDisplayAlert;
                 vm.DoNavigate += OnNavigate;
@@ -40,7 +40,7 @@ namespace GeorgaMobileClient.View
 
         protected void TearDownBinding(object bindingContext)
         {
-            if (bindingContext is BaseViewModel vm)
+            if (bindingContext is DatabaseViewModel vm)
             {
                 vm.OnDisappearing();
                 vm.DoDisplayAlert -= OnDisplayAlert;
@@ -53,7 +53,7 @@ namespace GeorgaMobileClient.View
             return DisplayAlert(Title, message, "OK");
         }
 
-        Task OnNavigate(BaseViewModel vm, bool showModal)
+        Task OnNavigate(DatabaseViewModel vm, bool showModal)
         {
             var name = vm.GetType().Name;
             name = name.Replace("ViewModel", "Page");
