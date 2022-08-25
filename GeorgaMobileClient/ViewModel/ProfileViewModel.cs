@@ -118,7 +118,7 @@ namespace GeorgaMobileClient.ViewModel
 
             SetBusy(true);
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)       // TODO: fallback to offline cache, if other network errors occur
             {
                 await Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
 

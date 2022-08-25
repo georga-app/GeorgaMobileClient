@@ -111,7 +111,7 @@ namespace GeorgaMobileClient.ViewModel
                 return;
             }
 
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
 			{
 				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform != DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
 
