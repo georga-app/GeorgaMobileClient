@@ -29,6 +29,8 @@ namespace GeorgaMobileClient.ViewModel
 
         // general person options
         [ObservableProperty]
+        ObservableCollection<OrganizationViewModel> organizations;
+        [ObservableProperty]
         ObservableCollection<PersonPropertyGroup> qualificationCategories;
         [ObservableProperty]
         ObservableCollection<PersonPropertyViewModel> qualifications;
@@ -100,6 +102,7 @@ namespace GeorgaMobileClient.ViewModel
             Title = GeorgaMobileClient.Properties.Resources.Profile;
             Result = "";
             QualificationCategories = new ObservableCollection<PersonPropertyGroup>();
+            organizations = new ObservableCollection<OrganizationViewModel>();
             Qualifications = new ObservableCollection<PersonPropertyViewModel>();
             qualificationsOfThisPerson = new List<string>();
 
@@ -359,6 +362,14 @@ query AllPersons ($email: String) {
                         }
                     }
                 }
+                organizationsSubscribed {
+                    edges {
+                        node {
+                            id
+                            name
+                        }
+                    }
+                }
 		    }
 	    }
     }
@@ -396,6 +407,14 @@ query AllPersons ($email: String) {
                     qualificationsOfThisPerson.Clear();
                     foreach (var qualification in qualificationEdges)
                         qualificationsOfThisPerson.Add(qualification.node.id.ToString());
+                    var organizationEdges = allPersons.edges[0].Person.organizationsSubscribed.edges.Children<JObject>();
+                    organizations.Clear();
+                    foreach (var organization in organizationEdges)
+                        organizations.Add(new OrganizationViewModel()
+                        {
+                            Id = organization.node.id.ToString(),
+                            Name = organization.node.name.ToString()
+                        });
                 });
             }
             catch (GraphQLHttpRequestException e)
