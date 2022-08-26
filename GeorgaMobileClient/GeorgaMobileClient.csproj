@@ -64,8 +64,8 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Resources.resx</DependentUpon>
 	  </Compile>
-	  <Compile Update="View\GraphQLPage.xaml.cs">
-	    <DependentUpon>GraphQLPage.xaml</DependentUpon>
+	  <Compile Update="View\ProjectsPage.xaml.cs">
+	    <DependentUpon>ProjectsPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="View\ProfilePage.xaml.cs">
 	    <DependentUpon>ProfilePage.xaml</DependentUpon>
@@ -92,7 +92,7 @@
 	</ItemGroup>
 		
 	<ItemGroup>
-	  <MauiXaml Update="View\GraphQLPage.xaml">
+	  <MauiXaml Update="View\ProjectsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\LoginPage.xaml">

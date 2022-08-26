@@ -33,6 +33,9 @@ public partial class Database
         //if (tableCreateResult != CreateTableResult.Created && tableCreateResult != CreateTableResult.Migrated)
         //    return false;  // can this even fail?
         tableCreateResult = await _database.CreateTableAsync<Organization>();
+        tableCreateResult = await _database.CreateTableAsync<PersonProperty>();
+        tableCreateResult = await _database.CreateTableAsync<PersonPropertyGroup>();
+        tableCreateResult = await _database.CreateTableAsync<Project>();
 
         return true;
     }

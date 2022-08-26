@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using GeorgaMobileClient.View;
 
 namespace GeorgaMobileClient;
 
@@ -21,6 +22,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<ProfileViewModel>();
         builder.Services.AddSingleton<ProfilePage>();
+        builder.Services.AddSingleton<ProjectsViewModel>();
+        builder.Services.AddSingleton<ProjectsPage>();
         return builder.Build();
 	}
 }

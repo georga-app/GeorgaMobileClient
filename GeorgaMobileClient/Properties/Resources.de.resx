@@ -150,6 +150,9 @@
   <data name="Profile" xml:space="preserve">
     <value>Profil</value>
   </data>
+  <data name="Projects" xml:space="preserve">
+    <value>Projekte</value>
+  </data>
   <data name="QualificationsFor" xml:space="preserve">
     <value>Qualifikationen für</value>
   </data>

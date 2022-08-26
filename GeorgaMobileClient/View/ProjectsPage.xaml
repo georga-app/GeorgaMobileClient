@@ -1,0 +1,25 @@
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:GeorgaMobileClient.View"
+                xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
+                x:Class="GeorgaMobileClient.View.ProjectsPage"
+                Title="Projects">
+    <views:BasePage.BindingContext>
+        <viewmodels:ProjectsViewModel />
+    </views:BasePage.BindingContext>
+
+    <ScrollView>
+        <StackLayout Padding="10">            
+            <ListView Margin="0,20,0,0" ItemsSource="{Binding Projects}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Label Text="{Binding Name}" />
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </ScrollView>
+
+</views:BasePage>

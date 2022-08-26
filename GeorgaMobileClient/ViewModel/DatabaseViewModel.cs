@@ -1,15 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using GeorgaMobileDatabase;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using GeorgaMobileDatabase;
+using GeorgaMobileClient.Service;
 
 namespace GeorgaMobileClient.ViewModel
 {
     public class DatabaseViewModel : ViewModelBase
     {
         public Database Db => DependencyService.Get<Database>();
+        public Data D => DependencyService.Get<Data>();
 
-        
         public virtual void OnAppearing()
         {
         }

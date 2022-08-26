@@ -1,6 +1,7 @@
 ﻿namespace GeorgaMobileClient;
 using CommunityToolkit.Maui;
 using GeorgaMobileDatabase;
+using GeorgaMobileClient.Service;
 
 public partial class App : Application
 {
@@ -11,6 +12,7 @@ public partial class App : Application
         InitializeComponent();
 
         DependencyService.Register<Database>();
+        DependencyService.Register<Data>();
 
         MainPage = new AppShell();
 

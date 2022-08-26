@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:GeorgaMobileClient"
+    xmlns:view="clr-namespace:GeorgaMobileClient.View"
     xmlns:prop="clr-namespace:GeorgaMobileClient.Properties"
     FlyoutBackgroundColor="{AppThemeBinding Dark={StaticResource BackgroundDark},
                                             Light={StaticResource BackgroundLight}}">
@@ -96,6 +97,9 @@
     <FlyoutItem Title="WebAuthenticator">
         <ShellContent ContentTemplate="{DataTemplate local:WebAuthenticatorPage}" Route="settings" />
     </FlyoutItem-->
+    <FlyoutItem Title="{x:Static prop:Resources.Projects}">
+        <ShellContent ContentTemplate="{DataTemplate view:ProjectsPage}" Route="projects" />
+    </FlyoutItem>
     <FlyoutItem Title="{x:Static prop:Resources.MainPage}">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="main" />
     </FlyoutItem>

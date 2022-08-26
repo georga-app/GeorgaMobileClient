@@ -58,11 +58,6 @@ public partial class MainPage : ContentPage
 		Navigation.PushModalAsync(new MapsPage());
 	}
 
-    private void OnGraphQL(object sender, EventArgs e)
-    {
-		Navigation.PushModalAsync(new GraphQLPage());
-	}
-
 	private void OnChangeLanguage(object sender, EventArgs e)
 	{
 		// get lang as "en"
