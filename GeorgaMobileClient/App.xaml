@@ -5,6 +5,7 @@
              x:Class="GeorgaMobileClient.App"
              windows:Application.ImageDirectory="Assets">
     <Application.Resources>
+        <!--StyleSheet Source="/Resources/styles.css" /-->
         <ResourceDictionary>
 
             <x:Double x:Key="ItemSpacing">10</x:Double>
@@ -22,14 +23,19 @@
             <Color x:Key="TextDark">White</Color>
             <Color x:Key="TextLight">Black</Color>
 
+            <Style TargetType="Entry">
+                <Setter Property="FontFamily" Value="RobotoRegular" />
+            </Style>
+            
             <Style TargetType="Label">
                 <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource TextDark}, Light={StaticResource TextLight}}" />
-                <Setter Property="FontFamily" Value="OSR" />
+                <Setter Property="FontFamily" Value="RobotoRegular" />
                 <Setter Property="FontSize" Value="{OnIdiom Phone=14, Desktop=18}" />
             </Style>
 
             <Style x:Key="MauiLabel" TargetType="Label">
                 <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource TextDark}, Light={StaticResource MauiColor}}" />
+                <Setter Property="FontFamily" Value="RobotoRegular" />
             </Style>
 
             <Style ApplyToDerivedTypes="True" TargetType="StackBase">
@@ -42,7 +48,7 @@
 
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
-                <Setter Property="FontFamily" Value="OSR" />
+                <Setter Property="FontFamily" Value="RobotoRegular" />
                 <Setter Property="FontSize" Value="{OnIdiom Phone={StaticResource MobileFontSize}, Desktop={StaticResource DesktopFontSize}}" />
                 <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
                 <Setter Property="Padding" Value="14,10" />
@@ -51,7 +57,7 @@
             <Style TargetType="RadioButton">
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource BackgroundDark}, Light={StaticResource BackgroundLight}}" />
                 <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource TextDark}, Light={StaticResource TextLight}}" />
-                <Setter Property="FontFamily" Value="OSR" />
+                <Setter Property="FontFamily" Value="RobotoRegular" />
                 <Setter Property="FontSize" Value="{OnIdiom Phone={StaticResource MobileFontSize}, Desktop={StaticResource DesktopFontSize}}" />
             </Style>
 

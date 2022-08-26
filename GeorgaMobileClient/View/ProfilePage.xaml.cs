@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using GeorgaMobileClient.View;
+using GeorgaMobileDatabase.Model;
 
 namespace GeorgaMobileClient;
 
@@ -31,14 +32,24 @@ public partial class ProfilePage : BasePage
         // add new qualification sections
         foreach (var cat in e.QualificationCategories)
         {
-            form.Root.Add(qualificationSections[cat.Code] = new TableSection(cat.Name));
+            int numberOfQualificationsInGroup = e.Qualifications.Where(x => x.GroupId == cat.Id).Count();
+            if (numberOfQualificationsInGroup > 0)
+            {
+                string orgName = "";
+                if (ViewModel.Organizations.Count > 1)
+                {
+                    var org = ViewModel.Organizations.Where(x => x.Id == cat.OrganizationId).FirstOrDefault();
+                    orgName = " " + GeorgaMobileClient.Properties.Resources.QualificationsFor + " " + org.Name;
+                }
+                form.Root.Add(qualificationSections[cat.Id] = new TableSection(cat.Name + orgName));
+            }
         }
 
         // populate qualification sections
         foreach (var qual in e.Qualifications)
         {
             SwitchCell boolSwitchCell;
-            qualificationSections[qual.Code].Add(boolSwitchCell = new SwitchCell()
+            qualificationSections[qual.GroupId].Add(boolSwitchCell = new SwitchCell()
             {
                 Text = qual.Name,
                 BindingContext = qual

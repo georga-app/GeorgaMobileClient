@@ -160,11 +160,29 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Qualifications for ähnelt.
+        /// </summary>
+        public static string QualificationsFor {
+            get {
+                return ResourceManager.GetString("QualificationsFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Refresh ähnelt.
         /// </summary>
         public static string Refresh {
             get {
                 return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Restrictions for ähnelt.
+        /// </summary>
+        public static string RestrictionsFor {
+            get {
+                return ResourceManager.GetString("RestrictionsFor", resourceCulture);
             }
         }
         

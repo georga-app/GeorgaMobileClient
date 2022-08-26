@@ -133,7 +133,10 @@ namespace GeorgaMobileClient.ViewModel
                             break;
                         }
                 if (!await SavePersonToDb())
-                    Result = "Problem while saving to local device.";
+                    Result = "Problem while saving profile data to local device.";
+
+                if (!await SaveOrganizationsToDb())
+                    Result = "Problem while saving organizations to local device.";
             }
             else
             {
@@ -251,6 +254,7 @@ namespace GeorgaMobileClient.ViewModel
       edges {
         node {
           id
+          organization { id }
           codename
           name
         }
@@ -262,7 +266,7 @@ namespace GeorgaMobileClient.ViewModel
           id
           name
           group {
-            codename
+            id
           }
         }
       }
@@ -301,7 +305,8 @@ namespace GeorgaMobileClient.ViewModel
                     QualificationCategories.Add(new PersonPropertyGroup()
                     {
                         Id = qualificationCategory.node.id,
-                        Code = qualificationCategory.node.codename,
+                        OrganizationId = qualificationCategory.node.organization.id,
+                        Codename = qualificationCategory.node.codename,
                         Name = qualificationCategory.node.name
                     });
                 }
@@ -316,7 +321,7 @@ namespace GeorgaMobileClient.ViewModel
                     Qualifications.Add(new PersonPropertyViewModel()
                     {
                         Id = qualification.node.id,
-                        Code = qualification.node.group.codename,
+                        GroupId = qualification.node.group.id,
                         Name = qualification.node.name,
                         Value = false
                     });
@@ -410,11 +415,13 @@ query AllPersons ($email: String) {
                     var organizationEdges = allPersons.edges[0].Person.organizationsSubscribed.edges.Children<JObject>();
                     organizations.Clear();
                     foreach (var organization in organizationEdges)
+                    {
                         organizations.Add(new OrganizationViewModel()
                         {
                             Id = organization.node.id.ToString(),
                             Name = organization.node.name.ToString()
                         });
+                    }
                 });
             }
             catch (GraphQLHttpRequestException e)
@@ -574,6 +581,19 @@ query AllPersons ($email: String) {
                 recordsUpdated = await Db.UpdatePersonAsync(thisPerson);
             Console.WriteLine($"{recordsCreated} record newly created, {recordsUpdated} existing records updated.");
 
+            return true;
+        }
+
+        public async Task<bool> SaveOrganizationsToDb()
+        {
+            if (String.IsNullOrEmpty(Id))  // is there valid data?
+                return false;
+
+            var oldOrgs = await Db.GetOrganizationsAsync();
+            foreach (var oldOrg in oldOrgs)   // delete old orgs in cache
+                await Db.DeleteOrganizationAsync(oldOrg);
+            foreach (var newOrg in Organizations)
+                await Db.SaveOrganizationAsync(new Organization { Id = newOrg.Id, Name = newOrg.Name });
             return true;
         }
 

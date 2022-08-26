@@ -25,7 +25,10 @@ namespace GeorgaMobileClient.ViewModel
 		[ObservableProperty]
 		bool isEmailValid;
 
-		[ObservableProperty]
+        [ObservableProperty]
+        bool isPasswordValid;
+
+        [ObservableProperty]
         bool isFirstNameValid;
 
         [ObservableProperty]
@@ -35,7 +38,7 @@ namespace GeorgaMobileClient.ViewModel
 		bool isMobilePhoneValid;
 
         [ObservableProperty]
-        [MinLength(8)]
+        [MinLength(6)]
         [NotifyPropertyChangedFor(nameof(IsPasswordMatching))]
 		string password = "georga";
 

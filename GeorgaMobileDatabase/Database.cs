@@ -30,8 +30,9 @@ public partial class Database
         });
         _database = new SQLiteAsyncConnection(options);
         var tableCreateResult = await _database.CreateTableAsync<Person>();
-        if (tableCreateResult != CreateTableResult.Created && tableCreateResult != CreateTableResult.Migrated)
-            return false;  // can this even fail?
+        //if (tableCreateResult != CreateTableResult.Created && tableCreateResult != CreateTableResult.Migrated)
+        //    return false;  // can this even fail?
+        tableCreateResult = await _database.CreateTableAsync<Organization>();
 
         return true;
     }

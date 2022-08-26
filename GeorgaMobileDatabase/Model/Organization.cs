@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace GeorgaMobileClient.Model;
+namespace GeorgaMobileDatabase.Model;
 
 public class Organization
 {

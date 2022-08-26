@@ -61,8 +61,15 @@
                             InvalidStyle="{StaticResource InvalidStyle}"/>
                     </Entry.Behaviors>
                 </Entry>
-                <Entry x:Name="password" Placeholder="Password" IsPassword = "true" Text="{Binding Password}" />
-                <Button Text="Login" Command="{Binding LoginCommand}" />
+                <Entry x:Name="password" Placeholder="Password" IsPassword = "true" Text="{Binding Password}">
+                    <Entry.Behaviors>
+                        <behaviors:CharactersValidationBehavior
+                            IsValid="{Binding IsPasswordValid}"
+                            MinimumLength="6"
+                            Flags="ValidateOnValueChanged" 
+                            InvalidStyle="{StaticResource InvalidStyle}"/>
+                    </Entry.Behaviors>
+                </Entry>                <Button Text="Login" Command="{Binding LoginCommand}" />
                 <!-- IsEnabled="{Binding HasErrors, Converter={StaticResource invertBoolConverter}}" -->
                 <Picker Title="Select your title" SelectedItem="{Binding Title}" IsVisible="{Binding IsRepeatPasswordVisible}">
                     <Picker.Items>
@@ -121,6 +128,7 @@
 
             <StackLayout Padding="10" Grid.Row="3" Grid.Column="1" HorizontalOptions="Center" VerticalOptions="StartAndExpand">
                 <Label Text="Email address not valid" LineBreakMode="WordWrap" TextColor="Red" IsVisible="{Binding IsEmailValid, Converter={StaticResource invertBoolConverter}}" />
+                <Label Text="Password too short" LineBreakMode="WordWrap" TextColor="Red" IsVisible="{Binding IsPasswordValid, Converter={StaticResource invertBoolConverter}}" />
                 <Label Text="Please provide an email address" LineBreakMode="WordWrap" TextColor="Red" IsVisible="{Binding IsEmailEmpty}" />
                 <Label Text="First name is not valid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsFirstNameValid, Converter={StaticResource invertBoolConverter}}" />
                 <Label Text="Last name is not valid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsLastNameValid, Converter={StaticResource invertBoolConverter}}" />

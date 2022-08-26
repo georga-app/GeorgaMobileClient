@@ -9,6 +9,8 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         public string code;
         [ObservableProperty]
+        public string groupId;
+        [ObservableProperty]
         public string name;
         [ObservableProperty]
         public bool value;

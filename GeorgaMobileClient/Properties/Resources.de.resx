@@ -150,8 +150,14 @@
   <data name="Profile" xml:space="preserve">
     <value>Profil</value>
   </data>
+  <data name="QualificationsFor" xml:space="preserve">
+    <value>Qualifikationen für</value>
+  </data>
   <data name="Refresh" xml:space="preserve">
     <value>Aktualisieren</value>
+  </data>
+  <data name="RestrictionsFor" xml:space="preserve">
+    <value>Einschränkungen für</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Einstellungen</value>

@@ -84,13 +84,33 @@
             </ScrollView>
             <StackLayout Grid.Row="2" Orientation="Vertical">
                 <StackLayout Orientation="Horizontal" Margin="5" IsVisible="{Binding IsEditing}">
-                    <Button Text="Store" Command="{Binding StoreCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
-                    <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                    <Button Text="Store" Command="{Binding StoreCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand">
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf0c7;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
                 </StackLayout>
                 <StackLayout Grid.Row="2" Orientation="Horizontal" Margin="5" IsVisible="{Binding IsEditing, Converter={StaticResource invertBoolConverter}}">
-                    <Button Text="Refresh" Command="{Binding RefreshCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
-                    <Button Text="Edit" Command="{Binding EditCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
-                    <Button Text="Back" Command="{Binding BackCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" />
+                    <Button Text="Refresh" Command="{Binding RefreshCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf021;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button Text="Edit" Command="{Binding EditCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf304;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button Text="Back" FontFamily="RobotoRegular"  Command="{Binding BackCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
                 </StackLayout>
             </StackLayout>
         </StackLayout>

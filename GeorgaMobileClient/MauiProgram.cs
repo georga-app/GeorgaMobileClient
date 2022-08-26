@@ -13,8 +13,9 @@ public static class MauiProgram
 			.UseVijayAnandMauiToolkit(ServiceRegistrations.Navigation | ServiceRegistrations.Theme)
 			.ConfigureFonts(fonts =>
 			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-			});
+				fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular");
+                fonts.AddFont("FontAwesomeFreeSolid900.otf", "FASolid");
+            });
 
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<SettingsPage>();
