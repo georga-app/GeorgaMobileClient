@@ -10,7 +10,7 @@ namespace GeorgaMobileDatabase;
 public partial class Database
 {
 
-    public async Task<List<Person>> GetPeopleAsync()
+    public async Task<List<Person>> GetPersonsAsync()
     {
         await Init();
 

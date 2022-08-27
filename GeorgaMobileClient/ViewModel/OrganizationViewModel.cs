@@ -8,5 +8,7 @@ namespace GeorgaMobileClient.ViewModel
         public string id;
         [ObservableProperty]
         public string name;
+        [ObservableProperty]
+        public string icon;
     }
 }

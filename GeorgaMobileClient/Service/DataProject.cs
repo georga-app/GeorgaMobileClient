@@ -31,15 +31,13 @@ public partial class Data
     }"});
     }
 
-    public async Task<bool> SaveToDb(dynamic response)
+    public async Task<bool> SaveProjectToDb(dynamic response)
     {
-        var db = DependencyService.Get<Database>();
-
         var allProjects = response?.Data?.allProjects.edges.Children<JObject>();
 
-        var oldProjs = await db.GetProjectsAsync();
-        foreach (var oldProj in oldProjs)   // delete old orgs in cache
-            await db.DeleteProjectAsync(oldProj);
+        var oldProjs = await _db.GetProjectsAsync();
+        foreach (var oldProj in oldProjs)   // delete old projects in cache
+            await _db.DeleteProjectAsync(oldProj);
         foreach (var project in allProjects)
         {
             var p = new Project()
@@ -48,7 +46,7 @@ public partial class Data
                 OrganizationId = project.node.organization.id,
                 Name = project.node.name
             };
-            await db.SaveProjectAsync(p);
+            await _db.SaveProjectAsync(p);
         }
 
         return true;

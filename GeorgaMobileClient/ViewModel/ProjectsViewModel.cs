@@ -15,6 +15,7 @@ namespace GeorgaMobileClient.ViewModel
 
 		public async void Init()
 		{
+			Projects.Clear();
             var projectsFromDb = await Db.GetProjectsAsync();
 			foreach (var project in projectsFromDb)
 			{

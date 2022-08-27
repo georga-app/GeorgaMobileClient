@@ -372,6 +372,7 @@ query AllPersons ($email: String) {
                         node {
                             id
                             name
+                            icon
                         }
                     }
                 }
@@ -419,7 +420,8 @@ query AllPersons ($email: String) {
                         organizations.Add(new OrganizationViewModel()
                         {
                             Id = organization.node.id.ToString(),
-                            Name = organization.node.name.ToString()
+                            Name = organization.node.name.ToString(),
+                            Icon = organization.node.icon.ToString()
                         });
                     }
                 });
@@ -593,7 +595,7 @@ query AllPersons ($email: String) {
             foreach (var oldOrg in oldOrgs)   // delete old orgs in cache
                 await Db.DeleteOrganizationAsync(oldOrg);
             foreach (var newOrg in Organizations)
-                await Db.SaveOrganizationAsync(new Organization { Id = newOrg.Id, Name = newOrg.Name });
+                await Db.SaveOrganizationAsync(new Organization { Id = newOrg.Id, Name = newOrg.Name, Icon = newOrg.Icon });
             return true;
         }
 

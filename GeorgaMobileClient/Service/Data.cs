@@ -1,4 +1,5 @@
-﻿using GraphQL;
+﻿using GeorgaMobileDatabase;
+using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
@@ -23,6 +24,7 @@ public partial class Data
     const string _androidEndpoint = "http://10.0.2.2:80/graphql";
     const string _otherPlatformsEndpoint = "http://localhost:80/graphql";
 
+    Database _db = DependencyService.Get<Database>();
     List<DataTemplate> _templates;
     string _querystring;
     GraphQLHttpClient _graphQLClient;
@@ -36,11 +38,15 @@ public partial class Data
 
         // add all models
         _templates = new List<DataTemplate>();
+
+        // ___ add all models to the query ___
         AddProject();
+        AddPerson();
+        AddOrganization();
 
         // build request
         var sb = new StringBuilder();
-        sb.AppendLine(@"query GetAll {");
+        sb.AppendLine(@"query GetAll ($email: String) {");
         foreach (var template in _templates)
             sb.AppendLine(template.Query);
         sb.AppendLine(@"}");
@@ -56,7 +62,11 @@ public partial class Data
     {
         var request = new GraphQLRequest
         {
-            Query = _querystring
+            Query = _querystring,
+            Variables = new
+            {
+                email = App.Instance.User.Email
+            }
         };
 
         dynamic response = null;
@@ -80,7 +90,10 @@ public partial class Data
             return false;
         }
 
-        await SaveToDb(response);
+        // ___ save all models to the database ___
+        await SaveProjectToDb(response);
+        await SavePersonToDb(response);
+        await SaveOrganizationToDb(response);
 
         return true;
     }
