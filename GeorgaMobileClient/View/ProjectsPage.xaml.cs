@@ -14,5 +14,11 @@ namespace GeorgaMobileClient.View
 			base.OnAppearing();
 			(BindingContext as ProjectsViewModel).Init();
 		}
+
+        public async void OnItemTapped(object o, ItemTappedEventArgs e)
+        {
+			(BindingContext as ProjectsViewModel).OpenProjectDetails(e.ItemIndex);
+
+        }
     }
 }

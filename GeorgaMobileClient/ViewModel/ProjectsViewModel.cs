@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -8,10 +9,17 @@ namespace GeorgaMobileClient.ViewModel
 		[ObservableProperty]
 		ObservableCollection<ProjectViewModel> projects;
 
+
+        [ObservableProperty]
+        private bool isManageSubscriptionsEnabled;
+        public ICommand ManageSubscriptionsCommand { protected set; get; }
+
         public ProjectsViewModel()
 		{
 			Projects = new ObservableCollection<ProjectViewModel>();
-		}
+			ManageSubscriptionsCommand = new Command(ManageSubscriptions);
+			IsManageSubscriptionsEnabled = true;
+        }
 
 		public async void Init()
 		{
@@ -27,5 +35,21 @@ namespace GeorgaMobileClient.ViewModel
 				});
             }
         }
-	}
+
+        public async void OpenProjectDetails(int itemIndex)
+		{
+            await NavigateAsync(projects[itemIndex]);
+        }
+
+        async void ManageSubscriptions()
+		{
+			if (!IsManageSubscriptionsEnabled) return;
+            IsManageSubscriptionsEnabled = false;
+
+			// await NavigateAsync ...
+			await NavigateAsync(projects[0]);
+
+            IsManageSubscriptionsEnabled = true;
+        }
+    }
 }

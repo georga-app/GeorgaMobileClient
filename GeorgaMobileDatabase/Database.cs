@@ -29,10 +29,9 @@ public partial class Database
             c.Execute("PRAGMA cipher_compatibility = 3");
         });
         _database = new SQLiteAsyncConnection(options);
-        var tableCreateResult = await _database.CreateTableAsync<Person>();
-        //if (tableCreateResult != CreateTableResult.Created && tableCreateResult != CreateTableResult.Migrated)
-        //    return false;  // can this even fail?
+        var tableCreateResult = await _database.CreateTableAsync<Operation>();
         tableCreateResult = await _database.CreateTableAsync<Organization>();
+        tableCreateResult = await _database.CreateTableAsync<Person>();
         tableCreateResult = await _database.CreateTableAsync<PersonProperty>();
         tableCreateResult = await _database.CreateTableAsync<PersonPropertyGroup>();
         tableCreateResult = await _database.CreateTableAsync<Project>();

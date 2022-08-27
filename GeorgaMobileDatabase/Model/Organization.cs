@@ -2,10 +2,9 @@
 
 namespace GeorgaMobileDatabase.Model;
 
-public class Organization
+public class Operation
 {
     [PrimaryKey]
     public string Id { get; set; }
     public string Name { get; set; }
-    public string Icon { get; set; }
 }

@@ -573,7 +573,7 @@ query AllPersons ($email: String) {
             thisPerson.Id = Id;
             thisPerson.FirstName = FirstName;
             thisPerson.LastName = LastName;
-            thisPerson.Options = "";
+            thisPerson.Properties = "";
 
             int recordsCreated = 0;
             int recordsUpdated = 0;

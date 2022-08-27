@@ -57,13 +57,31 @@ public partial class Data
             await _db.DeletePersonAsync(oldProj);
         foreach (var person in allPersons)
         {
+            var props = new StringBuilder();
+            foreach (var prop in person.properties.edges.Children<JObject>())
+            {
+                if (props.Length > 0)
+                    props.Append('|');  // add separator character
+                props.Append(prop.node.id.ToString());
+            }
+            var organizationEdges = allPersons.edges[0].Person.organizationsSubscribed.edges.Children<JObject>();
+
+            var orgs = new StringBuilder();
+            foreach (var org in person.organizationsSubscribed.edges.Children<JObject>())
+            {
+                if (orgs.Length > 0)
+                    orgs.Append('|');  // add separator character
+                orgs.Append(org.node.id.ToString());
+            }
+
             var p = new Person()
             {
                 Id = person.node.id,
                 Email = person.node.email,
                 FirstName = person.node.firstName,
-                LastName = person.lastName
-                // TODO Qualifications, Organizations
+                LastName = person.lastName,
+                Properties = props.ToString(),
+                OrganizationsSubscribed = orgs.ToString()
             };
             await _db.SavePersonAsync(p);
         }

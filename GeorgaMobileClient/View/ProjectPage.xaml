@@ -1,0 +1,25 @@
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:GeorgaMobileClient.View"
+                xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
+                x:Class="GeorgaMobileClient.View.ProjectPage"
+                Title="Project">
+    <views:BasePage.BindingContext>
+        <viewmodels:ProjectsViewModel />
+    </views:BasePage.BindingContext>
+
+    <ScrollView>
+        <Grid Style="{StaticResource ContentArea}" RowDefinitions="*,auto" Padding="10">
+            <Label Grid.Row="0" Text="{Binding Name}" />
+            <StackLayout Grid.Row="1" Orientation="Horizontal">
+                <Button Text="Back" Clicked="OnBackClicked">
+                    <Button.ImageSource>
+                        <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                    </Button.ImageSource>
+                </Button>
+                <Button Grid.Row="2" Text="Hiho!"  />
+            </StackLayout>
+        </Grid>
+    </ScrollView>
+
+</views:BasePage>
