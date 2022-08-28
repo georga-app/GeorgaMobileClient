@@ -5,19 +5,26 @@
                 x:Class="GeorgaMobileClient.View.ProjectPage"
                 Title="Project">
     <views:BasePage.BindingContext>
-        <viewmodels:ProjectsViewModel />
+        <viewmodels:ProjectViewModel />
     </views:BasePage.BindingContext>
 
     <ScrollView>
-        <Grid Style="{StaticResource ContentArea}" RowDefinitions="*,auto" Padding="10">
+        <Grid Style="{StaticResource ContentArea}" RowDefinitions="auto,*,auto" Padding="10">
             <Label Grid.Row="0" Text="{Binding Name}" />
-            <StackLayout Grid.Row="1" Orientation="Horizontal">
+            <ListView Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding Operations}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ImageCell Text="{Binding Name}"  />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackLayout Grid.Row="2" Orientation="Horizontal">
                 <Button Text="Back" Clicked="OnBackClicked">
                     <Button.ImageSource>
                         <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
                     </Button.ImageSource>
                 </Button>
-                <Button Grid.Row="2" Text="Hiho!"  />
+                <Button Grid.Row="3" Text="Hiho!"  />
             </StackLayout>
         </Grid>
     </ScrollView>

@@ -35,18 +35,17 @@ public partial class Data
     {
         var allOrganizations = response?.Data?.allOrganizations.edges.Children<JObject>();
 
-        var oldProjs = await _db.GetOrganizationsAsync();
-        foreach (var oldProj in oldProjs)   // delete old orgs in cache
-            await _db.DeleteOrganizationAsync(oldProj);
+        var oldOrgs = await _db.GetOrganizationsAsync();
+        foreach (var oldOrg in oldOrgs)   // delete old orgs in cache
+            await _db.DeleteOrganizationAsync(oldOrg);
         foreach (var organization in allOrganizations)
         {
-            var p = new Organization()
+            await _db.SaveOrganizationAsync(new Organization()
             {
                 Id = organization.node.id,
                 Name = organization.node.name,
                 Icon = organization.node.icon
-            };
-            await _db.SaveOrganizationAsync(p);
+            });
         }
 
         return true;

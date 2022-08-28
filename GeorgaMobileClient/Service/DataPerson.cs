@@ -20,9 +20,9 @@ public partial class Data
         _templates.Add(new DataTemplate()
         {
             Query = @"
-    allPersons (email: $email) {
+    allPersons {
 	    edges {
-	        Person: node {
+	        node {
 		        id
 		        firstName
 		        lastName
@@ -52,38 +52,36 @@ public partial class Data
     {
         var allPersons = response?.Data?.allPersons.edges.Children<JObject>();
 
-        var oldProjs = await _db.GetPersonsAsync();
-        foreach (var oldProj in oldProjs)   // delete old persons in cache
-            await _db.DeletePersonAsync(oldProj);
+        var oldPersons = await _db.GetPersonsAsync();
+        foreach (var oldPerson in oldPersons)   // delete old persons in cache
+            await _db.DeletePersonAsync(oldPerson);
         foreach (var person in allPersons)
         {
             var props = new StringBuilder();
-            foreach (var prop in person.properties.edges.Children<JObject>())
+            foreach (var prop in person.node.properties.edges.Children<JObject>())
             {
                 if (props.Length > 0)
                     props.Append('|');  // add separator character
                 props.Append(prop.node.id.ToString());
             }
-            var organizationEdges = allPersons.edges[0].Person.organizationsSubscribed.edges.Children<JObject>();
 
             var orgs = new StringBuilder();
-            foreach (var org in person.organizationsSubscribed.edges.Children<JObject>())
+            foreach (var org in person.node.organizationsSubscribed.edges.Children<JObject>())
             {
                 if (orgs.Length > 0)
                     orgs.Append('|');  // add separator character
                 orgs.Append(org.node.id.ToString());
             }
 
-            var p = new Person()
+            await _db.SavePersonAsync(new Person()
             {
                 Id = person.node.id,
                 Email = person.node.email,
                 FirstName = person.node.firstName,
-                LastName = person.lastName,
+                LastName = person.node.lastName,
                 Properties = props.ToString(),
                 OrganizationsSubscribed = orgs.ToString()
-            };
-            await _db.SavePersonAsync(p);
+            });
         }
 
         return true;

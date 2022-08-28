@@ -1,10 +1,14 @@
-﻿namespace GeorgaMobileClient
+﻿using GeorgaMobileClient.View;
+
+namespace GeorgaMobileClient
 {
     public partial class AppShell : Shell
     {
         public AppShell()
         {
             InitializeComponent();
+
+            Routing.RegisterRoute("project", typeof(ProjectPage));
         }
 
         private void OnLogoutClicked(object sender, EventArgs e)

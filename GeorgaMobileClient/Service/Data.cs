@@ -42,11 +42,12 @@ public partial class Data
         // ___ add all models to the query ___
         AddProject();
         AddPerson();
+        AddOperation();
         AddOrganization();
 
         // build request
         var sb = new StringBuilder();
-        sb.AppendLine(@"query GetAll ($email: String) {");
+        sb.AppendLine(@"query GetAll {");  //  ($email: String)
         foreach (var template in _templates)
             sb.AppendLine(template.Query);
         sb.AppendLine(@"}");
@@ -62,11 +63,11 @@ public partial class Data
     {
         var request = new GraphQLRequest
         {
-            Query = _querystring,
+            Query = _querystring/*,
             Variables = new
             {
                 email = App.Instance.User.Email
-            }
+            }*/
         };
 
         dynamic response = null;
@@ -93,6 +94,7 @@ public partial class Data
         // ___ save all models to the database ___
         await SaveProjectToDb(response);
         await SavePersonToDb(response);
+        await SaveOperationToDb(response);
         await SaveOrganizationToDb(response);
 
         return true;

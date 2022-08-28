@@ -40,13 +40,12 @@ public partial class Data
             await _db.DeleteProjectAsync(oldProj);
         foreach (var project in allProjects)
         {
-            var p = new Project()
+            await _db.SaveProjectAsync(new Project()
             {
                 Id = project.node.id,
                 OrganizationId = project.node.organization.id,
                 Name = project.node.name
-            };
-            await _db.SaveProjectAsync(p);
+            });
         }
 
         return true;

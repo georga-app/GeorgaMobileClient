@@ -38,7 +38,8 @@ namespace GeorgaMobileClient.ViewModel
 
         public async void OpenProjectDetails(int itemIndex)
 		{
-            await NavigateAsync(projects[itemIndex]);
+            //await NavigateAsync(projects[itemIndex]);
+            await Shell.Current.GoToAsync($"/project?Id={projects[itemIndex].Id}");
         }
 
         async void ManageSubscriptions()
@@ -47,7 +48,7 @@ namespace GeorgaMobileClient.ViewModel
             IsManageSubscriptionsEnabled = false;
 
 			// await NavigateAsync ...
-			await NavigateAsync(projects[0]);
+			// await NavigateAsync(projects[0]);
 
             IsManageSubscriptionsEnabled = true;
         }
