@@ -19,19 +19,22 @@ public partial class Data
     {
         _templates.Add(new DataTemplate()
         {
-            Query = @"
-    listOperations {
-        edges {
-      	    node {
-                id
-                name
-                project
-                {
-                    id
+            Query = """
+                listOperations {
+                    edges {
+                  	    node {
+                            id
+                            name
+                            description
+                            project
+                            {
+                                id
+                            }
+                        }      
+                    }
                 }
-            }      
-   	    }
-    }"});
+                """
+        });
     }
 
     public async Task<bool> SaveOperationToDb(dynamic response)
@@ -47,7 +50,8 @@ public partial class Data
             {
                 Id = operation.node.id,
                 Name = operation.node.name,
-                ProjectId = operation.node.project.id
+                ProjectId = operation.node.project.id,
+                Description = operation.node.description
             });
         }
 
