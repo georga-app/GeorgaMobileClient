@@ -19,7 +19,7 @@ public partial class MainPage : ContentPage
                 {
                     Query = @"
                     {
-                        allPersons {
+                        listPersons {
                           edges {
                             Person: node {
                               id

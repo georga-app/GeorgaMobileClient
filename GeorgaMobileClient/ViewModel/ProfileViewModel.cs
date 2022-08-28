@@ -247,7 +247,7 @@ namespace GeorgaMobileClient.ViewModel
             {
                 Query = @"
     query GetPersonOptions {
-    allPersonPropertyGroups {
+    listPersonPropertyGroups {
       edges {
         node {
           id
@@ -257,7 +257,7 @@ namespace GeorgaMobileClient.ViewModel
         }
       }
     }
-    allPersonProperties {
+    listPersonProperties {
       edges {
         node {
           id
@@ -293,7 +293,7 @@ namespace GeorgaMobileClient.ViewModel
                 return false;
             }
 
-            var allQualificationCategories = qualificationsResponse?.Data?.allPersonPropertyGroups.edges.Children<JObject>();
+            var allQualificationCategories = qualificationsResponse?.Data?.listPersonPropertyGroups.edges.Children<JObject>();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 QualificationCategories.Clear();
@@ -309,11 +309,11 @@ namespace GeorgaMobileClient.ViewModel
                 }
             });
 
-            var allQualifications = qualificationsResponse?.Data?.allPersonProperties.edges.Children<JObject>();
+            var listPersonProperties = qualificationsResponse?.Data?.listPersonProperties.edges.Children<JObject>();
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 Qualifications.Clear();
-                foreach (var qualification in allQualifications)
+                foreach (var qualification in listPersonProperties)
                 {
                     Qualifications.Add(new PersonPropertyViewModel()
                     {

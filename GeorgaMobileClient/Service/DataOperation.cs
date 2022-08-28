@@ -20,7 +20,7 @@ public partial class Data
         _templates.Add(new DataTemplate()
         {
             Query = @"
-    allOperations {
+    listOperations {
         edges {
       	    node {
                 id
@@ -36,12 +36,12 @@ public partial class Data
 
     public async Task<bool> SaveOperationToDb(dynamic response)
     {
-        var allOperations = response?.Data?.allOperations.edges.Children<JObject>();
+        var listOperations = response?.Data?.listOperations.edges.Children<JObject>();
 
         var oldOps = await _db.GetOperationsAsync();
         foreach (var oldOp in oldOps)   // delete old ops in cache
             await _db.DeleteOperationAsync(oldOp);
-        foreach (var operation in allOperations)
+        foreach (var operation in listOperations)
         {
             await _db.SaveOperationAsync(new Operation()
             {

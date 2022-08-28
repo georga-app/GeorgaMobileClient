@@ -164,7 +164,7 @@ namespace GeorgaMobileClient.ViewModel
                     Result = await D.CacheAll();
 #if DEBUG
 					if (Result == "")
-						await Shell.Current.GoToAsync("///profile");  // automatically go to page of concern for debugging purposes
+						await Shell.Current.GoToAsync("///main");  // automatically go to page of concern for debugging purposes
 					else
 						; // DisplayAlert(Result);
 #endif

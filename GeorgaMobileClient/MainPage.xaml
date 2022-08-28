@@ -8,6 +8,7 @@
         <Grid RowSpacing="25" RowDefinitions="Auto,*,Auto,Auto,Auto,Auto"
               Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
 
+            <CarouselView ItemsSource="{Binding Monkeys}" />
             <Label 
                 Text="{x:Static prop:Resources.Projects}"
                 Grid.Row="0"
@@ -39,7 +40,7 @@
                 Clicked="OnChangeLanguage"
                 HorizontalOptions="Center" />
 
-            <CollectionView Grid.Row="1" x:Name="collectionView" SelectionMode="Single" SelectionChanged="collectionView_SelectionChanged">
+            <!--CollectionView Grid.Row="1" x:Name="collectionView" SelectionMode="Single" SelectionChanged="collectionView_SelectionChanged">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <StackLayout Padding="15">
@@ -57,7 +58,7 @@
                         </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-            </CollectionView>
+            </CollectionView-->
 
             <!--Image Grid.Row="4"
                 Source="dotnet_bot.png"

@@ -20,7 +20,7 @@ public partial class Data
         _templates.Add(new DataTemplate()
         {
             Query = @"
-    allProjects {
+    listProjects {
         edges {
       	    node {
                 id
@@ -33,12 +33,12 @@ public partial class Data
 
     public async Task<bool> SaveProjectToDb(dynamic response)
     {
-        var allProjects = response?.Data?.allProjects.edges.Children<JObject>();
+        var listProjects = response?.Data?.listProjects.edges.Children<JObject>();
 
         var oldProjs = await _db.GetProjectsAsync();
         foreach (var oldProj in oldProjs)   // delete old projects in cache
             await _db.DeleteProjectAsync(oldProj);
-        foreach (var project in allProjects)
+        foreach (var project in listProjects)
         {
             await _db.SaveProjectAsync(new Project()
             {

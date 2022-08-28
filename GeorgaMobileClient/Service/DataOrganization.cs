@@ -20,7 +20,7 @@ public partial class Data
         _templates.Add(new DataTemplate()
         {
             Query = @"
-    allOrganizations {
+    listOrganizations {
         edges {
       	    node {
                 id
@@ -33,12 +33,12 @@ public partial class Data
 
     public async Task<bool> SaveOrganizationToDb(dynamic response)
     {
-        var allOrganizations = response?.Data?.allOrganizations.edges.Children<JObject>();
+        var listOrganizations = response?.Data?.listOrganizations.edges.Children<JObject>();
 
         var oldOrgs = await _db.GetOrganizationsAsync();
         foreach (var oldOrg in oldOrgs)   // delete old orgs in cache
             await _db.DeleteOrganizationAsync(oldOrg);
-        foreach (var organization in allOrganizations)
+        foreach (var organization in listOrganizations)
         {
             await _db.SaveOrganizationAsync(new Organization()
             {
