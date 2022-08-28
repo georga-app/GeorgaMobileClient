@@ -134,9 +134,6 @@ namespace GeorgaMobileClient.ViewModel
                         }
                 if (!await SavePersonToDb())
                     Result = "Problem while saving profile data to local device.";
-
-                if (!await SaveOrganizationsToDb())
-                    Result = "Problem while saving organizations to local device.";
             }
             else
             {
@@ -351,39 +348,32 @@ namespace GeorgaMobileClient.ViewModel
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
             var personRequest = new GraphQLRequest
             {
-                Query = @"
-query AllPersons ($email: String) {
-    allPersons (email: $email) {
-	    edges {
-	        Person: node {
-		        id
-		        firstName
-		        lastName
-		        email
-                properties {
-                    edges {
-                        node {
+                Query = """
+                    query getProfile {
+                        getProfile {
                             id
+                            firstName
+                            lastName
+                            email
+                            properties {
+                                edges {
+                                    node {
+                                        id
+                                    }
+                                }
+                            }
+                            organizationsSubscribed {
+                                edges {
+                                    node {
+                                        id
+                                        name
+                                        icon
+                                    }      
+                                }
+                            }
                         }
                     }
-                }
-                organizationsSubscribed {
-                    edges {
-                        node {
-                            id
-                            name
-                            icon
-                        }
-                    }
-                }
-		    }
-	    }
-    }
-}",
-                Variables = new
-                {
-                    email = App.Instance.User.Email
-                }
+                    """
             };
 
             dynamic graphQLResponse = null;
@@ -395,9 +385,8 @@ query AllPersons ($email: String) {
                     IsStoreEnabled = false;
                     return false;
                 }
-                // string allPersonsString = graphQLResponse.Data.allPersons.ToString();
-                var allPersons = graphQLResponse?.Data?.allPersons;
-                if (allPersons == null)
+                var getProfile = graphQLResponse?.Data?.getProfile;
+                if (getProfile == null)
                 {
                     IsStoreEnabled = false;
                     return false;
@@ -405,15 +394,15 @@ query AllPersons ($email: String) {
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Id = allPersons.edges[0].Person?.id;
-                    Email = allPersons.edges[0].Person?.email;
-                    FirstName = allPersons.edges[0].Person.firstName;
-                    LastName = allPersons.edges[0].Person.lastName;
-                    var qualificationEdges = allPersons.edges[0].Person.properties.edges.Children<JObject>();
+                    Id = getProfile.id;
+                    Email = getProfile.email;
+                    FirstName = getProfile.firstName;
+                    LastName = getProfile.lastName;
+                    var qualificationEdges = getProfile.properties.edges.Children<JObject>();
                     qualificationsOfThisPerson.Clear();
                     foreach (var qualification in qualificationEdges)
                         qualificationsOfThisPerson.Add(qualification.node.id.ToString());
-                    var organizationEdges = allPersons.edges[0].Person.organizationsSubscribed.edges.Children<JObject>();
+                    var organizationEdges = getProfile.organizationsSubscribed.edges.Children<JObject>();
                     organizations.Clear();
                     foreach (var organization in organizationEdges)
                     {
@@ -449,15 +438,13 @@ query AllPersons ($email: String) {
             var updatePersonRequest = new GraphQLRequest
             {
                 Query = @"
-  mutation UpdatePerson (
-    $id: ID!
+  mutation UpdateProfile (
     $firstName: String
     $lastName: String
     $properties: [ID]
   ) {
-    updatePerson(
+    updateProfile(
       input: {
-        id: $id
         firstName: $firstName
         lastName: $lastName
         properties: $properties
@@ -474,7 +461,6 @@ query AllPersons ($email: String) {
   }",
                 Variables = new
                 {
-                    id = Id,
                     firstName = FirstName,
                     lastName = LastName,
                     properties = qualificationsOfThisPerson
@@ -586,7 +572,7 @@ query AllPersons ($email: String) {
             return true;
         }
 
-        public async Task<bool> SaveOrganizationsToDb()
+        /*public async Task<bool> SaveOrganizationsToDb()
         {
             if (String.IsNullOrEmpty(Id))  // is there valid data?
                 return false;
@@ -597,7 +583,7 @@ query AllPersons ($email: String) {
             foreach (var newOrg in Organizations)
                 await Db.SaveOrganizationAsync(new Organization { Id = newOrg.Id, Name = newOrg.Name, Icon = newOrg.Icon });
             return true;
-        }
+        }*/
 
         public async Task<bool> GetPersonFromDb()
         {

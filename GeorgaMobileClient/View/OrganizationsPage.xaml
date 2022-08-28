@@ -10,7 +10,7 @@
 
     <ScrollView>
         <StackLayout Padding="10">
-            <ListView Margin="0,10,0,0" ItemsSource="{Binding Organizations}" ItemTapped="OnItemTapped">
+            <ListView Margin="5" ItemsSource="{Binding Organizations}" ItemTapped="OnItemTapped" RowHeight="80">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -23,8 +23,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Label Text="{Binding Result}" TextColor="Red" />
-            <Button Text="Confirm changes to subscriptions" Command="{Binding ConfirmSubscriptionsCommand}" HorizontalOptions="Start" IsVisible="{Binding IsConfirmSubscriptionsVisible}" >
+            <Label Text="{Binding Result}" TextColor="Red" Margin="10" />
+            <Button Text="Confirm changes to subscriptions" Command="{Binding ConfirmSubscriptionsCommand}" HorizontalOptions="Start" IsVisible="{Binding IsConfirmSubscriptionsVisible}" Margin="10" >
                 <Button.ImageSource>
                     <FontImageSource Glyph="&#xf00c;" FontFamily="FASolid" Color="#ffffff" Size="18" />
                 </Button.ImageSource>

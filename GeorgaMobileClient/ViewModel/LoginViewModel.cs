@@ -161,9 +161,12 @@ namespace GeorgaMobileClient.ViewModel
 					App.Instance.User.Authenticated = true;
 
 					D.SetAuthToken();
-                    await D.CacheAll();
+                    Result = await D.CacheAll();
 #if DEBUG
-					await Shell.Current.GoToAsync("///organizations");  // automatically go to page of concern for debugging purposes
+					if (Result == "")
+						await Shell.Current.GoToAsync("///profile");  // automatically go to page of concern for debugging purposes
+					else
+						; // DisplayAlert(Result);
 #endif
 				}
 				catch (GraphQLHttpRequestException e)

@@ -41,7 +41,7 @@ public partial class Data
 
         // ___ add all models to the query ___
         AddProject();
-        AddPerson();
+        AddProfile();
         AddOperation();
         AddOrganization();
 
@@ -59,7 +59,7 @@ public partial class Data
         _graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
     }
 
-    public async Task<bool> CacheAll()
+    public async Task<string> CacheAll()
     {
         var request = new GraphQLRequest
         {
@@ -75,12 +75,12 @@ public partial class Data
         {
             response = await _graphQLClient.SendQueryAsync<dynamic>(request);
             if (QueryHasErrors(response))
-                return false;
+                return Result;
         }
         catch (GraphQLHttpRequestException e)
         {
             Result = e.Content;
-            return false;
+            return Result;
         }
         catch (Exception e)
         {
@@ -88,16 +88,16 @@ public partial class Data
                 Result = response.Errors[0].Message;
             else
                 Result = e.Message;
-            return false;
+            return Result;
         }
 
         // ___ save all models to the database ___
         await SaveProjectToDb(response);
-        await SavePersonToDb(response);
+        await SaveProfileToDb(response);
         await SaveOperationToDb(response);
         await SaveOrganizationToDb(response);
 
-        return true;
+        return "";
     }
 
     private bool QueryHasErrors(dynamic obj)

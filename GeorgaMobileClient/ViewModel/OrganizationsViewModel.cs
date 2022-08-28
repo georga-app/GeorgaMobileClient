@@ -28,6 +28,7 @@ namespace GeorgaMobileClient.ViewModel
 			Organizations = new ObservableCollection<OrganizationViewModel>();
 			ConfirmSubscriptionsCommand = new Command(ConfirmSubscriptions);
             IsConfirmSubscriptionsEnabled = false;
+            IsConfirmSubscriptionsVisible = false;
         }
 
 		public async void Init()
@@ -84,7 +85,7 @@ namespace GeorgaMobileClient.ViewModel
             foreach (var org in Organizations)
                 if (org.IsSubscribed)
                     orgIds.Add(org.Id);
-            Result = await D.UpdatePersonSubscribedOrganizations(thisPerson.Id, orgIds);
+            Result = await D.UpdateProfileSubscribedOrganizations(thisPerson.Id, orgIds);
 
             if (String.IsNullOrEmpty(Result))
             {
@@ -100,6 +101,8 @@ namespace GeorgaMobileClient.ViewModel
                 int recordsUpdated = await Db.UpdatePersonAsync(thisPerson);
                 if (recordsUpdated < 1)
                     Result = "Error: Couldn't write subscribed organizations to local database.";
+                else
+                    IsConfirmSubscriptionsVisible = false;
             }
 
             SetBusy(false);

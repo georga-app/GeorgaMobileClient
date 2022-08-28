@@ -16,18 +16,16 @@ namespace GeorgaMobileClient.Service;
 
 public partial class Data
 {
-    void AddPerson()
+    void AddProfile()
     {
         _templates.Add(new DataTemplate()
         {
-            Query = @"
-    allPersons {
-	    edges {
-	        node {
-		        id
-		        firstName
-		        lastName
-		        email
+            Query = """
+            getProfile {
+                id
+                firstName
+                lastName
+                email
                 properties {
                     edges {
                         node {
@@ -44,77 +42,71 @@ public partial class Data
                         }
                     }
                 }
-		    }
-	    }
-    }"});
+            }
+            """
+        });
     }
 
-    public async Task<bool> SavePersonToDb(dynamic response)
+    public async Task<bool> SaveProfileToDb(dynamic response)
     {
-        var allPersons = response?.Data?.allPersons.edges.Children<JObject>();
+        var person = response?.Data?.getProfile;
 
         var oldPersons = await _db.GetPersonsAsync();
         foreach (var oldPerson in oldPersons)   // delete old persons in cache
             await _db.DeletePersonAsync(oldPerson);
-        foreach (var person in allPersons)
+
+        var props = new StringBuilder();
+        foreach (var prop in person.properties.edges.Children<JObject>())
         {
-            var props = new StringBuilder();
-            foreach (var prop in person.node.properties.edges.Children<JObject>())
-            {
-                if (props.Length > 0)
-                    props.Append('|');  // add separator character
-                props.Append(prop.node.id.ToString());
-            }
-
-            var orgs = new StringBuilder();
-            foreach (var org in person.node.organizationsSubscribed.edges.Children<JObject>())
-            {
-                if (orgs.Length > 0)
-                    orgs.Append('|');  // add separator character
-                orgs.Append(org.node.id.ToString());
-            }
-
-            await _db.SavePersonAsync(new Person()
-            {
-                Id = person.node.id,
-                Email = person.node.email,
-                FirstName = person.node.firstName,
-                LastName = person.node.lastName,
-                Properties = props.ToString(),
-                OrganizationsSubscribed = orgs.ToString()
-            });
+            if (props.Length > 0)
+                props.Append('|');  // add separator character
+            props.Append(prop.node.id.ToString());
         }
+
+        var orgs = new StringBuilder();
+        foreach (var org in person.organizationsSubscribed.edges.Children<JObject>())
+        {
+            if (orgs.Length > 0)
+                orgs.Append('|');  // add separator character
+            orgs.Append(org.node.id.ToString());
+        }
+
+        await _db.SavePersonAsync(new Person()
+        {
+            Id = person.id,
+            Email = person.email,
+            FirstName = person.firstName,
+            LastName = person.lastName,
+            Properties = props.ToString(),
+            OrganizationsSubscribed = orgs.ToString()
+        });
 
         return true;
     }
 
-    public async Task<string> UpdatePersonSubscribedOrganizations(string personId, List<string> orgIds)
+    public async Task<string> UpdateProfileSubscribedOrganizations(string personId, List<string> orgIds)
     {
         var updatePersonRequest = new GraphQLRequest
         {
-            Query = @"
-  mutation UpdatePerson (
-    $id: ID!
-    $organizationsSubscribed: [ID]
-  ) {
-    updatePerson(
-      input: {
-        id: $id
-        organizationsSubscribed: $organizationsSubscribed
-      }
-    ) {
-      person {
-        id
-      }
-      errors {
-        field
-        messages
-      }
-    }
-  }",
+            Query = """
+                mutation UpdateProfile ($organizationsSubscribed: [ID]) {
+                    updateProfile(
+                        input: {
+                            organizationsSubscribed: $organizationsSubscribed
+                            }
+                        ) {
+                            person {
+                                id
+                            }
+                            errors {
+                                field
+                                messages
+                        }
+                    }
+                }
+                """,
     Variables = new
             {
-                id = personId,
                 organizationsSubscribed = orgIds
             }
         };

@@ -39,7 +39,8 @@ public partial class ProfilePage : BasePage
                 if (ViewModel.Organizations.Count > 1)
                 {
                     var org = ViewModel.Organizations.Where(x => x.Id == cat.OrganizationId).FirstOrDefault();
-                    orgName = " " + GeorgaMobileClient.Properties.Resources.QualificationsFor + " " + org.Name;
+                    if (org != null)
+                        orgName = " " + GeorgaMobileClient.Properties.Resources.QualificationsFor + " " + org.Name;
                 }
                 form.Root.Add(qualificationSections[cat.Id] = new TableSection(cat.Name + orgName));
             }
