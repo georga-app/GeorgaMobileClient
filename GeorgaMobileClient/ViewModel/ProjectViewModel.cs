@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using GeorgaMobileDatabase.Model;
+using Microsoft.Maui;
 using System.Collections.ObjectModel;
 
 namespace GeorgaMobileClient.ViewModel;
@@ -32,7 +33,7 @@ public partial class ProjectViewModel : DatabaseViewModel
         }
     }
     [ObservableProperty]
-    //[NotifyPropertyChangedFor(nameof(IconFromOrg))]
+    [NotifyPropertyChangedFor(nameof(IconFromOrg))]
     string organizationId;
     [ObservableProperty]
     string name;
@@ -58,12 +59,11 @@ public partial class ProjectViewModel : DatabaseViewModel
         }
     }*/
 
-    //[ObservableProperty]
     public ImageSource IconFromOrg
     {
         get
         {
-            var iconFromOrg = ImageSource.FromStream(() =>
+            return ImageSource.FromStream(() =>
             {
                 var orgTask = Task.Run<Organization>(async () => await Db.GetOrganizationById(OrganizationId));
                 var org = orgTask.Result;
@@ -75,7 +75,6 @@ public partial class ProjectViewModel : DatabaseViewModel
                 else
                     return null;
             });
-            return iconFromOrg;
         }
     }
 

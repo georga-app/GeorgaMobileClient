@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static SQLite.SQLite3;
+using System.Net.Http.Headers;
 
 namespace GeorgaMobileClient.Service;
 
@@ -85,5 +86,61 @@ public partial class Data
         }
 
         return true;
+    }
+
+    public async Task<string> UpdatePersonSubscribedOrganizations(string personId, List<string> orgIds)
+    {
+        var updatePersonRequest = new GraphQLRequest
+        {
+            Query = @"
+  mutation UpdatePerson (
+    $id: ID!
+    $organizationsSubscribed: [ID]
+  ) {
+    updatePerson(
+      input: {
+        id: $id
+        organizationsSubscribed: $organizationsSubscribed
+      }
+    ) {
+      person {
+        id
+      }
+      errors {
+        field
+        messages
+      }
+    }
+  }",
+    Variables = new
+            {
+                id = personId,
+                organizationsSubscribed = orgIds
+            }
+        };
+
+        dynamic jwtResponse = null;
+        try
+        {
+            jwtResponse = await _graphQLClient.SendQueryAsync<dynamic>(updatePersonRequest);
+            if (QueryHasErrors(jwtResponse))
+                return Result;
+        }
+        catch (GraphQLHttpRequestException e)
+        {
+            Result = e.Content;
+            return Result;
+        }
+        catch (Exception e)
+        {
+            if (jwtResponse?.Errors?.Length > 0)
+                Result = jwtResponse.Errors[0].Message;
+            else
+                Result = e.Message;
+            return Result;
+        }
+
+
+        return "";
     }
 }

@@ -1,14 +1,35 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using GeorgaMobileDatabase.Model;
 
 namespace GeorgaMobileClient.ViewModel
 {
     public partial class OrganizationViewModel : ObservableObject
     {
         [ObservableProperty]
-        public string id;
+        string id;
         [ObservableProperty]
-        public string name;
+        string name;
         [ObservableProperty]
-        public string icon;
+        [NotifyPropertyChangedFor(nameof(IconImageSource))]
+        string icon;
+        [ObservableProperty]
+        bool isSubscribed;
+        [ObservableProperty]
+        bool isSubscribedInitialState;
+
+        public ImageSource IconImageSource
+        {
+            get
+            {
+                return ImageSource.FromStream(() =>
+                {
+                    if (String.IsNullOrEmpty(Icon))
+                        return null;
+
+                    byte[] data = System.Convert.FromBase64String(Icon);
+                    return new MemoryStream(data);
+                });
+            }
+        }
     }
 }

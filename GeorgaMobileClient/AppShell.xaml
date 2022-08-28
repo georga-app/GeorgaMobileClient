@@ -97,6 +97,9 @@
     <FlyoutItem Title="WebAuthenticator">
         <ShellContent ContentTemplate="{DataTemplate local:WebAuthenticatorPage}" Route="settings" />
     </FlyoutItem-->
+    <FlyoutItem Title="{x:Static prop:Resources.Organizations}">
+        <ShellContent ContentTemplate="{DataTemplate view:OrganizationsPage}" Route="organizations" />
+    </FlyoutItem>
     <FlyoutItem Title="{x:Static prop:Resources.Projects}">
         <ShellContent ContentTemplate="{DataTemplate view:ProjectsPage}" Route="projects" />
     </FlyoutItem>

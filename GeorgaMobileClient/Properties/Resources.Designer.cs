@@ -88,6 +88,15 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Confirm changes to subscriptions ähnelt.
+        /// </summary>
+        public static string ConfirmChangesToSubscriptions {
+            get {
+                return ResourceManager.GetString("ConfirmChangesToSubscriptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Edit ähnelt.
         /// </summary>
         public static string Edit {
@@ -138,6 +147,15 @@ namespace GeorgaMobileClient.Properties {
         public static string MainPage {
             get {
                 return ResourceManager.GetString("MainPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Organizations ähnelt.
+        /// </summary>
+        public static string Organizations {
+            get {
+                return ResourceManager.GetString("Organizations", resourceCulture);
             }
         }
         

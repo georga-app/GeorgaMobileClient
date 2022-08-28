@@ -126,6 +126,9 @@
   <data name="ChangeLanguage" xml:space="preserve">
     <value>Change language</value>
   </data>
+  <data name="ConfirmChangesToSubscriptions" xml:space="preserve">
+    <value>Confirm changes to subscriptions</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="MainPage" xml:space="preserve">
     <value>Main Page</value>
+  </data>
+  <data name="Organizations" xml:space="preserve">
+    <value>Organizations</value>
   </data>
   <data name="PersonalData" xml:space="preserve">
     <value>Personal Data</value>

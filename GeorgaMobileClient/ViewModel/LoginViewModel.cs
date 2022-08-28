@@ -163,7 +163,7 @@ namespace GeorgaMobileClient.ViewModel
 					D.SetAuthToken();
                     await D.CacheAll();
 #if DEBUG
-					await Shell.Current.GoToAsync("///projects");  // automatically go to page of concern for debugging purposes
+					await Shell.Current.GoToAsync("///organizations");  // automatically go to page of concern for debugging purposes
 #endif
 				}
 				catch (GraphQLHttpRequestException e)
