@@ -21,7 +21,7 @@ public partial class Data
         _templates.Add(new DataTemplate()
         {
             Query = """
-            getProfile {
+            getPersonProfile {
                 id
                 firstName
                 lastName
@@ -49,7 +49,7 @@ public partial class Data
 
     public async Task<bool> SaveProfileToDb(dynamic response)
     {
-        var person = response?.Data?.getProfile;
+        var person = response?.Data?.getPersonProfile;
 
         var oldPersons = await _db.GetPersonsAsync();
         foreach (var oldPerson in oldPersons)   // delete old persons in cache
@@ -89,8 +89,8 @@ public partial class Data
         var updatePersonRequest = new GraphQLRequest
         {
             Query = """
-                mutation UpdateProfile ($organizationsSubscribed: [ID]) {
-                    updateProfile(
+                mutation UpdatePersonProfile ($organizationsSubscribed: [ID]) {
+                    updatePersonProfile(
                         input: {
                             organizationsSubscribed: $organizationsSubscribed
                             }

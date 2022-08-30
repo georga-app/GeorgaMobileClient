@@ -349,8 +349,8 @@ namespace GeorgaMobileClient.ViewModel
             var personRequest = new GraphQLRequest
             {
                 Query = """
-                    query getProfile {
-                        getProfile {
+                    query getPersonProfile {
+                        getPersonProfile {
                             id
                             firstName
                             lastName
@@ -385,8 +385,8 @@ namespace GeorgaMobileClient.ViewModel
                     IsStoreEnabled = false;
                     return false;
                 }
-                var getProfile = graphQLResponse?.Data?.getProfile;
-                if (getProfile == null)
+                var getPersonProfile = graphQLResponse?.Data?.getPersonProfile;
+                if (getPersonProfile == null)
                 {
                     IsStoreEnabled = false;
                     return false;
@@ -394,15 +394,15 @@ namespace GeorgaMobileClient.ViewModel
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    Id = getProfile.id;
-                    Email = getProfile.email;
-                    FirstName = getProfile.firstName;
-                    LastName = getProfile.lastName;
-                    var qualificationEdges = getProfile.properties.edges.Children<JObject>();
+                    Id = getPersonProfile.id;
+                    Email = getPersonProfile.email;
+                    FirstName = getPersonProfile.firstName;
+                    LastName = getPersonProfile.lastName;
+                    var qualificationEdges = getPersonProfile.properties.edges.Children<JObject>();
                     qualificationsOfThisPerson.Clear();
                     foreach (var qualification in qualificationEdges)
                         qualificationsOfThisPerson.Add(qualification.node.id.ToString());
-                    var organizationEdges = getProfile.organizationsSubscribed.edges.Children<JObject>();
+                    var organizationEdges = getPersonProfile.organizationsSubscribed.edges.Children<JObject>();
                     organizations.Clear();
                     foreach (var organization in organizationEdges)
                     {
@@ -443,7 +443,7 @@ namespace GeorgaMobileClient.ViewModel
     $lastName: String
     $properties: [ID]
   ) {
-    updateProfile(
+    updatePersonProfile(
       input: {
         firstName: $firstName
         lastName: $lastName
