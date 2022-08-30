@@ -8,7 +8,8 @@ namespace GeorgaMobileClient
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("project", typeof(ProjectPage));
+            Routing.RegisterRoute("operations", typeof(OperationsPage));
+            Routing.RegisterRoute("tasks", typeof(TasksPage));
         }
 
         private void OnLogoutClicked(object sender, EventArgs e)

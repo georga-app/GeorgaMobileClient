@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static SQLite.SQLite3;
+using System.Diagnostics;
 
 namespace GeorgaMobileClient.Service;
 
@@ -46,13 +47,17 @@ public partial class Data
             await _db.DeleteOperationAsync(oldOp);
         foreach (var operation in listOperations)
         {
-            await _db.SaveOperationAsync(new Operation()
+            var record = new Operation()
             {
                 Id = operation.node.id,
                 Name = operation.node.name,
                 ProjectId = operation.node.project.id,
                 Description = operation.node.description
-            });
+            };
+            Debug.WriteLine($"Operation record: Id={record.Id} Name={record.Name} ProjectId={record.ProjectId} Description={record.Description}");
+            int recordsWritten = await _db.SaveOperationAsync(record);
+            if (recordsWritten != 1)
+                Debug.WriteLine($"!!! Couldn't write operation record: Id={record.Id} Name={record.Name} ProjectId={record.ProjectId} Description={record.Description}");
         }
 
         return true;

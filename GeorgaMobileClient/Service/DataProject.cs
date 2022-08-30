@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static SQLite.SQLite3;
+using System.Diagnostics;
 
 namespace GeorgaMobileClient.Service;
 
@@ -43,13 +44,15 @@ public partial class Data
             await _db.DeleteProjectAsync(oldProj);
         foreach (var project in listProjects)
         {
-            await _db.SaveProjectAsync(new Project()
+            var record = new Project()
             {
                 Id = project.node.id,
                 OrganizationId = project.node.organization.id,
                 Name = project.node.name,
                 Description = project.node.description
-            });
+            };
+            Debug.WriteLine($"Project record: Id={record.Id} Name={record.Name} OrganizationId={record.OrganizationId} Description={record.Description}");
+            await _db.SaveProjectAsync(record);
         }
 
         return true;

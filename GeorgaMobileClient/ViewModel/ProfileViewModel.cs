@@ -123,7 +123,7 @@ namespace GeorgaMobileClient.ViewModel
 
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)       // TODO: fallback to offline cache, if other network errors occur
             {
-                await Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
+                await System.Threading.Tasks.Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
 
                 foreach (string personQualId in qualificationsOfThisPerson)         // set the Value member in 
                     foreach (var qual in Qualifications)                            // Qualifications to true

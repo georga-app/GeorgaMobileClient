@@ -7,18 +7,11 @@ namespace GeorgaMobileClient.ViewModel
 	public partial class ProjectsViewModel : DatabaseViewModel
     {
 		[ObservableProperty]
-		ObservableCollection<ProjectViewModel> projects;
-
-
-        [ObservableProperty]
-        private bool isManageSubscriptionsEnabled;
-        public ICommand ManageSubscriptionsCommand { protected set; get; }
+		ObservableCollection<ProjectDetailsViewModel> projects;
 
         public ProjectsViewModel()
 		{
-			Projects = new ObservableCollection<ProjectViewModel>();
-			ManageSubscriptionsCommand = new Command(ManageSubscriptions);
-			IsManageSubscriptionsEnabled = true;
+			Projects = new ObservableCollection<ProjectDetailsViewModel>();
         }
 
 		public async void Init()
@@ -27,30 +20,19 @@ namespace GeorgaMobileClient.ViewModel
             var projectsFromDb = await Db.GetProjectsAsync();
 			foreach (var project in projectsFromDb)
 			{
-				Projects.Add(new ProjectViewModel()
+				Projects.Add(new ProjectDetailsViewModel()
 				{
 					Id = project.Id,
 					OrganizationId = project.OrganizationId,
-					Name = project.Name
+					Name = project.Name,
+					Description = project.Description
 				});
             }
         }
 
-        public async void OpenProjectDetails(int itemIndex)
+        public async Task OpenOperations(int itemIndex)
 		{
-            //await NavigateAsync(projects[itemIndex]);
-            await Shell.Current.GoToAsync($"/project?Id={projects[itemIndex].Id}");
-        }
-
-        async void ManageSubscriptions()
-		{
-			if (!IsManageSubscriptionsEnabled) return;
-            IsManageSubscriptionsEnabled = false;
-
-			// await NavigateAsync ...
-			// await NavigateAsync(projects[0]);
-
-            IsManageSubscriptionsEnabled = true;
+            await Shell.Current.GoToAsync($"/operations?ProjectId={Uri.EscapeDataString(projects[itemIndex].Id)}");
         }
     }
 }

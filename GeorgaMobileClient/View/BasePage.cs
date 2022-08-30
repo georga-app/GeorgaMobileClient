@@ -9,7 +9,7 @@ namespace GeorgaMobileClient.View
     {
         public BasePage()
         {
-            NavigationPage.SetBackButtonTitle(this, "Back");
+            // NavigationPage.SetBackButtonTitle(this, "Back");
             if (Device.Idiom == TargetIdiom.Watch)
                 NavigationPage.SetHasNavigationBar(this, false);
         }

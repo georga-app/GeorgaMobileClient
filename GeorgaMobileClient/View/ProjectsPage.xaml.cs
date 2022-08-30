@@ -17,8 +17,7 @@ namespace GeorgaMobileClient.View
 
         public async void OnItemTapped(object o, ItemTappedEventArgs e)
         {
-			(BindingContext as ProjectsViewModel).OpenProjectDetails(e.ItemIndex);
-
+			await (BindingContext as ProjectsViewModel).OpenOperations(e.ItemIndex);
         }
     }
 }

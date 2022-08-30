@@ -13,11 +13,10 @@
             <ListView Margin="0,10,0,0" ItemsSource="{Binding Projects}" ItemTapped="OnItemTapped">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <ImageCell ImageSource="{Binding IconFromOrg}" Text="{Binding Name}" Detail="{Binding OrganizationName}" />
+                        <ImageCell ImageSource="{Binding IconFromOrg}" Text="{Binding Name}" Detail="{Binding Description}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Text="Manage Subscriptions" Command="{Binding ManageSubscriptionsCommand}" />
         </StackLayout>
     </ScrollView>
 

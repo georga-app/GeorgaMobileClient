@@ -44,6 +44,7 @@ public partial class Data
         AddProfile();
         AddOperation();
         AddOrganization();
+        AddTask();
 
         // build request
         var sb = new StringBuilder();
@@ -96,6 +97,7 @@ public partial class Data
         await SaveProfileToDb(response);
         await SaveOperationToDb(response);
         await SaveOrganizationToDb(response);
+        await SaveTaskToDb(response);
 
         return "";
     }

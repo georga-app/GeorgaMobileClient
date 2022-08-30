@@ -35,6 +35,7 @@ public partial class Database
         tableCreateResult = await _database.CreateTableAsync<PersonProperty>();
         tableCreateResult = await _database.CreateTableAsync<PersonPropertyGroup>();
         tableCreateResult = await _database.CreateTableAsync<Project>();
+        tableCreateResult = await _database.CreateTableAsync<GeorgaMobileDatabase.Model.Task>();
 
         return true;
     }

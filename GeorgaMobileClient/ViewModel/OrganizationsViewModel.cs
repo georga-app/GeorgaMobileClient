@@ -68,11 +68,11 @@ namespace GeorgaMobileClient.ViewModel
                 IsConfirmSubscriptionsVisible = visible;
         }
 
-        public async void OpenOrganizationDetails(int itemIndex)
+        /*public async void OpenOrganizationDetails(int itemIndex)
 		{
             //await NavigateAsync(organizations[itemIndex]);
             await Shell.Current.GoToAsync($"/organization?Id={organizations[itemIndex].Id}");
-        }
+        }*/
 
         async void ConfirmSubscriptions()
 		{

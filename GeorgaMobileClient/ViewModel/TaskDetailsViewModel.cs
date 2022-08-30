@@ -2,7 +2,7 @@
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public partial class OperationViewModel : ObservableObject
+    public partial class TaskDetailsViewModel : ObservableObject
     {
         [ObservableProperty]
         public string id;
