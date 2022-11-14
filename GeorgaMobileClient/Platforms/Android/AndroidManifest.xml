@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
 
 	<!--Android.Content.Res.Resources+NotFoundException: Message=Drawable com.companyname.Vaultage:mipmap/appicon_round with resource ID #0x7f0c0001-->
 	<!--application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application-->
