@@ -17,7 +17,7 @@ namespace GeorgaMobileClient.ViewModel
         [Required]
         [EmailAddress]
 		//[AlsoNotifyChangeFor(nameof(IsEmailEmpty))]
-		string email = "helper@georga.test";
+		string email = "helper.001@georga.test";
 
         [ObservableProperty]
 		bool isEmailEmpty;
