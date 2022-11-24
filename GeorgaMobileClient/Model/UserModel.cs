@@ -4,6 +4,7 @@
     {
         private string _email;
         private string _password;
+        private string _id;
         private string _token;
         private bool? _authenticated;
 
@@ -28,6 +29,12 @@
         {
             get => _password;
             set => SetProperty(ref _password, value);
+        }
+
+        public string Id
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
         public string Token

@@ -120,22 +120,25 @@ namespace GeorgaMobileClient.ViewModel
 
 				var jwtRequest = new GraphQLRequest
 				{
-					Query = @"
+					Query = """
 					mutation TokenAuth (
 						$email: String!
 						$password: String!
-					) {
+					)
+					{
 						personAuth: tokenAuth (
 						input: {
 							email: $email
 							password: $password
+						})
+						{
+							id
+							payload
+							token
+							refreshExpiresIn
 						}
-						) {
-						payload
-						token
-						refreshExpiresIn
-						}
-					}",
+					}
+					""",
 					Variables = new
 					{
 						email = Email,
@@ -143,7 +146,7 @@ namespace GeorgaMobileClient.ViewModel
 					}
 				};
 
-				string token = "";
+				string token = "", id = "";
 				dynamic jwtResponse = null;
 				try
 				{
@@ -157,15 +160,19 @@ namespace GeorgaMobileClient.ViewModel
 					_ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
 					App.Instance.User.Email = Email;
 					App.Instance.User.Password = Password;
-					App.Instance.User.Token = token;
+                    App.Instance.User.Id = id;
+                    App.Instance.User.Token = token;
 					App.Instance.User.Authenticated = true;
 
 					D.SetAuthToken();
                     Result = await D.CacheAll();
 #if DEBUG
 					if (Result == "")
-						await Shell.Current.GoToAsync("//projects");  // automatically go to page of concern for debugging purposes
-					else
+                        // automatically go to page of concern for debugging purposes
+                        // await Shell.Current.GoToAsync("//projects");
+						await Shell.Current.GoToAsync("//profile");
+
+                    else
 						; // DisplayAlert(Result);
 #endif
 				}
@@ -196,6 +203,7 @@ namespace GeorgaMobileClient.ViewModel
                 App.Instance.User.Email = Email;
                 App.Instance.User.Password = Password;
                 App.Instance.User.Token = "";			// offline mode
+                App.Instance.User.Id = "";
                 App.Instance.User.Authenticated = true;
             }
 		}

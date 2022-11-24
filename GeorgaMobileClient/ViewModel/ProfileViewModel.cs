@@ -121,6 +121,8 @@ namespace GeorgaMobileClient.ViewModel
 
             SetBusy(true);
 
+            // ToDo: not only refresh person options, but also basic profile data like email 
+
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)       // TODO: fallback to offline cache, if other network errors occur
             {
                 await System.Threading.Tasks.Task.WhenAll(GetPersonOptions(), GetProfileDataFromApi());    // do two queries at once
@@ -242,6 +244,7 @@ namespace GeorgaMobileClient.ViewModel
         async Task<bool> GetPersonOptions()
         {
             var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+            graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
 
             var qualificationsRequest = new GraphQLRequest
             {
@@ -514,7 +517,17 @@ namespace GeorgaMobileClient.ViewModel
                 {
                     try
                     {
-                        Result += $"\r\nField '{error.field}': ";
+                        if (error.Path != null)
+                        {
+                            Result += $"\r\nQuery error '{error.Path[0]}'";
+                            if (error.Locations != null)
+                                Result += $" (line {error.Locations[0].Line},column {error.Locations[0].Column})";
+                            Result += ": ";
+                        }
+                        else if (error.field != null)
+                            Result += $"\r\nField '{error.field}': ";
+                        else
+                            Result += $"\r\n";
                     }
                     catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException e)
                     {
