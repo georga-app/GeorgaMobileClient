@@ -13,7 +13,7 @@ public partial class MainPage : ContentPage
 		base.OnAppearing();
         //collectionView.ItemsSource = await App.Database.GetPeopleAsync();
         /*
-                var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+                var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
                 graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
                 var usernameRequest = new GraphQLRequest
                 {
@@ -48,7 +48,7 @@ public partial class MainPage : ContentPage
                   collectionView.ItemsSource = items;*/
     }
 
-	private void OnAuthenticate(object sender, EventArgs e)
+    private void OnAuthenticate(object sender, EventArgs e)
 	{
 		Navigation.PushModalAsync(new WebAuthenticatorPage());
 	}

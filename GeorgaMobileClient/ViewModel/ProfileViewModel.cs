@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using GeorgaMobileDatabase.Model;
+using Microsoft.Extensions.Configuration;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -87,8 +88,14 @@ namespace GeorgaMobileClient.ViewModel
 
         #region constructor
 
+        IConfiguration configuration;
+        NetworkSettings settings;
+
         public ProfileViewModel()
         {
+            configuration = MauiProgram.Services.GetService<IConfiguration>();
+            settings = configuration.GetRequiredSection("NetworkSettings").Get<NetworkSettings>();
+
             RefreshCommand = new Command(Refresh);
             EditCommand = new Command(Edit);
             BackCommand = new Command(Back);
@@ -243,7 +250,7 @@ namespace GeorgaMobileClient.ViewModel
 
         async Task<bool> GetPersonOptions()
         {
-            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
 
             var qualificationsRequest = new GraphQLRequest
@@ -347,7 +354,7 @@ namespace GeorgaMobileClient.ViewModel
 
         public async Task<bool> GetProfileDataFromApi()
         {
-            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
             var personRequest = new GraphQLRequest
             {
@@ -436,7 +443,7 @@ namespace GeorgaMobileClient.ViewModel
 
         public async Task<bool> SendProfileDataToApi()
         {
-            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
             var updatePersonRequest = new GraphQLRequest
             {

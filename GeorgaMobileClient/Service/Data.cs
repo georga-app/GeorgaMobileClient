@@ -3,6 +3,7 @@ using GraphQL;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,7 @@ public class DataTemplate
 
 public partial class Data
 {
-    const string _androidEndpoint = "http://10.0.2.2:80/graphql";
-    const string _otherPlatformsEndpoint = "http://localhost:80/graphql";
+    private IConfiguration configuration;
 
     Database _db = DependencyService.Get<Database>();
     List<DataTemplate> _templates;
@@ -32,9 +32,12 @@ public partial class Data
     public string Result;
 
     public Data()
-    {   
+    {
+        configuration = MauiProgram.Services.GetService<IConfiguration>();
+        var settings = configuration.GetRequiredSection("NetworkSettings").Get<NetworkSettings>();
+
         // init graphQL client
-        _graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? _androidEndpoint : _otherPlatformsEndpoint, new NewtonsoftJsonSerializer());
+        _graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
 
         // add all models
         _templates = new List<DataTemplate>();

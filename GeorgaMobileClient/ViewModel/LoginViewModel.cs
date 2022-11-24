@@ -8,6 +8,7 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Newtonsoft.Json.Linq;
 using GeorgaMobileDatabase;
+using Microsoft.Extensions.Configuration;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -81,9 +82,20 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
 		string result;
 
-		// --- events ---
+        IConfiguration configuration;
+        NetworkSettings settings;
 
-		public override void OnAppearing()
+        // --- construct ---
+
+        public LoginViewModel()
+		{
+            configuration = MauiProgram.Services.GetService<IConfiguration>();
+            settings = configuration.GetRequiredSection("NetworkSettings").Get<NetworkSettings>();
+        }
+
+        // --- events ---
+
+        public override void OnAppearing()
 		{
 			base.OnAppearing();
 			Db.Logout();        // if login page is showing, we consider this a logout
@@ -116,7 +128,7 @@ namespace GeorgaMobileClient.ViewModel
 
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
 			{
-				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
 
 				var jwtRequest = new GraphQLRequest
 				{
@@ -249,7 +261,7 @@ namespace GeorgaMobileClient.ViewModel
 				}
 				else
 				{
-					var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:80/graphql" : "http://localhost:80/graphql", new NewtonsoftJsonSerializer());
+					var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
 
 					var jwtRequest = new GraphQLRequest
 					{
