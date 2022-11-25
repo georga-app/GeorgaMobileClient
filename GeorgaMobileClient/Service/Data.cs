@@ -48,6 +48,7 @@ public partial class Data
         AddOperation();
         AddOrganization();
         AddTask();
+        AddShift();
 
         // build request
         var sb = new StringBuilder();
@@ -101,6 +102,7 @@ public partial class Data
         await SaveOperationToDb(response);
         await SaveOrganizationToDb(response);
         await SaveTaskToDb(response);
+        await SaveShiftToDb(response);
 
         return "";
     }

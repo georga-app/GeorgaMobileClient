@@ -134,7 +134,7 @@
                 <Label Text="Last name is not valid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsLastNameValid, Converter={StaticResource invertBoolConverter}}" />
                 <Label Text="Mobile phone number invalid" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsMobilePhoneValid, Converter={StaticResource invertBoolConverter}}" />
                 <Label Text="Passwords don't match" TextColor="Red" LineBreakMode="WordWrap" IsVisible="{Binding IsPasswordMatching, Converter={StaticResource invertBoolConverter}}" />
-                <Label Text="{Binding Result}" LineBreakMode="WordWrap" WidthRequest="200" />
+                <Label Text="{Binding Result}" LineBreakMode="WordWrap" WidthRequest="200" HeightRequest="50" />
             </StackLayout>
 
         </Grid>
