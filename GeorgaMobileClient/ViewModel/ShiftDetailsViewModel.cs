@@ -14,5 +14,7 @@ namespace GeorgaMobileClient.ViewModel
         public string enrollmentDeadline;
         [ObservableProperty]
         public string state;
+        [ObservableProperty]
+        public int helpersNeeded;
     }
 }

@@ -25,14 +25,29 @@ public partial class ShiftsViewModel : DatabaseViewModel
             var ops = opsShift.Result;
             if (ops == null) return;
             foreach (var op in ops)
-                Shifts.Add(new ShiftDetailsViewModel()
+            {
+                var shift = new ShiftDetailsViewModel()
                 {
                     Id = op.Id,
-                    StartTime = op.StartTime.ToString(),
-                    EnrollmentDeadline = op.EnrollmentDeadline.ToString(),
-                    EndTime = op.EndTime.ToString(),
+                    StartTime = DateOnly.FromDateTime(op.StartTime.DateTime).ToString() + "    " + TimeOnly.FromDateTime(op.StartTime.DateTime),
+                    EnrollmentDeadline = op.EnrollmentDeadline.DateTime.ToString(),
+                    EndTime = op.EndTime.DateTime.ToString(),
                     State = op.State
-                });
+                };
+                if (DateOnly.FromDateTime(op.StartTime.DateTime) == DateOnly.FromDateTime(op.EndTime.DateTime))  // only display time, if endtime is on same day as starttime
+                    shift.EndTime = TimeOnly.FromDateTime(op.EndTime.DateTime).ToString();
+
+                // compute helpers needed
+                var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRoleByShiftId(shift.Id));
+                var shiftRoles = shiftRolesTask.Result;
+                int helpersNeeded = 0;
+                foreach (var role in shiftRoles)
+                {
+                    helpersNeeded += role.Quantity;
+                }
+                shift.HelpersNeeded = helpersNeeded;
+                Shifts.Add(shift);
+            }
         }
     }
     [ObservableProperty]

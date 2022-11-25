@@ -24,7 +24,7 @@ public partial class Database
         return await _database.Table<Shift>().Where(x => x.Id == id).FirstOrDefaultAsync();
     }
 
-    public async System.Threading.Tasks.Task<List<Shift>> GetShiftByTaskId(string taskId)
+    public async Task<List<Shift>> GetShiftByTaskId(string taskId)
     {
         await Init();
 
