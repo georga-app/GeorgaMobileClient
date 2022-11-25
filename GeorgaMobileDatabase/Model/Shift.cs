@@ -10,7 +10,7 @@ public class Shift
     [Indexed]
     public string TaskId { get; set; }
     public DateTimeOffset StartTime { get; set; }
-    public DateTimeOffset EnrollmentDeadline { get; set; }
     public DateTimeOffset EndTime { get; set; }
+    public DateTimeOffset EnrollmentDeadline { get; set; }
     public string State { get; set; }
 }

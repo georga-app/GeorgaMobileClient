@@ -52,7 +52,9 @@ public partial class Data
                 Description = project.node.description
             };
             Debug.WriteLine($"Project record: Id={record.Id} Name={record.Name} OrganizationId={record.OrganizationId} Description={record.Description}");
-            await _db.SaveProjectAsync(record);
+            int recordsWritten = await _db.SaveProjectAsync(record);
+            if (recordsWritten != 1)
+                Debug.WriteLine($"!!! Couldn't write project record: Id={record.Id} Name={record.Name} Description={record.Description}");
         }
 
         return true;

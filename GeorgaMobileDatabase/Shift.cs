@@ -24,6 +24,13 @@ public partial class Database
         return await _database.Table<Shift>().Where(x => x.Id == id).FirstOrDefaultAsync();
     }
 
+    public async System.Threading.Tasks.Task<List<Shift>> GetShiftByTaskId(string taskId)
+    {
+        await Init();
+
+        return await _database.Table<Shift>().Where(x => x.TaskId == taskId).ToListAsync();
+    }
+
     public async Task<int> SaveShiftAsync(Shift shift)
     {
         await Init();

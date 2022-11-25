@@ -98,7 +98,7 @@ public partial class Data
             Debug.WriteLine($"Task record: Id={record.Id} Name={record.Name} OperationId={record.OperationId} Description={record.Description}");
             int recordsWritten = await _db.SaveTaskAsync(record);
             if (recordsWritten != 1)
-                Debug.WriteLine($"!!! Couldn't write operation record: Id={record.Id} Name={record.Name} OperationId={record.OperationId} Description={record.Description}");
+                Debug.WriteLine($"!!! Couldn't write task record: Id={record.Id} Name={record.Name} OperationId={record.OperationId} Description={record.Description}");
         }
 
         return true;

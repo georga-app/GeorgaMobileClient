@@ -42,8 +42,7 @@ public partial class OperationsViewModel : DatabaseViewModel
     ObservableCollection<OperationViewModel> operations;
 
     public async System.Threading.Tasks.Task OpenTasks(int itemIndex)
-    {
-        
+    {        
         await Shell.Current.GoToAsync($"/tasks?OperationId={Uri.EscapeDataString(Operations[itemIndex].Id)}");
     }
 }

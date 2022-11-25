@@ -2,9 +2,9 @@ using Microsoft.Maui.Controls.Xaml;
 
 namespace GeorgaMobileClient.View
 {
-	public partial class TasksPage : BasePage
+	public partial class ShiftsPage : BasePage
 	{
-		public TasksPage()
+		public ShiftsPage()
 		{
 			InitializeComponent();
 		}
@@ -16,7 +16,7 @@ namespace GeorgaMobileClient.View
 
         public async void OnItemTapped(object o, ItemTappedEventArgs e)
         {
-            await (BindingContext as TasksViewModel).OpenShifts(e.ItemIndex);
+            // XXXXXXXXXXXXawait (BindingContext as ProjectsViewModel).OpenRoleDetails(e.ItemIndex);
         }
     }
 }

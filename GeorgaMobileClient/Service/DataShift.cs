@@ -31,8 +31,8 @@ public partial class Data
                                 id
                             }
                             startTime
-                            enrollmentDeadline
                             endTime
+                            enrollmentDeadline
                             state
                         }      
                     }
@@ -55,14 +55,14 @@ public partial class Data
                 Id = shift.node.id,
                 TaskId = shift.node.task.id,
                 StartTime = shift.node.startTime,
-                EnrollmentDeadline = shift.node.enrollmentDeadline,
                 EndTime = shift.node.endTime,
+                EnrollmentDeadline = shift.node.enrollmentDeadline,
                 State = shift.node.state
             };
-            Debug.WriteLine($"Shift record: Id={record.Id}");
+            Debug.WriteLine($"Shift record: Id={record.Id} TaskId={record.TaskId} StartTime={record.StartTime} Id={record.EnrollmentDeadline} Id={record.EndTime}TaskId={record.State}");
             int recordsWritten = await _db.SaveShiftAsync(record);
             if (recordsWritten != 1)
-                Debug.WriteLine($"!!! Couldn't write operation record: Id={record.Id}");
+                Debug.WriteLine($"!!! Couldn't write shift record: Id={record.Id} TaskId={record.TaskId} StartTime={record.StartTime} Id={record.EnrollmentDeadline} Id={record.EndTime}TaskId={record.State}");
         }
 
         return true;

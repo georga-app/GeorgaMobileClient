@@ -181,8 +181,8 @@ namespace GeorgaMobileClient.ViewModel
 #if DEBUG
 					if (Result == "")
                         // automatically go to page of concern for debugging purposes
-                        // await Shell.Current.GoToAsync("//projects");
-						await Shell.Current.GoToAsync("//profile");
+                        await Shell.Current.GoToAsync("//projects");
+						// await Shell.Current.GoToAsync("//profile");
 
                     else
 						; // DisplayAlert(Result);

@@ -41,8 +41,8 @@ public partial class TasksViewModel : DatabaseViewModel
     [ObservableProperty]
     ObservableCollection<TaskDetailsViewModel> tasks;
 
-    public async System.Threading.Tasks.Task OpenRoles(int itemIndex)
+    public async System.Threading.Tasks.Task OpenShifts(int itemIndex)
     {
-        //await Shell.Current.GoToAsync($"/roles?Id={tasks[itemIndex].Id}");
+        await Shell.Current.GoToAsync($"/shifts?TaskId={Uri.EscapeDataString(tasks[itemIndex].Id)}"); 
     }
 }

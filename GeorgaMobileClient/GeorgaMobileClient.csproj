@@ -69,6 +69,9 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Resources.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="View\ShiftsPage.xaml.cs">
+	    <DependentUpon>ShiftsPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="View\TasksPage.xaml.cs">
 	    <DependentUpon>TasksPage.xaml</DependentUpon>
 	  </Compile>
@@ -108,6 +111,9 @@
 	</ItemGroup>
 		
 	<ItemGroup>
+	  <MauiXaml Update="View\ShiftsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\TasksPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

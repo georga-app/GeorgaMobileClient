@@ -1,0 +1,52 @@
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:GeorgaMobileClient.View"
+                xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
+                x:Class="GeorgaMobileClient.View.ShiftsPage"
+                Title="Shifts">
+    <views:BasePage.BindingContext>
+        <viewmodels:ShiftsViewModel />
+    </views:BasePage.BindingContext>
+
+    <ScrollView>
+        <Grid Style="{StaticResource ContentArea}" RowDefinitions="auto,*,auto" Padding="10">
+            <Label Grid.Row="0" Text="{Binding Name}" />
+            <ListView Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding Shifts}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" Margin="1">
+                                <Image Aspect="AspectFit" HeightRequest="32" WidthRequest="32">
+                                    <Image.Source>
+                                        <FontImageSource Glyph="&#xf073;" FontFamily="FASolid" Color="#000" Size="18" />
+                                    </Image.Source>
+                                </Image>
+                                <StackLayout Orientation="Vertical" Margin="0" VerticalOptions="Center">
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="{Binding StartTime}" FontSize="Micro" />
+                                        <Label Text=" - " FontSize="Micro" />
+                                        <Label Text="{Binding EndTime}" FontSize="Micro" />
+                                    </StackLayout>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="Enroll till " TextColor="Grey" FontSize="Micro" />
+                                        <Label Text="{Binding EnrollmentDeadline}" TextColor="Grey" FontSize="Micro" />
+                                        <Label Text=" --  status is " TextColor="Grey" FontSize="Micro" />
+                                        <Label Text="{Binding State}" TextColor="Grey" FontSize="Micro" />
+                                    </StackLayout>
+                                </StackLayout>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackLayout Grid.Row="2" Orientation="Horizontal">
+                <Button Text="Back" Clicked="OnBackClicked">
+                    <Button.ImageSource>
+                        <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                    </Button.ImageSource>
+                </Button>
+            </StackLayout>
+        </Grid>
+    </ScrollView>
+
+</views:BasePage>
