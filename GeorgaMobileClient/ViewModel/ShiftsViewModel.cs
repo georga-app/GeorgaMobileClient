@@ -21,6 +21,12 @@ public partial class ShiftsViewModel : DatabaseViewModel
         {
             SetProperty(ref taskId, value);
             Shifts = new ObservableCollection<ShiftDetailsViewModel>();
+            var thisMetatask = System.Threading.Tasks.Task.Run<GeorgaMobileDatabase.Model.Task>(async () => await Db.GetTaskById(taskId));
+            var thisTask = thisMetatask.Result;
+            if (thisTask != null)
+                Title = $"Shifts for {thisTask.Name}";
+            else
+                Title = "Shifts";
             var opsShift = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Shift>>(async () => await Db.GetShiftByTaskId(taskId));
             var ops = opsShift.Result;
             if (ops == null) return;

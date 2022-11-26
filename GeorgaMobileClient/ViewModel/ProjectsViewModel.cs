@@ -12,6 +12,7 @@ namespace GeorgaMobileClient.ViewModel
         public ProjectsViewModel()
 		{
 			Projects = new ObservableCollection<ProjectDetailsViewModel>();
+			Title = "Your Projects";
         }
 
 		public async void Init()

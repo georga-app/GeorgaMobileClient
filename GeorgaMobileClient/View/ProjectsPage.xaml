@@ -3,7 +3,7 @@
                 xmlns:views="clr-namespace:GeorgaMobileClient.View"
                 xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
                 x:Class="GeorgaMobileClient.View.ProjectsPage"
-                Title="Projects">
+                Title="{Binding Title}">
     <views:BasePage.BindingContext>
         <viewmodels:ProjectsViewModel />
     </views:BasePage.BindingContext>

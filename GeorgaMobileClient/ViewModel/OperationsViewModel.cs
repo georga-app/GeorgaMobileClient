@@ -19,6 +19,14 @@ public partial class OperationsViewModel : DatabaseViewModel
         {
             SetProperty(ref projectId, value);
             Operations = new ObservableCollection<OperationViewModel>();
+
+            var thisProjectTask = System.Threading.Tasks.Task.Run<GeorgaMobileDatabase.Model.Project>(async () => await Db.GetProjectById(projectId));
+            var thisProject = thisProjectTask.Result;
+            if (thisProject != null)
+                Title = $"Operations for {thisProject.Name}";
+            else
+                Title = "Operations";
+            
             var opsTask = System.Threading.Tasks.Task.Run<List<Operation>>(async () => await Db.GetOperationByProjectId(projectId));
             var ops = opsTask.Result;
             if (ops == null) return;

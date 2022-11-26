@@ -202,7 +202,7 @@ namespace GeorgaMobileClient.ViewModel
 					else
 					{
 						if (e is SQLite.SQLiteException)
-							Result = $"Devices database reports '{e.Message}' -- make sure you entered your password corretly.";
+							Result = $"Devices database reports '{e.Message}' -- make sure you entered your password correctly.";
 						else
 							Result = e.Message;
 					}
