@@ -50,6 +50,7 @@ public partial class Data
         AddTask();
         AddShift();
         AddRole();
+        AddParticipant();
 
         // build request
         var sb = new StringBuilder();
@@ -98,13 +99,22 @@ public partial class Data
         }
 
         // ___ save all models to the database ___
-        await SaveProjectToDb(response);
-        await SaveProfileToDb(response);
-        await SaveOperationToDb(response);
-        await SaveOrganizationToDb(response);
-        await SaveTaskToDb(response);
-        await SaveShiftToDb(response);
-        await SaveRoleToDb(response);
+        try
+        {
+            await SaveProjectToDb(response);
+            await SaveProfileToDb(response);
+            await SaveOperationToDb(response);
+            await SaveOrganizationToDb(response);
+            await SaveTaskToDb(response);
+            await SaveShiftToDb(response);
+            await SaveRoleToDb(response);
+            await SaveParticipantToDb(response);
+        }
+        catch (Exception e)
+        {
+            Result = e.Message;
+            return Result;
+        }
 
         return "";
     }

@@ -34,7 +34,7 @@ public partial class ShiftsViewModel : DatabaseViewModel
                     EndTime = op.EndTime.DateTime.ToString(),
                     State = op.State
                 };
-                if (DateOnly.FromDateTime(op.StartTime.DateTime) == DateOnly.FromDateTime(op.EndTime.DateTime))  // only display time, if endtime is on same day as starttime
+                if (DateOnly.FromDateTime(op.StartTime.DateTime) == DateOnly.FromDateTime(op.EndTime.DateTime))  // only display date, if endtime is not on same day as starttime
                     shift.EndTime = TimeOnly.FromDateTime(op.EndTime.DateTime).ToString();
 
                 // compute helpers needed

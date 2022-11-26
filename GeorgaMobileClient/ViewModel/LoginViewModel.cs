@@ -9,6 +9,7 @@ using GraphQL.Client.Serializer.Newtonsoft;
 using Newtonsoft.Json.Linq;
 using GeorgaMobileDatabase;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Channels;
 
 namespace GeorgaMobileClient.ViewModel
 {
@@ -178,14 +179,13 @@ namespace GeorgaMobileClient.ViewModel
 
 					D.SetAuthToken();
                     Result = await D.CacheAll();
+                    if (Result != "")
+                        await Application.Current.MainPage.DisplayAlert("Data Service Error", Result, "OK");
 #if DEBUG
-					if (Result == "")
-                        // automatically go to page of concern for debugging purposes
-                        await Shell.Current.GoToAsync("//projects");
-						// await Shell.Current.GoToAsync("//profile");
-
                     else
-						; // DisplayAlert(Result);
+                        // automatically go to page of interest for debugging purposes
+                        await Shell.Current.GoToAsync("//projects");
+						// await Shell.Current.GoToAsync("//profile");					
 #endif
 				}
 				catch (GraphQLHttpRequestException e)

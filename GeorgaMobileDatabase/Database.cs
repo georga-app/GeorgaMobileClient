@@ -38,6 +38,7 @@ public partial class Database
         tableCreateResult = await _database.CreateTableAsync<GeorgaMobileDatabase.Model.Task>();
         tableCreateResult = await _database.CreateTableAsync<Shift>();
         tableCreateResult = await _database.CreateTableAsync<Role>();
+        tableCreateResult = await _database.CreateTableAsync<Participant>();
 
         return true;
     }
