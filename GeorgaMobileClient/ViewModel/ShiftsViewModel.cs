@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Maui;
 using System.Collections.ObjectModel;
 using static SQLite.SQLite3;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 namespace GeorgaMobileClient.ViewModel;
 
@@ -67,18 +69,14 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 int participantsPending = 0;
                 int participantsDeclined = 0;
                 int helpersNeeded = 0;
-                foreach (var role in shiftRoles)
-                {
-                    helpersNeeded += role.Quantity;
-
-                    // compute helpers already acquired -- scrap that, done in role now on server
-                    // var shiftParticipantsTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Participant>>(async () => await Db.GetParticipantByRoleId(shift.Id));
-                    // var shiftParticipants = shiftParticipantsTask.Result;
-                    // foreach (var participant in shiftParticipants)
-                    // {
-                    //     participantsAcquired ++;
-                    // }
-                }
+                if (shiftRoles != null)
+                    foreach (var role in shiftRoles)
+                    {
+                        helpersNeeded += role.Quantity;
+                        participantsAccepted += role.ParticipantsAccepted;
+                        participantsPending += role.ParticipantsPending;
+                        participantsDeclined += role.ParticipantsDeclined;
+                    }
                 shift.HelpersNeeded = helpersNeeded;
                 shift.Participants = participantsAccepted.ToString() + "/" + participantsPending.ToString() + "/" + participantsDeclined.ToString();
 
@@ -95,17 +93,26 @@ public partial class ShiftsViewModel : DatabaseViewModel
     [ObservableProperty]
     ObservableCollection<ShiftDetailsViewModel> shifts;
 
+    string Result;
+    int currentItemIndex;
+
     public async System.Threading.Tasks.Task SelectItem(int itemIndex)
     {
+        currentItemIndex = itemIndex;
         if (Shifts[itemIndex].Glyph == itemGlyphPlus)
             Shifts[itemIndex].Glyph = itemGlyphMinus;
         else
             Shifts[itemIndex].Glyph = itemGlyphPlus;
+
+        var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRoleByShiftId(Shifts[itemIndex].Id));
+        var shiftRoles = shiftRolesTask.Result;
+        if (shiftRoles != null)
+            Participate(shiftRoles.FirstOrDefault().Id, App.Instance.User.Id, "ACCEPT");
     }
 
-    private async void SendToApi()
+    private async void Participate(string roleId, string personId, string acceptance)
     {
-/*        if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+        if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
         {
             var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
@@ -114,58 +121,45 @@ public partial class ShiftsViewModel : DatabaseViewModel
             {
                 Query = """
 					mutation CreateParticipant (
-						$person: String!
-						$role: String!
-					)
+						$roleId: ID!
+						$personId: ID!
+						$acceptance: String!
+					) 
 					{
-						personAuth: tokenAuth (
-						input: {
-							email: $email
-							password: $password
-						})
-						{
-							id
-							payload
-							token
-							refreshExpiresIn
-						}
+					  createParticipant (
+					    input: {
+					      role: $roleId
+					      person: $personId
+					      acceptance: $acceptance
+					      adminAcceptance: "PENDING"
+					    }
+					  ) {
+					    errors {
+					      field
+					      messages
+					    }
+					    participant {
+					      id
+					    }
+					  }
 					}
 					""",
                 Variables = new
                 {
-                    email = Email,
-                    password = Password
+                    roleId,
+                    personId,
+                    acceptance
                 }
             };
 
-            string token = "", id = "";
             dynamic jwtResponse = null;
             try
             {
                 jwtResponse = await graphQLClient.SendQueryAsync<dynamic>(jwtRequest);
                 if (QueryHasErrors(jwtResponse))
-                    return;
-
-                // login, if token has been aquired successfully
-                token = jwtResponse.Data.personAuth.token;
-
-                _ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
-                App.Instance.User.Email = Email;
-                App.Instance.User.Password = Password;
-                App.Instance.User.Id = id;
-                App.Instance.User.Token = token;
-                App.Instance.User.Authenticated = true;
-
-                D.SetAuthToken();
-                Result = await D.CacheAll();
-                if (Result != "")
-                    await Application.Current.MainPage.DisplayAlert("Data Service Error", Result, "OK");
-#if DEBUG
+                    await Application.Current.MainPage.DisplayAlert("Error while applying for shift", Result, "OK");
                 else
-                    // automatically go to page of interest for debugging purposes
-                    await Shell.Current.GoToAsync("//projects");
-                // await Shell.Current.GoToAsync("//profile");					
-#endif
+                    Shifts[currentItemIndex].Glyph = itemGlyphCheck;
             }
             catch (GraphQLHttpRequestException e)
             {
@@ -181,13 +175,60 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 else
                 {
                     if (e is SQLite.SQLiteException)
-                        Result = $"Devices database reports '{e.Message}' -- make sure you entered your password correctly.";
+                        Result = $"Devices database reports '{e.Message}'";
                     else
                         Result = e.Message;
                 }
                 return;
             }
         }
-*/
+    }
+
+    private bool QueryHasErrors(dynamic obj)
+    {
+        if (obj == null)
+        {
+            Result = "Application error (object is null)";  // this shouldn't happen
+            return true;
+        }
+        dynamic errors;
+        try
+        {
+            errors = obj.Errors;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        if (errors?.Length > 0)
+        {
+            Result = "";
+            foreach (dynamic error in errors)
+            {
+                try
+                {
+                    Result += $"\r\nField '{error.field}': ";
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException e)
+                {
+                    Result += $"\r\n";
+                }
+
+                try
+                {
+                    JArray messages = error.messages;
+                    foreach (var message in messages)
+                        Result += $"{message}\r\n";
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException e)
+                {
+                    Result += $"{error.Message}\r\n";
+                }
+            }
+            return true;
+        }
+        else
+            return false;
     }
 }

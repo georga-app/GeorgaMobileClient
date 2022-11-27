@@ -169,8 +169,9 @@ namespace GeorgaMobileClient.ViewModel
 
 					// login, if token has been aquired successfully
 					token = jwtResponse.Data.personAuth.token;
+                    id = jwtResponse.Data.personAuth.id;
 
-					_ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
+                    _ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
 					App.Instance.User.Email = Email;
 					App.Instance.User.Password = Password;
                     App.Instance.User.Id = id;
