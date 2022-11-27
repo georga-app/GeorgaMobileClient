@@ -15,4 +15,7 @@ public class Role
     public bool IsTemplate { get; set; }
     public bool NeedsAdminAcceptance { get; set; }
     public int Quantity { get; set; }
+    public int ParticipantsAccepted { get; set; }
+    public int ParticipantsPending { get; set; }
+    public int ParticipantsDeclined { get; set; }
 }

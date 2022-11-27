@@ -7,6 +7,8 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         public string id;
         [ObservableProperty]
+        public string glyph;
+        [ObservableProperty]
         public string startTime;
         [ObservableProperty]
         public string endTime;
@@ -16,5 +18,7 @@ namespace GeorgaMobileClient.ViewModel
         public string state;
         [ObservableProperty]
         public int helpersNeeded;
+        [ObservableProperty]
+        public string participants;
     }
 }

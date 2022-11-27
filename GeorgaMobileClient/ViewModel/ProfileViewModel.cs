@@ -255,30 +255,31 @@ namespace GeorgaMobileClient.ViewModel
 
             var qualificationsRequest = new GraphQLRequest
             {
-                Query = @"
-    query GetPersonOptions {
-    listPersonPropertyGroups {
-      edges {
-        node {
-          id
-          organization { id }
-          codename
-          name
-        }
-      }
-    }
-    listPersonProperties {
-      edges {
-        node {
-          id
-          name
-          group {
-            id
-          }
-        }
-      }
-    }
-  }"
+                Query = """
+                        query GetPersonOptions {
+                          listPersonPropertyGroups {
+                            edges {
+                              node {
+                                id
+                                organization { id }
+                                codename
+                                name
+                              }
+                            }
+                          }
+                          listPersonProperties {
+                            edges {
+                              node {
+                                id
+                                name
+                                group {
+                                  id
+                                }
+                              }
+                            }
+                          }
+                        }
+                        """
             };
 
 

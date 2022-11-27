@@ -36,6 +36,9 @@ public partial class Data
                             isTemplate
                             needsAdminAcceptance
                             quantity
+                            participantsAccepted
+                            participantsPending 
+                            participantsDeclined
                         }      
                     }
                 }
@@ -61,7 +64,10 @@ public partial class Data
                 IsActive = role.node.isActive,
                 IsTemplate = role.node.isTemplate,
                 NeedsAdminAcceptance = role.node.needsAdminAcceptance,
-                Quantity = role.node.quantity
+                Quantity = role.node.quantity,
+                ParticipantsAccepted = role.node.participantsAccepted,
+                ParticipantsPending = role.node.participantsPending,
+                ParticipantsDeclined = role.node.participantsDeclined
             };
             Debug.WriteLine($"Role record: Id={record.Id}");
             int recordsWritten = await _db.SaveRoleAsync(record);
