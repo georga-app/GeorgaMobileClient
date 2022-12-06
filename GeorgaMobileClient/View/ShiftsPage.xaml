@@ -8,6 +8,12 @@
         <viewmodels:ShiftsViewModel />
     </views:BasePage.BindingContext>
 
+    <views:BasePage.Resources>
+        <ResourceDictionary>
+            <views:IntToUsericonsConverter x:Key="intToUsericons" />
+        </ResourceDictionary>
+    </views:BasePage.Resources>
+    
     <Grid Style="{StaticResource ContentArea}" RowDefinitions="auto,*,auto" Padding="10">
         <Label Grid.Row="0" Text="{Binding Name}" />
         <ScrollView Grid.Row="1">
@@ -36,10 +42,11 @@
                                     <Label Text="{Binding EndTime}" FontSize="Small" FontAttributes="Bold" />
                                 </StackLayout>
                                 <StackLayout Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                                    <Label Text="Helpers needed: " FontSize="Micro" />
-                                    <Label Text="{Binding Participants}" FontSize="Micro" FontAttributes="Italic" />
-                                    <Label Text="/" FontSize="Micro" />
-                                    <Label Text="{Binding HelpersNeeded}" FontSize="Micro" FontAttributes="Italic" />
+                                    <Label Text="{Binding HelpersNeeded, Converter={StaticResource intToUsericons}}" FontSize="Micro" FontFamily="FASolid" TextColor="LightGrey" />
+                                    <Label Text="{Binding ParticipantsPending, Converter={StaticResource intToUsericons}}" FontSize="Micro" FontFamily="FASolid" TextColor="Yellow" />
+                                    <Label Text="{Binding ParticipantsAccepted, Converter={StaticResource intToUsericons}}" FontSize="Micro" FontFamily="FASolid" TextColor="Green" />
+                                    <Label Text="|" FontSize="Micro" />
+                                    <Label Text="{Binding ParticipantsDeclined, Converter={StaticResource intToUsericons}}" FontSize="Micro" FontFamily="FASolid" TextColor="Red" />
                                 </StackLayout>
                                 <StackLayout Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalOptions="End">
                                     <Label Text="Enroll till " TextColor="Grey" FontSize="Micro" />

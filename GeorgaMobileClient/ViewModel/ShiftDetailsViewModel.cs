@@ -5,20 +5,35 @@ namespace GeorgaMobileClient.ViewModel
     public partial class ShiftDetailsViewModel : ObservableObject
     {
         [ObservableProperty]
-        public string id;
+        private string id;
         [ObservableProperty]
-        public string glyph;
+        private string glyph;
         [ObservableProperty]
-        public string startTime;
+        private string startTime;
         [ObservableProperty]
-        public string endTime;
+        private string endTime;
         [ObservableProperty]
-        public string enrollmentDeadline;
+        private string enrollmentDeadline;
         [ObservableProperty]
-        public string state;
+        private string state;
         [ObservableProperty]
-        public int helpersNeeded;
+        [NotifyPropertyChangedFor(nameof(HelpersVacant))]
+        private int helpersNeeded;
+        public int HelpersVacant
+        {
+            get
+            {
+                int n = helpersNeeded - participantsAccepted;
+                if (n < 0) 
+                    n = 0;
+                return n;
+            }
+        }
         [ObservableProperty]
-        public string participants;
+        private int participantsAccepted;
+        [ObservableProperty]
+        private int participantsPending;
+        [ObservableProperty]
+        private int participantsDeclined;
     }
 }

@@ -78,7 +78,9 @@ public partial class ShiftsViewModel : DatabaseViewModel
                         participantsDeclined += role.ParticipantsDeclined;
                     }
                 shift.HelpersNeeded = helpersNeeded;
-                shift.Participants = participantsAccepted.ToString() + "/" + participantsPending.ToString() + "/" + participantsDeclined.ToString();
+                shift.ParticipantsAccepted = participantsAccepted;
+                shift.ParticipantsPending = participantsPending;
+                shift.ParticipantsDeclined = participantsDeclined;
 
                 Shifts.Add(shift);
             }
