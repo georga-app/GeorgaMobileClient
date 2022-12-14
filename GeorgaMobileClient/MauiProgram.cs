@@ -19,6 +19,7 @@ public static class MauiProgram
             {
                 fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular");
                 fonts.AddFont("FontAwesomeFreeSolid900.otf", "FASolid");
+                fonts.AddFont("FontAwesomeFreeRegular400.otf", "FARegular");
             });
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<SettingsPage>();

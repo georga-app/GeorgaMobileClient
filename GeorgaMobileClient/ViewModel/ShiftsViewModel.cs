@@ -59,11 +59,11 @@ public partial class ShiftsViewModel : DatabaseViewModel
                     EndTime = op.EndTime.DateTime.ToString(),
                     State = op.State
                 };
-                if (DateOnly.FromDateTime(op.StartTime.DateTime) == DateOnly.FromDateTime(op.EndTime.DateTime))  // only display date, if endtime is not on same day as starttime
+                if (DateOnly.FromDateTime(op.StartTime.DateTime) == DateOnly.FromDateTime(op.EndTime.DateTime))  // only display end date, if endtime is not on same day as starttime
                     shift.EndTime = TimeOnly.FromDateTime(op.EndTime.DateTime).ToString();
 
                 // compute helpers needed
-                var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRoleByShiftId(shift.Id));
+                var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRolesByShiftId(shift.Id));
                 var shiftRoles = shiftRolesTask.Result;
                 int participantsAccepted = 0;
                 int participantsPending = 0;
@@ -81,6 +81,24 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 shift.ParticipantsAccepted = participantsAccepted;
                 shift.ParticipantsPending = participantsPending;
                 shift.ParticipantsDeclined = participantsDeclined;
+
+                // get acceptance status of user via role and participant tables
+                foreach (var role in shiftRoles)
+                {
+                    var acceptanceTask = System.Threading.Tasks.Task.Run<String>(
+                        async () => await Db.GetAcceptanceByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
+                    );
+                    var acceptance = acceptanceTask.Result;
+                    if (shift.Glyph != itemGlyphCheck)  // rejected status for one rule can't be overruled by rejected status for another rule
+                    {
+                        if (acceptance == "ACCEPTED")
+                            shift.Glyph = itemGlyphCheck;
+                        else if (acceptance == "DECLINED")
+                            shift.Glyph = itemGlyphX;
+                        if (acceptance == "PENDING")
+                            shift.Glyph = itemGlyphPlus;
+                    }
+                }
 
                 Shifts.Add(shift);
             }
@@ -106,10 +124,10 @@ public partial class ShiftsViewModel : DatabaseViewModel
         else
             Shifts[itemIndex].Glyph = itemGlyphPlus;
 
-        var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRoleByShiftId(Shifts[itemIndex].Id));
+        var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRolesByShiftId(Shifts[itemIndex].Id));
         var shiftRoles = shiftRolesTask.Result;
         if (shiftRoles != null)
-            Participate(shiftRoles.FirstOrDefault().Id, App.Instance.User.Id, "ACCEPT");
+            Participate(shiftRoles.FirstOrDefault().Id, App.Instance.User.Id, "ACCEPTED");
     }
 
     private async void Participate(string roleId, string personId, string acceptance)

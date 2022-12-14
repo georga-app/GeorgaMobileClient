@@ -21,7 +21,7 @@ public partial class Database
         return await _database.Table<Role>().Where(x => x.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<List<Role>> GetRoleByShiftId(string shiftId)
+    public async Task<List<Role>> GetRolesByShiftId(string shiftId)
     {
         await Init();
 

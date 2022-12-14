@@ -38,6 +38,17 @@ public partial class Database
         return await _database.Table<Participant>().Where(x => x.RoleId == roleId).ToListAsync();
     }
 
+    public async Task<String> GetAcceptanceByPersonIdAndRoleId(string personId, string roleId)
+    {
+        await Init();
+
+        var participation = await _database.Table<Participant>().Where(x => x.PersonId == personId && x.RoleId == roleId).ToListAsync();
+        if (participation != null && participation.Count > 0)
+            return participation.FirstOrDefault().Acceptance;
+        else
+            return null;
+    }
+
     public async Task<int> SaveParticipantAsync(Participant participant)
     {
         await Init();
