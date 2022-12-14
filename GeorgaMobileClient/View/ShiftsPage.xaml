@@ -11,6 +11,7 @@
     <views:BasePage.Resources>
         <ResourceDictionary>
             <views:IntToUsericonsConverter x:Key="intToUsericons" />
+            <views:AcceptanceToGlyphConverter x:Key="acceptanceToGlyph" />
         </ResourceDictionary>
     </views:BasePage.Resources>
     
@@ -33,7 +34,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Image Grid.RowSpan="3" Aspect="AspectFill" HeightRequest="40" Margin="10" >
                                     <Image.Source>
-                                        <FontImageSource Glyph="{Binding Glyph}" FontFamily="FASolid" Color="#000" Size="40" />
+                                        <FontImageSource Glyph="{Binding Acceptance, Converter={StaticResource acceptanceToGlyph}}" FontFamily="FASolid" Color="#000" Size="40" />
                                     </Image.Source>
                                 </Image>
                                 <StackLayout Grid.Column="1" Orientation="Horizontal">

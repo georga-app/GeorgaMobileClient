@@ -15,13 +15,6 @@ namespace GeorgaMobileClient.ViewModel;
 [QueryProperty(nameof(TaskId), nameof(TaskId))]
 public partial class ShiftsViewModel : DatabaseViewModel
 {
-    const string itemGlyph = "\uf133";  // or f073 ?
-    const string itemGlyphCheck = "\uf274";
-    const string itemGlyphNeutral = "\uf133";
-    const string itemGlyphPlus = "\uf271";
-    const string itemGlyphMinus = "\uf272";
-    const string itemGlyphX = "\uf273";
-
     IConfiguration configuration;
     NetworkSettings settings;
 
@@ -53,7 +46,7 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 var shift = new ShiftDetailsViewModel()
                 {
                     Id = op.Id,
-                    Glyph = itemGlyph,
+                    Acceptance = "",
                     StartTime = DateOnly.FromDateTime(op.StartTime.DateTime).ToString() + "    " + TimeOnly.FromDateTime(op.StartTime.DateTime),
                     EnrollmentDeadline = op.EnrollmentDeadline.DateTime.ToString(),
                     EndTime = op.EndTime.DateTime.ToString(),
@@ -89,15 +82,14 @@ public partial class ShiftsViewModel : DatabaseViewModel
                         async () => await Db.GetAcceptanceByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
                     );
                     var acceptance = acceptanceTask.Result;
-                    if (shift.Glyph != itemGlyphCheck)  // rejected status for one rule can't be overruled by rejected status for another rule
+                    if (acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
                     {
-                        if (acceptance == "ACCEPTED")
-                            shift.Glyph = itemGlyphCheck;
-                        else if (acceptance == "DECLINED")
-                            shift.Glyph = itemGlyphX;
-                        if (acceptance == "PENDING")
-                            shift.Glyph = itemGlyphPlus;
+                        shift.Acceptance = acceptance;
+                        break;
                     }
+
+                    if (acceptance != "")
+                        shift.Acceptance = acceptance;  // TODO: clarify state priorities for multiple roles with different states
                 }
 
                 Shifts.Add(shift);
@@ -118,16 +110,29 @@ public partial class ShiftsViewModel : DatabaseViewModel
 
     public async System.Threading.Tasks.Task SelectItem(int itemIndex)
     {
-        currentItemIndex = itemIndex;
-        if (Shifts[itemIndex].Glyph == itemGlyphPlus)
-            Shifts[itemIndex].Glyph = itemGlyphMinus;
-        else
-            Shifts[itemIndex].Glyph = itemGlyphPlus;
-
-        var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRolesByShiftId(Shifts[itemIndex].Id));
+        var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(
+            async () => await Db.GetRolesByShiftId(Shifts[itemIndex].Id)
+        );
         var shiftRoles = shiftRolesTask.Result;
-        if (shiftRoles != null)
+        if (shiftRoles == null || shiftRoles.Count == 0)
+        {
+            await Application.Current.MainPage.DisplayAlert("Data Integrity Error", $"Couldn't find role record for this shift, so can't participate.", "OK");
+            return;
+        }
+
+        // set a transient state and trigger API call to change acceptance state on the server
+        currentItemIndex = itemIndex;
+        string acceptance = Shifts[itemIndex].Acceptance;
+        if (acceptance == "ACCEPTING" || acceptance == "ACCEPTED")
+        {
+            Shifts[itemIndex].Acceptance = "DECLINING";  // transient
+            Participate(shiftRoles.FirstOrDefault().Id, App.Instance.User.Id, "DECLINED");
+        }
+        else
+        {
+            Shifts[itemIndex].Acceptance = "ACCEPTING"; // transient
             Participate(shiftRoles.FirstOrDefault().Id, App.Instance.User.Id, "ACCEPTED");
+        }            
     }
 
     private async void Participate(string roleId, string personId, string acceptance)
@@ -179,7 +184,7 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 if (QueryHasErrors(jwtResponse))
                     await Application.Current.MainPage.DisplayAlert("Error while applying for shift", Result, "OK");
                 else
-                    Shifts[currentItemIndex].Glyph = itemGlyphCheck;
+                    Shifts[currentItemIndex].Acceptance = acceptance;
             }
             catch (GraphQLHttpRequestException e)
             {

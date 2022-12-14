@@ -7,7 +7,7 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         private string id;
         [ObservableProperty]
-        private string glyph;
+        private string acceptance;
         [ObservableProperty]
         private string startTime;
         [ObservableProperty]
