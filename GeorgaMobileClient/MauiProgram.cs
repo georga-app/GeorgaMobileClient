@@ -22,6 +22,7 @@ using CommunityToolkit.Maui;
 using GeorgaMobileClient.View;
 using GeorgaMobileClient.ViewModel;
 using System.Reflection;
+using VijayAnand.MauiToolkit.Core;
 
 namespace GeorgaMobileClient;
 

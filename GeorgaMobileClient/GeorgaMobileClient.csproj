@@ -6,7 +6,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0-maccatalyst;net7.0-android33.0;net7.0-ios</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows')) and '$(MSBuildRuntimeType)' == 'Full'">$(TargetFrameworks);net7.0-windows10.0.19041</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows')) and '$(MSBuildRuntimeType)' == 'Full'">$(TargetFrameworks);net7.0-windows10.0.22621.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
 		<OutputType>Exe</OutputType>
@@ -39,10 +39,6 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
-	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
-		<!-- Required - WinUI does not yet have buildTransitive for everything -->
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221109.1" />
-	</ItemGroup>	
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#FFFFFF" />
@@ -90,20 +86,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="3.0.0" />
-		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="2.0.0" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-		<PackageReference Include="GraphQL.Client" Version="5.1.0" />
-		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="5.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="6.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.3.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+		<PackageReference Include="GraphQL.Client" Version="6.0.1" />
+		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
-		<PackageReference Include="VijayAnand.MauiToolkit" Version="2.0.0" />
-		<PackageReference Include="VijayAnand.MauiToolkit.Core" Version="2.0.0" />
-		<PackageReference Include="SQLitePCLRaw.core" Version="2.1.2" />
-		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.2" />
-		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.2" />
-		<PackageReference Include="SQLitePCLRaw.provider.sqlite3" Version="2.1.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="VijayAnand.MauiToolkit" Version="2.1.1" />
+		<PackageReference Include="VijayAnand.MauiToolkit.Core" Version="2.1.1" />
+		<PackageReference Include="SQLitePCLRaw.core" Version="2.1.6" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.6" />
+		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.6" />
+		<PackageReference Include="SQLitePCLRaw.provider.sqlite3" Version="2.1.6" />
 	</ItemGroup>
 
 	<ItemGroup>
