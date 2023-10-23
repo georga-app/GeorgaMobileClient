@@ -28,6 +28,7 @@ using System.Collections.ObjectModel;
 using static SQLite.SQLite3;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using System.Data;
 
 namespace GeorgaMobileClient.ViewModel;
 
@@ -57,7 +58,7 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 Title = $"Shifts for {thisTask.Name}";
             else
                 Title = "Shifts";
-            var opsShift = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Shift>>(async () => await Db.GetShiftByTaskId(taskId));
+            var opsShift = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Shift>>(async () => await Db.GetShiftsByTaskId(taskId));
             var ops = opsShift.Result;
             if (ops == null) return;
             foreach (var op in ops)
@@ -97,18 +98,17 @@ public partial class ShiftsViewModel : DatabaseViewModel
                 // get acceptance status of user via role and participant tables
                 foreach (var role in shiftRoles)
                 {
-                    var acceptanceTask = System.Threading.Tasks.Task.Run<String>(
-                        async () => await Db.GetAcceptanceByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
-                    );
-                    var acceptance = acceptanceTask.Result;
-                    if (acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
+                    var acceptanceTask = System.Threading.Tasks.Task.Run<Participant>(
+                            async () => await Db.GetParticipantByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
+                        );
+                    var participant = acceptanceTask.Result;
+                    if (participant != null && participant.Acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
                     {
-                        shift.Acceptance = acceptance;
-                        break;
+                        shift.Acceptance = participant.Acceptance;
                     }
 
-                    if (acceptance != "")
-                        shift.Acceptance = acceptance;  // TODO: clarify state priorities for multiple roles with different states
+                    if (participant != null && participant.Acceptance != "")
+                        shift.Acceptance = participant.Acceptance;  // TODO: clarify state priorities for multiple roles with different states
                 }
 
                 Shifts.Add(shift);
@@ -129,6 +129,10 @@ public partial class ShiftsViewModel : DatabaseViewModel
 
     public async System.Threading.Tasks.Task SelectItem(int itemIndex)
     {
+        await Shell.Current.GoToAsync($"/roles?ShiftId={Uri.EscapeDataString(Shifts[itemIndex].Id)}");
+        return;
+
+
         var shiftRolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(
             async () => await Db.GetRolesByShiftId(Shifts[itemIndex].Id)
         );
@@ -158,13 +162,19 @@ public partial class ShiftsViewModel : DatabaseViewModel
     {
         if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
         {
+            var participantTask = System.Threading.Tasks.Task.Run<Participant>(
+                async () => await Db.GetParticipantByPersonIdAndRoleId(App.Instance.User.Id, roleId)
+            );
+            var participantInDb = participantTask.Result;
+
             var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
 
             var jwtRequest = new GraphQLRequest
             {
-                Query = """
-					mutation CreateParticipant (
+                Query = (participantInDb.Acceptance == null ? "mutation CreateParticipant " : "mutation UpdateParticipant ") +
+                    """
+					(
 						$roleId: ID!
 						$personId: ID!
 						$acceptance: String!

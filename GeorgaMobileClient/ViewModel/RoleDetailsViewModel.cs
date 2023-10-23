@@ -21,7 +21,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace GeorgaMobileClient.ViewModel
 {
-    public partial class ShiftDetailsViewModel : ObservableObject
+    public partial class RoleDetailsViewModel : ObservableObject
     {
         [ObservableProperty]
         private string id;
@@ -30,7 +30,15 @@ namespace GeorgaMobileClient.ViewModel
         [ObservableProperty]
         private string roleID;
         [ObservableProperty]
-        private string roleName;
+        private string name;
+        [ObservableProperty]
+        private string description;
+        [ObservableProperty]
+        private string isActive;
+        [ObservableProperty]
+        private string isTemplate;
+        [ObservableProperty]
+        private string needsAdminAcceptance;
         [ObservableProperty]
         private string startTime;
         [ObservableProperty]

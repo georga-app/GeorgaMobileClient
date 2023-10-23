@@ -1,4 +1,4 @@
-﻿/* GeoRGA Mobile Client -- a multi-platform mobile app for the
+/* GeoRGA Mobile Client -- a multi-platform mobile app for the
  * Geographic Resouce and Group Allocation project (https://georga.app/)
  * 
  * Copyright (C) 2023 Thomas Mielke D8AE2CE41CB1D1A61087165B95DC1917252AD305 
@@ -17,28 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using GeorgaMobileClient.View;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Xaml;
+using System.Globalization;
+using System.Text;
 
-namespace GeorgaMobileClient
+namespace GeorgaMobileClient.View
 {
-    public partial class AppShell : Shell
-    {
-        public AppShell()
-        {
-            InitializeComponent();
+    public partial class RolesPage : BasePage
+	{
+		public RolesPage()
+		{
+			InitializeComponent();
+		}
 
-            Routing.RegisterRoute("operations", typeof(OperationsPage));
-            Routing.RegisterRoute("tasks", typeof(TasksPage));
-            Routing.RegisterRoute("shifts", typeof(ShiftsPage));
-            Routing.RegisterRoute("roles", typeof(RolesPage));
+        async void OnBackClicked(object sender, EventArgs args)
+		{
+			await Navigation.PopAsync();
         }
 
-        private void OnLogoutClicked(object sender, EventArgs e)
+        public async void OnItemTapped(object o, ItemTappedEventArgs e)
         {
-            if (App.Instance is not null)
-            {
-                App.Instance.User.Authenticated = false;
-            }
+            await (BindingContext as RolesViewModel).SelectItem(e.ItemIndex);
         }
     }
 }
