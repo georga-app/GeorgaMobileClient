@@ -29,8 +29,8 @@ using static SQLite.SQLite3;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.VisualBasic.Devices;
+using System.Diagnostics;
+using GeorgaMobileDatabase;
 
 namespace GeorgaMobileClient.ViewModel;
 
@@ -96,12 +96,12 @@ public partial class RolesViewModel : DatabaseViewModel
                         async () => await Db.GetParticipantByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
                     );
                     var participant = acceptanceTask.Result;
-                    if (participant.Acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
+                    if (participant?.Acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
                     {
                         roleItem.Acceptance = participant.Acceptance;
                     }
 
-                    if (participant.Acceptance != "")
+                    if (participant != null && participant.Acceptance != "")
                         roleItem.Acceptance = participant.Acceptance;  // TODO: clarify state priorities for multiple roles with different states
 
                 Roles.Add(roleItem);
@@ -135,19 +135,20 @@ public partial class RolesViewModel : DatabaseViewModel
         // set a transient state and trigger API call to change acceptance state on the server
         currentItemIndex = itemIndex;
         string acceptance = Roles[itemIndex].Acceptance;
+        bool needsAdminAcceptance = Roles[itemIndex].NeedsAdminAcceptance != "";
         if (acceptance == "ACCEPTING" || acceptance == "ACCEPTED")
         {
             Roles[itemIndex].Acceptance = "DECLINING";  // transient
-            Participate(shiftRole.Id, App.Instance.User.Id, "DECLINED");
+            Participate(shiftRole.Id, App.Instance.User.Id, "DECLINED", needsAdminAcceptance);
         }
         else
         {
             Roles[itemIndex].Acceptance = "ACCEPTING"; // transient
-            Participate(shiftRole.Id, App.Instance.User.Id, "ACCEPTED");
+            Participate(shiftRole.Id, App.Instance.User.Id, "ACCEPTED", needsAdminAcceptance);
         }         
     }
 
-    private async void Participate(string roleId, string personId, string acceptance)
+    private async void Participate(string roleId, string personId, string acceptance, bool needsAdminAcceptance)
     {
         if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
         {
@@ -256,6 +257,30 @@ public partial class RolesViewModel : DatabaseViewModel
                 }
                 return;
             }
+
+            Database _db = DependencyService.Get<Database>();
+            int recordsWritten;
+            Participant record;
+            if (participantInDb == null)  // new record to write to local db?
+            {
+                record = new GeorgaMobileDatabase.Model.Participant()
+                {
+                    Id = (participantInDb == null ? jwtResponse.Data.createParticipant.participant.id : participantInDb.Id),
+                    PersonId = personId,
+                    RoleId = roleId,
+                    Acceptance = acceptance,
+                    AdminAcceptance = needsAdminAcceptance ? "PENDING" : "NONE"
+                };
+                recordsWritten = await _db.SaveParticipantAsync(record);
+            }
+            else  // just update existing record in local db
+            {
+                record = participantInDb;
+                participantInDb.Acceptance = acceptance;
+                recordsWritten = await _db.UpdateParticipantAsync(record);
+            }
+            if (recordsWritten != 1)
+                Debug.WriteLine($"!!! Couldn't write participant record: Id={record.Id} PersonId={record.PersonId} RoleId={record.RoleId} Acceptance={record.Acceptance} AdminAcceptance={record.AdminAcceptance}");
         }
     }
 
