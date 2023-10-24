@@ -18,6 +18,7 @@
             <Style x:Key="BaseStyle" TargetType="Element">
                 <Setter Property="Shell.BackgroundColor" Value="{StaticResource PrimaryColor}" />
                 <Setter Property="Shell.ForegroundColor" Value="{StaticResource PrimaryTextColor}" />
+                <Setter Property="Shell.ForegroundColor" Value="{OnPlatform WinUI={StaticResource PrimaryColor}, Default={x:Null}}" />
                 <Setter Property="Shell.TitleColor" Value="{StaticResource PrimaryTextColor}" />
                 <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
                 <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />

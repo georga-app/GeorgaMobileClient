@@ -142,7 +142,7 @@ public partial class RolesViewModel : DatabaseViewModel
             };
             if (DateOnly.FromDateTime(thisShift.StartTime.DateTime) == DateOnly.FromDateTime(thisShift.EndTime.DateTime))  // only display end date, if endtime is not on same day as starttime
                 roleItem.EndTime = TimeOnly.FromDateTime(thisShift.EndTime.DateTime).ToString();
-            if (Filter != null) roleItem.Name = $"{roleItem.StartTime} - {roleItem.EndTime}: {roleItem.Name}";
+            if (Filter != null) roleItem.Name = $"{roleItem.StartTime} - {roleItem.EndTime}    {roleItem.Name}";
             roleItem.HelpersNeeded = role.Quantity;
             roleItem.ParticipantsAccepted = role.ParticipantsAccepted;
             roleItem.ParticipantsPending = role.ParticipantsPending;
