@@ -25,20 +25,39 @@ using System.Text;
 namespace GeorgaMobileClient.View
 {
     public partial class RolesPage : BasePage
-	{
-		public RolesPage()
-		{
-			InitializeComponent();
-		}
+    {
+        public RolesPage()
+        {
+            InitializeComponent();
+        }
 
         async void OnBackClicked(object sender, EventArgs args)
-		{
-			await Navigation.PopAsync();
+        {
+            await Navigation.PopAsync();
         }
 
         public async void OnItemTapped(object o, ItemTappedEventArgs e)
         {
             await (BindingContext as RolesViewModel).SelectItem(e.ItemIndex);
+        }
+
+        protected override void OnNavigatedTo(NavigatedToEventArgs args)
+        {
+            // Hack: Get the category Id
+            (BindingContext as RolesViewModel).Filter = GetFilterFromRoute();
+
+            base.OnNavigatedTo(args);
+        }
+
+        private string GetFilterFromRoute()
+        {
+            // Hack: As the shell can't define query parameters
+            // in XAML, we have to parse the route. 
+            // as a convention the last route section defines the category.
+            // ugly but works for now :-(
+            var route = Shell.Current.CurrentState.Location
+                .OriginalString.Split("/").LastOrDefault();
+            return route;
         }
     }
 }

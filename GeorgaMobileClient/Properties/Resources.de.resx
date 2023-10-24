@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AllShifts" xml:space="preserve">
+    <value>Alle Schichten</value>
+  </data>
   <data name="Authenticate" xml:space="preserve">
     <value>Authentifizieren</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="MainPage" xml:space="preserve">
     <value>Hauptseite</value>
+  </data>
+  <data name="MyShifts" xml:space="preserve">
+    <value>Meine Schichten</value>
   </data>
   <data name="Organizations" xml:space="preserve">
     <value>Organisationen</value>

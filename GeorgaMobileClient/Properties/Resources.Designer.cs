@@ -61,6 +61,15 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die All Shifts ähnelt.
+        /// </summary>
+        public static string AllShifts {
+            get {
+                return ResourceManager.GetString("AllShifts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Authenticate ähnelt.
         /// </summary>
         public static string Authenticate {
@@ -147,6 +156,15 @@ namespace GeorgaMobileClient.Properties {
         public static string MainPage {
             get {
                 return ResourceManager.GetString("MainPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die My Shifts ähnelt.
+        /// </summary>
+        public static string MyShifts {
+            get {
+                return ResourceManager.GetString("MyShifts", resourceCulture);
             }
         }
         

@@ -35,6 +35,7 @@ using GeorgaMobileDatabase;
 namespace GeorgaMobileClient.ViewModel;
 
 [QueryProperty(nameof(ShiftId), nameof(ShiftId))]
+[QueryProperty(nameof(Filter), nameof(Filter))]
 public partial class RolesViewModel : DatabaseViewModel
 {
     IConfiguration configuration;
@@ -44,6 +45,38 @@ public partial class RolesViewModel : DatabaseViewModel
     {
         configuration = MauiProgram.Services.GetService<IConfiguration>();
         settings = configuration.GetRequiredSection("NetworkSettings").Get<NetworkSettings>();
+    }
+
+    private string filter;
+    public string Filter
+    {
+        get => filter;
+        set
+        {
+            SetProperty(ref filter, value);
+            Roles = new ObservableCollection<RoleDetailsViewModel>();
+            List<Role> roles = new List<Role>();
+            if (filter == "myshifts")
+            {
+                Title = "My Shifts";
+                var participantTask = System.Threading.Tasks.Task.Run<List<Participant>>(
+                    async () => await Db.GetParticipantByPersonId(App.Instance.User.Id)
+                );
+                var participants = participantTask.Result;
+                foreach (var participant in participants)
+                {
+                    var roleTask = System.Threading.Tasks.Task.Run<GeorgaMobileDatabase.Model.Role>(async () => await Db.GetRoleById(participant.RoleId));
+                    roles.Add(roleTask.Result);
+                }                
+            }
+            else // if (filter == "allshifts")
+            {
+                Title = "All Shifts";
+                var rolesTask = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRolesAsync());
+                roles = rolesTask.Result;
+            }
+            ShowRoles(roles);
+        }
     }
 
     private string shiftId;
@@ -70,42 +103,7 @@ public partial class RolesViewModel : DatabaseViewModel
                 Title = "Roles";
             var shiftRoles = System.Threading.Tasks.Task.Run<List<GeorgaMobileDatabase.Model.Role>>(async () => await Db.GetRolesByShiftId(shiftId));
             var roles = shiftRoles.Result;
-            if (roles == null) return;
-            foreach (var role in roles)
-            {
-                var roleItem = new RoleDetailsViewModel()
-                {
-                    Id = role.Id,
-                    Acceptance = "",
-                    Name = role.Name,
-                    Description = role.Description,
-                    IsActive = role.IsActive ? "" : " (inactive)",
-                    IsTemplate = role.IsTemplate ? "template" : "",
-                    NeedsAdminAcceptance = role.NeedsAdminAcceptance ? "needs admin acceptance" : "",
-                    StartTime = startTimeText,
-                    EnrollmentDeadline = thisShift.EnrollmentDeadline.DateTime.ToString(),
-                    EndTime = endTimeText,
-                    State = thisShift.State
-                };
-                roleItem.HelpersNeeded = role.Quantity;
-                roleItem.ParticipantsAccepted = role.ParticipantsAccepted;
-                roleItem.ParticipantsPending = role.ParticipantsPending;
-                roleItem.ParticipantsDeclined = role.ParticipantsDeclined;
-
-                var acceptanceTask = System.Threading.Tasks.Task.Run<Participant>(
-                        async () => await Db.GetParticipantByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
-                    );
-                    var participant = acceptanceTask.Result;
-                    if (participant?.Acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
-                    {
-                        roleItem.Acceptance = participant.Acceptance;
-                    }
-
-                    if (participant != null && participant.Acceptance != "")
-                        roleItem.Acceptance = participant.Acceptance;  // TODO: clarify state priorities for multiple roles with different states
-
-                Roles.Add(roleItem);
-            }
+            ShowRoles(roles);
         }
     }
 
@@ -119,6 +117,52 @@ public partial class RolesViewModel : DatabaseViewModel
 
     string Result;
     int currentItemIndex;
+
+    private void ShowRoles(List<GeorgaMobileDatabase.Model.Role> roles)
+    {
+        if (roles == null) return;
+        foreach (var role in roles)
+        {
+            var thisShiftTask = System.Threading.Tasks.Task.Run<GeorgaMobileDatabase.Model.Shift>(async () => await Db.GetShiftById(role.ShiftId));
+            var thisShift = thisShiftTask.Result;
+
+            var roleItem = new RoleDetailsViewModel()
+            {
+                Id = role.Id,
+                Acceptance = "",
+                Name = role.Name,
+                Description = role.Description,
+                IsActive = role.IsActive ? "" : " (inactive)",
+                IsTemplate = role.IsTemplate ? "template" : "",
+                NeedsAdminAcceptance = (role.NeedsAdminAcceptance ? "needs admin acceptance" : ""),
+                StartTime = DateOnly.FromDateTime(thisShift.StartTime.DateTime).ToString() + "    " + TimeOnly.FromDateTime(thisShift.StartTime.DateTime),
+                EnrollmentDeadline = thisShift.EnrollmentDeadline.DateTime.ToString(),
+                EndTime = thisShift.EndTime.DateTime.ToString(),
+                State = thisShift.State
+            };
+            if (DateOnly.FromDateTime(thisShift.StartTime.DateTime) == DateOnly.FromDateTime(thisShift.EndTime.DateTime))  // only display end date, if endtime is not on same day as starttime
+                roleItem.EndTime = TimeOnly.FromDateTime(thisShift.EndTime.DateTime).ToString();
+            if (Filter != null) roleItem.Name = $"{roleItem.StartTime} - {roleItem.EndTime}: {roleItem.Name}";
+            roleItem.HelpersNeeded = role.Quantity;
+            roleItem.ParticipantsAccepted = role.ParticipantsAccepted;
+            roleItem.ParticipantsPending = role.ParticipantsPending;
+            roleItem.ParticipantsDeclined = role.ParticipantsDeclined;
+
+            var acceptanceTask = System.Threading.Tasks.Task.Run<Participant>(
+                    async () => await Db.GetParticipantByPersonIdAndRoleId(App.Instance.User.Id, role.Id)
+                );
+            var participant = acceptanceTask.Result;
+            if (participant?.Acceptance == "ACCEPTED")  // rejected status for one rule can't be overruled by rejected status for another rule
+            {
+                roleItem.Acceptance = participant.Acceptance;
+            }
+
+            if (participant != null && participant.Acceptance != "")
+                roleItem.Acceptance = participant.Acceptance;  // TODO: clarify state priorities for multiple roles with different states
+
+            Roles.Add(roleItem);
+        }
+    }
 
     public async System.Threading.Tasks.Task SelectItem(int itemIndex)
     {
