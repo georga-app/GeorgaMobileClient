@@ -40,16 +40,20 @@ public partial class App : Application
 
         themeService = AppService.GetService<IThemeService>();
 
-        // Enable verbose OneSignal logging to debug issues if needed.
-        // OneSignal.Debug.LogLevel = LogLevel.VERBOSE;
+        // Push notification with OneSignal service
+        if (DeviceInfo.Current.Platform != DevicePlatform.WinUI)
+        {
+            // Enable verbose OneSignal logging to debug issues if needed.
+            // OneSignal.Debug.LogLevel = LogLevel.VERBOSE;
 
-        // OneSignal Initialization
-        OneSignal.Initialize("b36a32c7-be08-421f-a369-10abe7de8082");
+            // OneSignal Initialization
+            OneSignal.Initialize("b36a32c7-be08-421f-a369-10abe7de8082");
 
-        // RequestPermissionAsync will show the notification permission prompt.
-        // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
-        // (See step 5 on https://documentation.onesignal.com/docs/net-sdk-setup)
-        OneSignal.Notifications.RequestPermissionAsync(true);
+            // RequestPermissionAsync will show the notification permission prompt.
+            // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+            // (See step 5 on https://documentation.onesignal.com/docs/net-sdk-setup)
+            OneSignal.Notifications.RequestPermissionAsync(true);
+        }
 
         User = new UserModel();
         // Add logic to check whether the user is authenticated or not and then update this flag

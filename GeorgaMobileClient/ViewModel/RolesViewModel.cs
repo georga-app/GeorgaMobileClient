@@ -201,76 +201,41 @@ public partial class RolesViewModel : DatabaseViewModel
             );
             var participantInDb = participantTask.Result;
 
-            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
+            var isEmulator = DeviceInfo.DeviceType == DeviceType.Virtual;
+            var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? (isEmulator ? settings.AndroidEndpointEmulator : settings.AndroidEndpoint) : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
             graphQLClient.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JWT", App.Instance.User.Token);
 
-            GraphQLRequest jwtRequest;
-            if (participantInDb == null)
-                jwtRequest = new GraphQLRequest
-                {
-                    Query = """
-					mutation CreateParticipant (
-						$roleId: ID!
-						$personId: ID!
-						$acceptance: String!
-					) 
-					{
-					    createParticipant (
-					        input: {
-					            role: $roleId
-					            person: $personId
-					            acceptance: $acceptance
-					            adminAcceptance: "PENDING"
-					        }
-					    ) {
-					        errors {
-					            field
-					            messages
-					        }
-					        participant {
-					            id
-					        }
+            string mutationName = (acceptance == "ACCEPTED" ? "acceptRole" : "declineRole");
+            GraphQLRequest jwtRequest = new GraphQLRequest
+            {
+                Query = "mutation " + mutationName + " (" +
+                """
+					
+					$roleId: ID!
+				) 
+				{
+				""" + "    " + mutationName + " (" +				
+				"""
+
+					    input: {
+					        id: $roleId
+					    }
+					) {
+					    errors {
+					        field
+					        messages
+					    }
+					    participant {
+					        id
 					    }
 					}
-					""",
-                    Variables = new
-                    {
-                        roleId,
-                        personId,
-                        acceptance
-                    }
-                };
-            else
-                jwtRequest = new GraphQLRequest
+				}
+				""",
+                Variables = new
                 {
-                    Query = """
-					    mutation UpdateParticipant (
-					        $participantId: ID!
-					        $acceptance: String
-					    ) 
-					    {
-					        updateParticipant (
-					            input: {
-					                id: $participantId
-					                acceptance: $acceptance
-					            }
-					        ) {
-					            errors {
-					                field
-					                messages
-					            }
-					            participant {
-					                id
-					            }
-					        }
-					    }
-					    """,
-                    Variables = new
-                    {
-                        participantId = participantInDb.Id,
-                        acceptance
-                    }
-                };
+                    roleId
+                }
+            };
 
             dynamic jwtResponse = null;
             try
