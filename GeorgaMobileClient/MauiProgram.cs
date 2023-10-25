@@ -81,5 +81,6 @@ public static class MauiProgram
 public class NetworkSettings
 {
     public string AndroidEndpoint { get; set; }
+    public string AndroidEndpointEmulator { get; set; }    
     public string OtherPlatformsEndpoint { get; set; }
 }

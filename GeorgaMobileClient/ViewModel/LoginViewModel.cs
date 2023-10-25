@@ -148,7 +148,8 @@ namespace GeorgaMobileClient.ViewModel
 
             if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
 			{
-				var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? settings.AndroidEndpoint : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
+                var isEmulator = DeviceInfo.DeviceType == DeviceType.Virtual;
+                var graphQLClient = new GraphQLHttpClient(DeviceInfo.Platform == DevicePlatform.Android ? (isEmulator ? settings.AndroidEndpointEmulator : settings.AndroidEndpoint) : settings.OtherPlatformsEndpoint, new NewtonsoftJsonSerializer());
 
 				var jwtRequest = new GraphQLRequest
 				{

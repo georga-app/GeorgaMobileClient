@@ -17,6 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using OneSignalSDK.DotNet;
+using OneSignalSDK.DotNet.Core;
+using OneSignalSDK.DotNet.Core.Debug;
 namespace GeorgaMobileClient;
 using CommunityToolkit.Maui;
 using GeorgaMobileDatabase;
@@ -36,6 +39,17 @@ public partial class App : Application
         MainPage = new AppShell();
 
         themeService = AppService.GetService<IThemeService>();
+
+        // Enable verbose OneSignal logging to debug issues if needed.
+        // OneSignal.Debug.LogLevel = LogLevel.VERBOSE;
+
+        // OneSignal Initialization
+        OneSignal.Initialize("b36a32c7-be08-421f-a369-10abe7de8082");
+
+        // RequestPermissionAsync will show the notification permission prompt.
+        // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+        // (See step 5 on https://documentation.onesignal.com/docs/net-sdk-setup)
+        OneSignal.Notifications.RequestPermissionAsync(true);
 
         User = new UserModel();
         // Add logic to check whether the user is authenticated or not and then update this flag
