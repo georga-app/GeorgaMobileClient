@@ -25,7 +25,7 @@ using System.Collections.ObjectModel;
 namespace GeorgaMobileClient.ViewModel;
 
 [QueryProperty(nameof(OperationId), nameof(OperationId))]
-public partial class TasksViewModel : DatabaseViewModel
+public partial class TasksViewModel : ModeableViewModel
 {
     public TasksViewModel()
     {
@@ -68,6 +68,6 @@ public partial class TasksViewModel : DatabaseViewModel
 
     public async System.Threading.Tasks.Task OpenShifts(int itemIndex)
     {
-        await Shell.Current.GoToAsync($"/shifts?TaskId={Uri.EscapeDataString(tasks[itemIndex].Id)}"); 
+        await Shell.Current.GoToAsync($"/shifts?TaskId={Uri.EscapeDataString(tasks[itemIndex].Id)}&Mode={Mode}"); 
     }
 }

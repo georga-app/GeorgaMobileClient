@@ -1,12 +1,12 @@
-<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<views:ModeablePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                 xmlns:views="clr-namespace:GeorgaMobileClient.View"
                 xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
                 x:Class="GeorgaMobileClient.View.OperationsPage"
                 Title="{Binding Title}">
-    <views:BasePage.BindingContext>
+    <views:ModeablePage.BindingContext>
         <viewmodels:OperationsViewModel />
-    </views:BasePage.BindingContext>
+    </views:ModeablePage.BindingContext>
 
     <ScrollView>
         <Grid Style="{StaticResource ContentArea}" RowDefinitions="auto,*,auto" Padding="10">
@@ -40,4 +40,4 @@
         </Grid>
     </ScrollView>
 
-</views:BasePage>
+</views:ModeablePage>

@@ -23,7 +23,7 @@ using System.Windows.Input;
 
 namespace GeorgaMobileClient.ViewModel
 {
-	public partial class ProjectsViewModel : DatabaseViewModel
+	public partial class ProjectsViewModel : ModeableViewModel
     {
 		[ObservableProperty]
 		ObservableCollection<ProjectDetailsViewModel> projects;
@@ -52,7 +52,7 @@ namespace GeorgaMobileClient.ViewModel
 
         public async Task OpenOperations(int itemIndex)
 		{
-            await Shell.Current.GoToAsync($"/operations?ProjectId={Uri.EscapeDataString(projects[itemIndex].Id)}");
+            await Shell.Current.GoToAsync($"/operations?ProjectId={Uri.EscapeDataString(projects[itemIndex].Id)}&Mode={Mode}");
         }
     }
 }

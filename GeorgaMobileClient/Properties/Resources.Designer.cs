@@ -205,6 +205,24 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Manage Project ähnelt.
+        /// </summary>
+        public static string ProjectsManage {
+            get {
+                return ResourceManager.GetString("ProjectsManage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Volunteer via Project Hierarchy ähnelt.
+        /// </summary>
+        public static string ProjectsVolunteer {
+            get {
+                return ResourceManager.GetString("ProjectsVolunteer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Qualifications for ähnelt.
         /// </summary>
         public static string QualificationsFor {

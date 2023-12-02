@@ -36,7 +36,7 @@ namespace GeorgaMobileClient.ViewModel;
 
 [QueryProperty(nameof(ShiftId), nameof(ShiftId))]
 [QueryProperty(nameof(Filter), nameof(Filter))]
-public partial class RolesViewModel : DatabaseViewModel
+public partial class RolesViewModel : ModeableViewModel
 {
     IConfiguration configuration;
     NetworkSettings settings;

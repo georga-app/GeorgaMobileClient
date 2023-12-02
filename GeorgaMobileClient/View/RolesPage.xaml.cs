@@ -43,7 +43,7 @@ namespace GeorgaMobileClient.View
 
         protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
-            // Hack: Get the category Id
+            // Hack: Get the filter (all shifts vs. my shifts)
             (BindingContext as RolesViewModel).Filter = GetFilterFromRoute();
 
             base.OnNavigatedTo(args);

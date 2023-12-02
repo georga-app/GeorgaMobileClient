@@ -33,7 +33,7 @@ using System.Data;
 namespace GeorgaMobileClient.ViewModel;
 
 [QueryProperty(nameof(TaskId), nameof(TaskId))]
-public partial class ShiftsViewModel : DatabaseViewModel
+public partial class ShiftsViewModel : ModeableViewModel
 {
     IConfiguration configuration;
     NetworkSettings settings;
@@ -129,7 +129,7 @@ public partial class ShiftsViewModel : DatabaseViewModel
 
     public async System.Threading.Tasks.Task SelectItem(int itemIndex)
     {
-        await Shell.Current.GoToAsync($"/roles?ShiftId={Uri.EscapeDataString(Shifts[itemIndex].Id)}");
+        await Shell.Current.GoToAsync($"/roles?ShiftId={Uri.EscapeDataString(Shifts[itemIndex].Id)}&Mode={Mode}");
         return;
 
 

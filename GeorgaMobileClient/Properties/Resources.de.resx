@@ -165,6 +165,12 @@
   <data name="Projects" xml:space="preserve">
     <value>Projekte</value>
   </data>
+  <data name="ProjectsManage" xml:space="preserve">
+    <value>Projekte verwalten</value>
+  </data>
+  <data name="ProjectsVolunteer" xml:space="preserve">
+    <value>Freiwillig melden via Projekthierarchie</value>
+  </data>
   <data name="QualificationsFor" xml:space="preserve">
     <value>Qualifikationen für</value>
   </data>

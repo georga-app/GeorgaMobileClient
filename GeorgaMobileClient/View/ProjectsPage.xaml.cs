@@ -21,7 +21,7 @@ using Microsoft.Maui.Controls.Xaml;
 
 namespace GeorgaMobileClient.View
 {
-	public partial class ProjectsPage : BasePage
+	public partial class ProjectsPage : ModeablePage
 	{
 		public ProjectsPage()
 		{

@@ -28,7 +28,7 @@ namespace GeorgaMobileClient.ViewModel;
 /// List all operations associated with a certain project, supplied by query property.
 /// </summary>
 [QueryProperty(nameof(ProjectId), nameof(ProjectId))]
-public partial class OperationsViewModel : DatabaseViewModel
+public partial class OperationsViewModel : ModeableViewModel
 {
     private string projectId;
     public string ProjectId
@@ -70,6 +70,6 @@ public partial class OperationsViewModel : DatabaseViewModel
 
     public async System.Threading.Tasks.Task OpenTasks(int itemIndex)
     {        
-        await Shell.Current.GoToAsync($"/tasks?OperationId={Uri.EscapeDataString(Operations[itemIndex].Id)}");
+        await Shell.Current.GoToAsync($"/tasks?OperationId={Uri.EscapeDataString(Operations[itemIndex].Id)}&Mode={Mode}");
     }
 }

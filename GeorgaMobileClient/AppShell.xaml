@@ -107,8 +107,11 @@
     <FlyoutItem Title="{x:Static prop:Resources.Organizations}">
         <ShellContent ContentTemplate="{DataTemplate view:OrganizationsPage}" Route="organizations" />
     </FlyoutItem>
-    <FlyoutItem Title="{x:Static prop:Resources.Projects}">
-        <ShellContent ContentTemplate="{DataTemplate view:ProjectsPage}" Route="projects" />
+    <FlyoutItem Title="{x:Static prop:Resources.ProjectsVolunteer}">
+        <ShellContent ContentTemplate="{DataTemplate view:ProjectsPage}" Route="projectsvolunteer" />
+    </FlyoutItem>
+    <FlyoutItem Title="{x:Static prop:Resources.ProjectsManage}">
+        <ShellContent ContentTemplate="{DataTemplate view:ProjectsPage}" Route="projectsmanage" />
     </FlyoutItem>
     <FlyoutItem Title="{x:Static prop:Resources.MainPage}">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="main" />
