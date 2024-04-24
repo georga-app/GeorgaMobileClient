@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:GeorgaMobileClient.View"
+    xmlns:viewmodels="clr-namespace:GeorgaMobileClient.ViewModel"
+    xmlns:prop="clr-namespace:GeorgaMobileClient.Properties"
+    xmlns:behaviors="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui"
+    xmlns:converters="clr-namespace:CommunityToolkit.Maui.Converters;assembly=CommunityToolkit.Maui"
+    xmlns:ctviews="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"   
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
+    x:Class="GeorgaMobileClient.View.RoleDetailsPage"
+    Title="RoleDetailsPage">
+    
+    <views:BasePage.BindingContext>
+        <viewmodels:RoleDetailsViewModel x:Name="ViewModel" />
+    </views:BasePage.BindingContext>
+
+    <views:BasePage.Resources>
+
+        <Style x:Key="InvalidStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+
+        <ResourceDictionary>
+            <views:IntToStringConverter x:Key="intToStringConverter" />
+            <views:StringToIntConverter x:Key="stringToIntConverter" />
+            <converters:InvertedBoolConverter x:Key="invertBoolConverter" />
+            <converters:IsStringNotNullOrEmptyConverter x:Key="isStringNotNullOrEmptyConverter" />
+            <converters:IsStringNullOrEmptyConverter x:Key="isStringNullOrEmptyConverter" />
+        </ResourceDictionary>
+
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+        <Style x:Key="ValidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Black" />
+        </Style>
+
+    </views:BasePage.Resources>
+
+    <Grid Style="{StaticResource ContentArea}">
+        <StackLayout Grid.Row="2" Orientation="Vertical">
+            <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                <StackLayout Orientation="Vertical">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Margin="5" />
+                    <StackLayout Orientation="Vertical" IsVisible="{Binding IsBusy, Converter={StaticResource invertBoolConverter}}">
+                        <Label Text="{Binding Result}" TextColor="LightGrey" HorizontalOptions="CenterAndExpand" Margin="5" IsVisible="{Binding Result, Converter={StaticResource isStringNotNullOrEmptyConverter}}" />
+                        <TableView Intent="Form" x:Name="form" Margin="10, 0" IsVisible="{Binding Result, Converter={StaticResource isStringNullOrEmptyConverter}}" >
+                            <TableRoot Title="{x:Static prop:Resources.Profile}">
+                                <TableSection Title="{x:Static prop:Resources.PersonalData}">
+                                    <EntryCell Label="{x:Static prop:Resources.Name}" Text="{Binding Name}" IsEnabled="{Binding IsEditing}" />
+                                    <EntryCell Label="{x:Static prop:Resources.Description}" Text="{Binding Description}" IsEnabled="{Binding IsEditing}" />
+                                    <EntryCell Label="{x:Static prop:Resources.Quantity}" Text="{Binding Quantity}"  IsEnabled="{Binding IsEditing}"/>
+                                </TableSection>
+                                <!--TableSection Title="Playground Section">
+                                    <TextCell Text="Text Cell"
+                                      Detail="With Detail Text" />
+
+                                    <ImageCell Text = "Image Cell"
+                                       Detail = "With Detail Text">
+                                        <ImageCell.ImageSource>
+                                            <OnPlatform x:TypeArguments="ImageSource">
+                                                <On Platform="iOS" Value="dotnet_bot.svg" />
+                                                <On Platform="Android" Value="dotnet_bot.svg" />
+                                                <On Platform="UWP" Value="dotnet_bot.svg" />
+                                            </OnPlatform>
+                                        </ImageCell.ImageSource>
+                                    </ImageCell>
+
+                                    <SwitchCell Text="Switch Cell" />
+
+                                    <EntryCell Label="Entry Cell"
+                                       Placeholder = "Type text here" />
+
+                                    <ViewCell>
+                                        <Label Text="A View Cell can be anything you want!" />
+                                    </ViewCell>
+                                </TableSection-->
+                            </TableRoot>
+                        </TableView>
+                    </StackLayout>
+                </StackLayout>
+            </ScrollView>
+            <StackLayout Grid.Row="2" Orientation="Vertical">
+                <StackLayout Orientation="Horizontal" Margin="5" IsVisible="{Binding IsEditing}">
+                    <Button Text="Store" Command="{Binding StoreCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand">
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf0c7;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button Text="Cancel" Command="{Binding CancelCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                </StackLayout>
+                <StackLayout Grid.Row="2" Orientation="Horizontal" Margin="5" IsVisible="{Binding IsEditing, Converter={StaticResource invertBoolConverter}}">
+                    <Button Text="Refresh" Command="{Binding RefreshCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf021;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button Text="Edit" Command="{Binding EditCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf304;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button Text="Back" FontFamily="RobotoRegular"  Command="{Binding BackCommand}" Padding="10" Margin="5" HorizontalOptions="FillAndExpand" >
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="&#xf060;" FontFamily="FASolid" Color="#ffffff" Size="18" />
+                        </Button.ImageSource>
+                    </Button>
+                </StackLayout>
+            </StackLayout>
+        </StackLayout>
+    </Grid>
+
+</views:BasePage>

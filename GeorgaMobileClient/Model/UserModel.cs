@@ -25,6 +25,7 @@ namespace GeorgaMobileClient.Model
         private string _password;
         private string _id;
         private string _token;
+        private string _adminLevel;
         private bool? _authenticated;
 
         private readonly INavigationService? _navigationService;
@@ -34,6 +35,7 @@ namespace GeorgaMobileClient.Model
             _email = string.Empty;
             _password = string.Empty;
             _token = string.Empty;
+            _adminLevel = string.Empty;
             _authenticated = null;
             _navigationService = AppService.GetService<INavigationService>();
         }
@@ -60,6 +62,12 @@ namespace GeorgaMobileClient.Model
         {
             get => _token;
             set => SetProperty(ref _token, value);
+        }
+
+        public string AdminLevel
+        {
+            get => _adminLevel;
+            set => SetProperty(ref _adminLevel, value);
         }
 
         public bool? Authenticated

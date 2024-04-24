@@ -25,7 +25,6 @@ using GraphQL;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Maui;
 using System.Collections.ObjectModel;
-using static SQLite.SQLite3;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Data;
@@ -54,7 +53,7 @@ public partial class RolesViewModel : ModeableViewModel
         set
         {
             SetProperty(ref filter, value);
-            Roles = new ObservableCollection<RoleDetailsViewModel>();
+            Roles = new ObservableCollection<RoleItemViewModel>();
             List<Role> roles = new List<Role>();
             if (filter == "myshifts")
             {
@@ -86,7 +85,7 @@ public partial class RolesViewModel : ModeableViewModel
         set
         {
             SetProperty(ref shiftId, value);
-            Roles = new ObservableCollection<RoleDetailsViewModel>();
+            Roles = new ObservableCollection<RoleItemViewModel>();
             var thisShiftTask = System.Threading.Tasks.Task.Run<GeorgaMobileDatabase.Model.Shift>(async () => await Db.GetShiftById(shiftId));
             var thisShift = thisShiftTask.Result;
             string startTimeText = "this Shift";
@@ -113,7 +112,7 @@ public partial class RolesViewModel : ModeableViewModel
     string description;
 
     [ObservableProperty]
-    ObservableCollection<RoleDetailsViewModel> roles;
+    ObservableCollection<RoleItemViewModel> roles;
 
     string Result;
     int currentItemIndex;
@@ -126,24 +125,24 @@ public partial class RolesViewModel : ModeableViewModel
             var thisShiftTask = System.Threading.Tasks.Task.Run<GeorgaMobileDatabase.Model.Shift>(async () => await Db.GetShiftById(role.ShiftId));
             var thisShift = thisShiftTask.Result;
 
-            var roleItem = new RoleDetailsViewModel()
+            var roleItem = new RoleItemViewModel()
             {
                 Id = role.Id,
                 Acceptance = "",
                 Name = role.Name,
                 Description = role.Description,
-                IsActive = role.IsActive ? "" : " (inactive)",
-                IsTemplate = role.IsTemplate ? "template" : "",
+                IsActive = role.IsActive,  // ? "" : " (inactive)",
+                IsTemplate = role.IsTemplate,  // ? "template" : "",
                 NeedsAdminAcceptance = (role.NeedsAdminAcceptance ? "needs admin acceptance" : ""),
-                StartTime = DateOnly.FromDateTime(thisShift.StartTime.DateTime).ToString() + "    " + TimeOnly.FromDateTime(thisShift.StartTime.DateTime),
-                EnrollmentDeadline = thisShift.EnrollmentDeadline.DateTime.ToString(),
-                EndTime = thisShift.EndTime.DateTime.ToString(),
-                State = thisShift.State
+                StartTime = (thisShift == null) ? "" : DateOnly.FromDateTime(thisShift.StartTime.DateTime).ToString() + "    " + TimeOnly.FromDateTime(thisShift.StartTime.DateTime),
+                EnrollmentDeadline = thisShift?.EnrollmentDeadline.DateTime.ToString(),
+                EndTime = thisShift?.EndTime.DateTime.ToString(),
+                State = thisShift?.State
             };
-            if (DateOnly.FromDateTime(thisShift.StartTime.DateTime) == DateOnly.FromDateTime(thisShift.EndTime.DateTime))  // only display end date, if endtime is not on same day as starttime
+            if (thisShift != null && DateOnly.FromDateTime(thisShift.StartTime.DateTime) == DateOnly.FromDateTime(thisShift.EndTime.DateTime))  // only display end date, if endtime is not on same day as starttime
                 roleItem.EndTime = TimeOnly.FromDateTime(thisShift.EndTime.DateTime).ToString();
             if (Filter != null) roleItem.Name = $"{roleItem.StartTime} - {roleItem.EndTime}    {roleItem.Name}";
-            roleItem.HelpersNeeded = role.Quantity;
+            roleItem.Quantity = role.Quantity;
             roleItem.ParticipantsAccepted = role.ParticipantsAccepted;
             roleItem.ParticipantsPending = role.ParticipantsPending;
             roleItem.ParticipantsDeclined = role.ParticipantsDeclined;
@@ -162,6 +161,11 @@ public partial class RolesViewModel : ModeableViewModel
 
             Roles.Add(roleItem);
         }
+    }
+
+    public async System.Threading.Tasks.Task EditItem(RoleItemViewModel roleVM)
+    {
+        await Shell.Current.GoToAsync($"/roledetails?RoleId={Uri.EscapeDataString(roleVM.Id)}&Mode=Edit");
     }
 
     public async System.Threading.Tasks.Task SelectItem(int itemIndex)

@@ -32,8 +32,10 @@ namespace GeorgaMobileClient
             Routing.RegisterRoute("tasks", typeof(TasksPage));
             Routing.RegisterRoute("shifts", typeof(ShiftsPage));
             Routing.RegisterRoute("roles", typeof(RolesPage));
+            Routing.RegisterRoute("roledetails", typeof(RoleDetailsPage));
             // Routing.RegisterRoute("myshifts", typeof(RolesPage));   // virtual routes to pass filter value because shell
             // Routing.RegisterRoute("allshifts", typeof(RolesPage));  // can't have url parameters in xaml (see RolesPage)
+            Routing.RegisterRoute("web", typeof(WebPage));
         }
 
         private void OnLogoutClicked(object sender, EventArgs e)

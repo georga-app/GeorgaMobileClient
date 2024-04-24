@@ -1,4 +1,4 @@
-/* GeoRGA Mobile Client -- a multi-platform mobile app for the
+﻿/* GeoRGA Mobile Client -- a multi-platform mobile app for the
  * Geographic Resouce and Group Allocation project (https://georga.app/)
  * 
  * Copyright (C) 2023 Thomas Mielke D8AE2CE41CB1D1A61087165B95DC1917252AD305 
@@ -17,58 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-using System.Globalization;
-using System.Text;
+using System;
+using System.Threading.Tasks;
+using GeorgaMobileClient.ViewModel;
+using Microsoft.Maui;
 
 namespace GeorgaMobileClient.View
 {
-    public partial class RolesPage : BasePage
+    /// <summary>
+    /// Base class for a view that can be operated in 'volunteer'/'enroll' mode or otherwise in 'manage'/'admin' mode
+    /// </summary>
+    public class ModeablePage : BasePage
     {
-        public RolesPage()
-        {
-            InitializeComponent();
-        }
-
-        async void OnBackClicked(object sender, EventArgs args)
-        {
-            await Navigation.PopAsync();
-        }
-
-        public async void OnItemTapped(object o, ItemTappedEventArgs e)
-        {
-            await (BindingContext as RolesViewModel).SelectItem(e.ItemIndex);
-        }
-
-        public async void OnEditSwipeItemInvoked(object sender, EventArgs e)
-        {
-            var item = sender as SwipeItem;
-            if (item == null)
-                return;
-
-            var role = item.BindingContext as RoleDetailsViewModel;
-            if (role == null)
-                return;
-
-
-            await (BindingContext as RolesViewModel).EditItem(role);
-        }
-
-        public async void OnDeleteSwipeItemInvoked(object o, EventArgs e)
-        {
-            await DisplayAlert("Role", "Deleted", "OK");
-        }
-
         protected override void OnNavigatedTo(NavigatedToEventArgs args)
         {
-            // Hack: Get the filter (all shifts vs. my shifts)
-            (BindingContext as RolesViewModel).Filter = GetFilterFromRoute();
+            // Hack: Get the category Id
+            GetModeFromRoute();
 
             base.OnNavigatedTo(args);
         }
 
-        private string GetFilterFromRoute()
+        private void GetModeFromRoute()
         {
             // Hack: As the shell can't define query parameters
             // in XAML, we have to parse the route. 
@@ -76,7 +45,9 @@ namespace GeorgaMobileClient.View
             // ugly but works for now :-(
             var route = Shell.Current.CurrentState.Location
                 .OriginalString.Split("/").LastOrDefault();
-            return route;
+            string keyword = "projects";
+            if (route.Substring(0, keyword.Length) == keyword)      // only extract mode from "projects" page, otherwise let the QueryProperty attribute do the job
+                (BindingContext as ModeableViewModel).Mode = route.Substring(keyword.Length);        // get the part after "projects": either "manage" or "volunteer" and set it as query param
         }
     }
 }

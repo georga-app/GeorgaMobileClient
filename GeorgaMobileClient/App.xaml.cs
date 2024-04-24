@@ -55,6 +55,45 @@ public partial class App : Application
             OneSignal.Notifications.RequestPermissionAsync(true);
         }
 
+
+
+
+
+
+
+
+
+/*
+
+        OneSignal.User..IdsAvailable(new Com.OneSignal.Abstractions.IdsAvailableCallback((playerID, pushToken) =>
+        {
+            var oneSignalAddId = new UserApi.OneSignalAddIdAction();
+
+            oneSignalAddId.player_id = playerID;
+            Logger.WriteLine($"OneSignal playerID: {playerID}");
+#if __ANDROID__
+            oneSignalAddId.plattform = "android";
+#else
+#if __IOS__
+                oneSignalAddId.plattform = "ios";
+#else
+                    oneSignalAddId.plattform = "exotic";
+#endif
+#endif
+            oneSignalAddId.UploadStringCompleted += new UploadStringCompletedEventHandler(OnOneSignalAddIdCompleted);
+            if (!oneSignalAddId.Post(userApiSessionId))
+                Logger.WriteLine("User API: OneSignalAddId.Post() returned false.");
+        }));
+
+        */
+
+
+
+
+
+
+
+
         User = new UserModel();
         // Add logic to check whether the user is authenticated or not and then update this flag
         User.Authenticated = false;

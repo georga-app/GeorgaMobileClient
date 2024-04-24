@@ -38,7 +38,7 @@ namespace GeorgaMobileClient.ViewModel
         [Required]
         [EmailAddress]
 		//[AlsoNotifyChangeFor(nameof(IsEmailEmpty))]
-		string email = "helper.001@georga.test";
+		string email = "organization@georga.test";
 
         [ObservableProperty]
 		bool isEmailEmpty;
@@ -168,6 +168,7 @@ namespace GeorgaMobileClient.ViewModel
 							id
 							payload
 							token
+							adminLevel
 							refreshExpiresIn
 						}
 					}
@@ -179,7 +180,7 @@ namespace GeorgaMobileClient.ViewModel
 					}
 				};
 
-				string token = "", id = "";
+				string token = "", id = "", adminLevel = "";
 				dynamic jwtResponse = null;
 				try
 				{
@@ -190,13 +191,16 @@ namespace GeorgaMobileClient.ViewModel
 					// login, if token has been aquired successfully
 					token = jwtResponse.Data.personAuth.token;
                     id = jwtResponse.Data.personAuth.id;
+                    adminLevel = jwtResponse.Data.personAuth.adminLevel;
 
                     _ = await Db.Login(ComputeSha256Hash(Email.ToLower()), Password);
 					App.Instance.User.Email = Email;
 					App.Instance.User.Password = Password;
                     App.Instance.User.Id = id;
                     App.Instance.User.Token = token;
-					App.Instance.User.Authenticated = true;
+                    App.Instance.User.AdminLevel = adminLevel;
+
+                    App.Instance.User.Authenticated = true;
 
 					D.SetAuthToken();
                     Result = await D.CacheAll();
@@ -205,11 +209,13 @@ namespace GeorgaMobileClient.ViewModel
 #if DEBUG
                     else
                         // automatically go to page of interest for debugging purposes
-                        await Shell.Current.GoToAsync("//projects");
-						// await Shell.Current.GoToAsync("//profile");					
+                        // await Shell.Current.GoToAsync("roledetails?RoleId=Um9sZVR5cGU6MDAwMDAwMTItMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMTAw&mode=Edit");
+                        // await Shell.Current.GoToAsync("//projectsmanage");
+                        // await Shell.Current.GoToAsync("//profile");
+                        await Shell.Current.GoToAsync("//web");
 #endif
-				}
-				catch (GraphQLHttpRequestException e)
+                }
+                catch (GraphQLHttpRequestException e)
 				{
 					Result = e.Content;
 					return;

@@ -53,6 +53,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<OrganizationsPage>();
         builder.Services.AddSingleton<TasksViewModel>();
         builder.Services.AddSingleton<TasksPage>();
+        builder.Services.AddSingleton<WebPage>();
 
         //var MyConfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         //var IntExample = MyConfig.GetValue<int>("AppSettings:SampleIntValue");

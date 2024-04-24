@@ -113,6 +113,9 @@
     <FlyoutItem Title="{x:Static prop:Resources.ProjectsManage}">
         <ShellContent ContentTemplate="{DataTemplate view:ProjectsPage}" Route="projectsmanage" />
     </FlyoutItem>
+    <FlyoutItem Title="{x:Static prop:Resources.AdminInterface}">
+        <ShellContent ContentTemplate="{DataTemplate view:WebPage}" Route="web" />
+    </FlyoutItem>
     <FlyoutItem Title="{x:Static prop:Resources.MainPage}">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" Route="main" />
     </FlyoutItem>

@@ -61,6 +61,15 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Admin Interface ähnelt.
+        /// </summary>
+        public static string AdminInterface {
+            get {
+                return ResourceManager.GetString("AdminInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die All Shifts ähnelt.
         /// </summary>
         public static string AllShifts {
@@ -102,6 +111,15 @@ namespace GeorgaMobileClient.Properties {
         public static string ConfirmChangesToSubscriptions {
             get {
                 return ResourceManager.GetString("ConfirmChangesToSubscriptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Description ähnelt.
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
@@ -169,6 +187,15 @@ namespace GeorgaMobileClient.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Name ähnelt.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Organizations ähnelt.
         /// </summary>
         public static string Organizations {
@@ -228,6 +255,15 @@ namespace GeorgaMobileClient.Properties {
         public static string QualificationsFor {
             get {
                 return ResourceManager.GetString("QualificationsFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Persons required ähnelt.
+        /// </summary>
+        public static string Quantity {
+            get {
+                return ResourceManager.GetString("Quantity", resourceCulture);
             }
         }
         

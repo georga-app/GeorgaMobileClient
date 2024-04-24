@@ -131,7 +131,7 @@ public partial class Data
         }
         catch (Exception e)
         {
-            Result = e.Message;
+            Result = e.Message + "\r\n\r\n" + e.StackTrace;
             return Result;
         }
 

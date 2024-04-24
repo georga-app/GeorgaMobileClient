@@ -1,4 +1,4 @@
-/* GeoRGA Mobile Client -- a multi-platform mobile app for the
+﻿/* GeoRGA Mobile Client -- a multi-platform mobile app for the
  * Geographic Resouce and Group Allocation project (https://georga.app/)
  * 
  * Copyright (C) 2023 Thomas Mielke D8AE2CE41CB1D1A61087165B95DC1917252AD305 
@@ -17,26 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using SQLite;
 using System;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using GeorgaMobileDatabase;
+using GeorgaMobileClient.Service;
+using GeorgaMobileDatabase.Model;
+using System.Collections.ObjectModel;
 
-namespace GeorgaMobileDatabase.Model;
-
-public class Role
+/// <summary>
+/// Base class for a view model that can be operated in 'volunteer'/'enroll' mode or otherwise in 'manage'/'admin' mode
+/// </summary>
+namespace GeorgaMobileClient.ViewModel
 {
-    [PrimaryKey]
-    public string Id { get; set; }
-    [Indexed]
-    public string? ShiftId { get; set; }
-    [Indexed]
-    public string TaskId { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public bool IsActive { get; set; }
-    public bool IsTemplate { get; set; }
-    public bool NeedsAdminAcceptance { get; set; }
-    public int Quantity { get; set; }
-    public int ParticipantsAccepted { get; set; }
-    public int ParticipantsPending { get; set; }
-    public int ParticipantsDeclined { get; set; }
+    [QueryProperty(nameof(Mode), nameof(Mode))]
+    public class ModeableViewModel : DatabaseViewModel
+    {
+
+        private string mode;
+        public string Mode
+        {
+            get => mode;
+            set
+            {
+                SetProperty(ref mode, value);
+            }
+        }
+    }
 }

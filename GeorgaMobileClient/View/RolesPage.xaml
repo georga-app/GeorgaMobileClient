@@ -18,11 +18,25 @@
     <Grid Style="{StaticResource ContentArea}" RowDefinitions="auto,*,auto" Padding="10">
         <Label Grid.Row="0" Text="{Binding Name}" />
         <ScrollView Grid.Row="1">
-            <ListView Margin="0,0,0,0" ItemsSource="{Binding Roles}" RowHeight="68" ItemTapped="OnItemTapped">
+            <ListView Margin="0,0,0,0" ItemsSource="{Binding Roles}" RowHeight="68">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Grid>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Delete"
+                                                   IconImageSource="trash_solid.svg"
+                                                   BackgroundColor="#ffd191"
+                                                   Invoked="OnDeleteSwipeItemInvoked"/>
+                                        <SwipeItem Text="Edit"
+                                                   IconImageSource="pencil_solid.svg"
+                                                   BackgroundColor="LightGreen"
+                                                   Invoked="OnEditSwipeItemInvoked" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <!-- Content -->
+                                <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -38,10 +52,10 @@
                                     </Image.Source>
                                 </Image>
                                 <StackLayout Grid.Column="1" Orientation="Horizontal">
-                                    <Label Text="{Binding Name}" FontSize="Small" FontAttributes="Bold" />
-                                    <Label Text="{Binding IsActive}" FontSize="Small" FontAttributes="Italic" />
+                                        <Label Text="{Binding Name}" FontSize="Small" FontAttributes="Bold" VerticalOptions="End" />
+                                    <!-- TODO: boolToAcivestringConverter schreiben: Label Text="{Binding IsActive}" FontSize="Small" FontAttributes="Italic" /-->
                                 </StackLayout>
-                                <StackLayout Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalOptions="End">
+                                <StackLayout Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalOptions="Start">
                                     <Label Text="{Binding Description}" TextColor="Grey" FontSize="Micro" FontAttributes="Italic" />
                                 </StackLayout>
                                 <StackLayout Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
@@ -51,7 +65,8 @@
                                     <Label Text="|" FontSize="Micro" />
                                     <Label Text="{Binding ParticipantsDeclined, Converter={StaticResource intToUsericons}}" FontSize="Micro" FontFamily="FASolid" TextColor="Red" />
                                 </StackLayout>
-                            </Grid>
+                                </Grid>
+                            </SwipeView>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>

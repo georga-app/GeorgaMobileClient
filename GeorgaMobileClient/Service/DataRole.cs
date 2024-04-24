@@ -49,6 +49,10 @@ public partial class Data
                             {
                                 id
                             }
+                            task
+                            {
+                                id
+                            }
                             name
                             description
                             isActive
@@ -74,10 +78,23 @@ public partial class Data
             await _db.DeleteRoleAsync(oldRole);
         foreach (var role in listRoles)
         {
+            dynamic shift = role.node.shift;    // special case shift!=null;
+            string? shiftid;                    // only occurs if role
+            if (shift != null)                  // information in shift
+                shiftid = shift.id;             // differs from the task's one
+            else
+                shiftid = null;
+            dynamic task = role.node.task;      // either shift or task
+            string? taskid;                     // can be null
+            if (task != null)
+                taskid = task.id;
+            else
+                taskid = null;
             var record = new GeorgaMobileDatabase.Model.Role()
             {
                 Id = role.node.id,
-                ShiftId = role.node.shift.id,
+                ShiftId = shiftid,
+                TaskId = taskid,
                 Name = role.node.name,
                 Description = role.node.description,
                 IsActive = role.node.isActive,
