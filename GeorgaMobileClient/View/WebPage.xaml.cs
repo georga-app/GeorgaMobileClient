@@ -19,10 +19,10 @@ public partial class WebPage : BasePage, GeorgaMobileClient.Interface.IWebView
                 appearingFirstTime = false;
                 if ((bool)App.Instance.User.Authenticated)
                 {
-                    LoadUri($"http://localhost:3000/auth?id={App.Instance.User.Id}"
-                                                 + $"&token={App.Instance.User.Token}"
-                                            + $"&adminLevel={App.Instance.User.AdminLevel}"
-                                               + "&redirect=schedule");
+                    LoadUri($"{(BindingContext as WebViewModel).Endpoint}:3000/auth?id={App.Instance.User.Id}"
+                                                                            + $"&token={App.Instance.User.Token}"
+                                                                       + $"&adminLevel={App.Instance.User.AdminLevel}"
+                                                                          + "&redirect=schedule");
                 }
                 else
                 {
@@ -51,6 +51,13 @@ public partial class WebPage : BasePage, GeorgaMobileClient.Interface.IWebView
 
     private void OnSizeChanged(object sender, EventArgs e)
     {
-        webView.Reload();
+        try
+        {
+            webView.Reload();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
     }
 }

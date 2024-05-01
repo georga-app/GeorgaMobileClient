@@ -32,6 +32,11 @@ namespace GeorgaMobileClient.ViewModel
 {
     public partial class WebViewModel : DatabaseViewModel
     {
+        #region vars
+        IConfiguration configuration;
+        NetworkSettings settings;
+        public string Endpoint;
+        #endregion
 
         #region events
 
@@ -42,6 +47,12 @@ namespace GeorgaMobileClient.ViewModel
         public WebViewModel()
         {
             Title = GeorgaMobileClient.Properties.Resources.AdminInterface;
+            configuration = MauiProgram.Services.GetService<IConfiguration>();
+            settings = configuration.GetRequiredSection("NetworkSettings").Get<NetworkSettings>();
+            var isEmulator = DeviceInfo.DeviceType == DeviceType.Virtual;
+            Endpoint = DeviceInfo.Platform == DevicePlatform.Android ? (isEmulator ? settings.AndroidEndpointEmulator : settings.AndroidEndpoint) : settings.OtherPlatformsEndpoint;
+            if (Endpoint.Length >= 11)
+                Endpoint = Endpoint.Substring(0, Endpoint.Length - 11);  // cut ":port/graphql"
         }
 
         #endregion
