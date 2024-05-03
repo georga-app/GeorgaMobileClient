@@ -19,10 +19,13 @@ public partial class WebPage : BasePage, GeorgaMobileClient.Interface.IWebView
                 appearingFirstTime = false;
                 if ((bool)App.Instance.User.Authenticated)
                 {
+                    string emulatorQueryParam = (DeviceInfo.DeviceType == DeviceType.Virtual) ? "1" : "0";
                     LoadUri($"{(BindingContext as WebViewModel).Endpoint}:3000/auth?id={App.Instance.User.Id}"
                                                                             + $"&token={App.Instance.User.Token}"
                                                                        + $"&adminLevel={App.Instance.User.AdminLevel}"
-                                                                          + "&redirect=schedule");
+                                                                          + "&redirect=schedule"
+                                                                             + "&embed=1"
+                                                                         + $"&emulator={emulatorQueryParam}");
                 }
                 else
                 {
